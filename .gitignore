@@ -1,0 +1,53 @@
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.tmp
+*.swp
+
+# === Eclipse ===
+.project
+.classpath
+.settings/
+bin/
+build/
+
+# === IntelliJ IDEA ===
+*.iml
+.idea/
+out/
+
+# === JavaFX (build artifacts) ===
+/target/
+build/
+fxbuild/
+
+# === OS-specific ===
+.DS_Store
+Thumbs.db
+
+# === Gradle ===
+.gradle/
+build/
+
+# === Maven ===
+target/
+
+# === Node (if accidentally included) ===
+node_modules/
+
+# === VSCode ===
+.vscode/
+
+# === Logs ===
+*.log
+
+# === Backup files ===
+*~
+*.bak
+
+# === Others ===
+.env
+*.orig
