@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
-</BorderPane>
+<VBox xmlns="http://javafx.com/javafx"
+	xmlns:fx="http://javafx.com/fxml"
+	fx:controller="view.LoginView"
+	spacing="20"
+	alignment="CENTER"
+	style="-fx-background-color: white; -fx-padding: 40;">
 
+	<Label text="Gym Management System"
+		style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
+	<Label text="Đăng nhập" style="-fx-font-size: 24px; -fx-text-fill: black;" />
+
+	<GridPane vgap="15" hgap="15" alignment="CENTER">
+		<Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+			style="-fx-font-size: 14px; -fx-text-fill: black;" />
+		<TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+			prefWidth="250" prefHeight="30" />
+
+		<Label text="Mật khẩu:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+			style="-fx-font-size: 14px; -fx-text-fill: black;" />
+		<PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+			prefWidth="250" prefHeight="30" />
+	</GridPane>
+
+	<Button text="Đăng nhập" onAction="#handleLogin"
+		style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+		prefWidth="200" prefHeight="40" />
+
+</VBox>
