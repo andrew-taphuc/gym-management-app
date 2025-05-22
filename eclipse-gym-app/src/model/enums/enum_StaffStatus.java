@@ -1,9 +1,9 @@
 package model.enums;
 
 public enum enum_StaffStatus {
-    DANG_LAM_VIEC("Đang làm việc"),
-    NGHI_PHEP("Nghỉ phép"),
-    DA_NGHI_VIEC("Đã nghỉ việc");
+    ACTIVE("Hoạt động"),
+    ON_LEAVE("Nghỉ phép"),
+    TERMINATED("Đã nghỉ việc");
 
     private final String value;
 
@@ -13,5 +13,14 @@ public enum enum_StaffStatus {
 
     public String getValue() {
         return value;
+    }
+
+    public static enum_StaffStatus fromValue(String value) {
+        for (enum_StaffStatus status : enum_StaffStatus.values()) {
+            if (status.value.equals(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown staff status value: " + value);
     }
 }

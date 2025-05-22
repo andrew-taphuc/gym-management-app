@@ -1,9 +1,9 @@
 package model.enums;
 
 public enum enum_Gender {
-    NAM("Nam"),
-    NU("Nữ"),
-    KHAC("Khác");
+    MALE("Nam"),
+    FEMALE("Nữ"),
+    OTHER("Khác");
 
     private final String value;
 
@@ -13,5 +13,14 @@ public enum enum_Gender {
 
     public String getValue() {
         return value;
+    }
+
+    public static enum_Gender fromValue(String value) {
+        for (enum_Gender gender : enum_Gender.values()) {
+            if (gender.value.equals(value)) {
+                return gender;
+            }
+        }
+        throw new IllegalArgumentException("Unknown gender value: " + value);
     }
 }

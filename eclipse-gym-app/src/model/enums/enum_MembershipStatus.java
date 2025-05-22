@@ -1,8 +1,10 @@
 package model.enums;
 
 public enum enum_MembershipStatus {
-    HOAT_DONG("Hoạt động"),
-    HET_HAN("Hết hạn");
+    ACTIVE("Hoạt động"),
+    EXPIRED("Hết hạn"),
+    SUSPENDED("Tạm ngừng"),
+    CANCELLED("Đã hủy");
 
     private final String value;
 
@@ -12,5 +14,14 @@ public enum enum_MembershipStatus {
 
     public String getValue() {
         return value;
+    }
+
+    public static enum_MembershipStatus fromValue(String value) {
+        for (enum_MembershipStatus status : enum_MembershipStatus.values()) {
+            if (status.value.equals(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown membership status value: " + value);
     }
 }

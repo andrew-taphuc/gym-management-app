@@ -1,10 +1,10 @@
 package model.enums;
 
 public enum enum_PaymentMethod {
-    TIEN_MAT("Tiền mặt"),
-    THE_NGAN_HANG("Thẻ ngân hàng"),
-    VI_DIEN_TU("Ví điện tử"),
-    CHUYEN_KHOAN("Chuyển khoản");
+    CASH("Tiền mặt"),
+    CREDIT_CARD("Thẻ tín dụng"),
+    BANK_TRANSFER("Chuyển khoản"),
+    E_WALLET("Ví điện tử");
 
     private final String value;
 
@@ -14,5 +14,14 @@ public enum enum_PaymentMethod {
 
     public String getValue() {
         return value;
+    }
+
+    public static enum_PaymentMethod fromValue(String value) {
+        for (enum_PaymentMethod method : enum_PaymentMethod.values()) {
+            if (method.value.equals(value)) {
+                return method;
+            }
+        }
+        throw new IllegalArgumentException("Unknown payment method value: " + value);
     }
 }

@@ -1,9 +1,9 @@
 package model.enums;
 
 public enum enum_UserStatus {
-    HOAT_DONG("Hoạt động"),
-    KHOA("Khóa"),
-    TAM_NGUNG("Tạm ngừng");
+    ACTIVE("Hoạt động"),
+    LOCKED("Khóa"),
+    SUSPENDED("Tạm ngừng");
 
     private final String value;
 
@@ -13,5 +13,14 @@ public enum enum_UserStatus {
 
     public String getValue() {
         return value;
+    }
+
+    public static enum_UserStatus fromValue(String value) {
+        for (enum_UserStatus status : enum_UserStatus.values()) {
+            if (status.value.equals(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown user status value: " + value);
     }
 }
