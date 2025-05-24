@@ -3,8 +3,7 @@ package model.enums;
 public enum enum_MembershipStatus {
     ACTIVE("Hoạt động"),
     EXPIRED("Hết hạn"),
-    SUSPENDED("Tạm ngừng"),
-    CANCELLED("Đã hủy");
+    INACTIVE("Chưa kích hoạt");
 
     private final String value;
 

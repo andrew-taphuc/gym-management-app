@@ -9,23 +9,20 @@ public class MembershipRenewal {
     private LocalDate newEndDate;
     private LocalDateTime renewalDate;
     private int paymentId;
-    private int staffId;
     private String notes;
     private Membership membership; // Reference to Membership
     private Payment payment; // Reference to Payment
-    private Staff staff; // Reference to Staff
 
     public MembershipRenewal() {
     }
 
     public MembershipRenewal(int renewalId, int membershipId, LocalDate newEndDate,
-            LocalDateTime renewalDate, int paymentId, int staffId, String notes) {
+            LocalDateTime renewalDate, int paymentId, String notes) {
         this.renewalId = renewalId;
         this.membershipId = membershipId;
         this.newEndDate = newEndDate;
         this.renewalDate = renewalDate;
         this.paymentId = paymentId;
-        this.staffId = staffId;
         this.notes = notes;
     }
 
@@ -70,14 +67,6 @@ public class MembershipRenewal {
         this.paymentId = paymentId;
     }
 
-    public int getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(int staffId) {
-        this.staffId = staffId;
-    }
-
     public String getNotes() {
         return notes;
     }
@@ -100,13 +89,5 @@ public class MembershipRenewal {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
-    }
-
-    public Staff getStaff() {
-        return staff;
-    }
-
-    public void setStaff(Staff staff) {
-        this.staff = staff;
     }
 }

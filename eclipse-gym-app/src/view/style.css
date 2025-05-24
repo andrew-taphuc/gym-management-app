@@ -1,0 +1,53 @@
+/* Sidebar và label tiêu đề */
+.menu-btn {
+    -fx-background-color: #232930;
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Courier New';
+    -fx-background-radius: 10;
+    -fx-border-color: #181c20;
+    -fx-border-width: 2;
+    -fx-padding: 20 0 20 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);
+}
+.menu-btn:hover {
+    -fx-background-color: #2c313a;
+}
+
+.label {
+    -fx-font-family: 'Courier New';
+}
+
+/* Nút logout */
+.button {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* StackPane nội dung */
+#contentPane {
+    -fx-background-color: #f5f5f6;
+}
+
+.menu-bar {
+    -fx-spacing: 10;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.menu-button {
+    -fx-min-width: 280;
+    -fx-min-height: 70;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Courier New';
+}
+
+.menu-button:hover {
+    -fx-background-color: #2c3238;
+} 

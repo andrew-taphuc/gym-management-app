@@ -15,7 +15,7 @@ INSERT INTO Trainers (UserID, TrainerCode, Specialization, Bio, Rating, Status) 
 
 -- Dữ liệu mẫu cho bảng Members
 INSERT INTO Members (UserID, MemberCode, JoinDate, Status) VALUES
-(4, 'MEMBER001', CURRENT_DATE, 'Hoạt động');
+(4, 'HV0001', CURRENT_DATE, 'Hoạt động');
 
 -- Dữ liệu mẫu cho bảng FitnessCenter
 INSERT INTO FitnessCenter (CenterName, Address, PhoneNumber) VALUES
@@ -50,18 +50,18 @@ INSERT INTO TrainingPlans (PlanCode, PlanName, Type, SessionAmount, Price, Descr
 ('TPLAN002', 'Gói 20 buổi', 'Gym', 20, 3800000, 'Gói tập với HLV 20 buổi');
 
 -- Dữ liệu mẫu cho bảng Payments
-INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, StaffID, Notes) VALUES
-(500000, CURRENT_TIMESTAMP, 'Tiền mặt', 'Thành công', 1, 'Thanh toán gói tập 1 tháng'),
-(2000000, CURRENT_TIMESTAMP, 'Chuyển khoản', 'Thành công', 1, 'Thanh toán gói tập với HLV');
+INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, Notes) VALUES
+(500000, CURRENT_TIMESTAMP, 'Credit Card', 'Thành công', 'Thanh toán gói tập 1 tháng'),
+(2000000, CURRENT_TIMESTAMP, 'Credit Card', 'Thành công', 'Thanh toán gói tập với HLV');
 
 -- Dữ liệu mẫu cho bảng Memberships
-INSERT INTO Memberships (MemberID, PlanID, StartDate, EndDate, Status, PaymentID) VALUES
-(1, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', 'Hoạt động', 1);
+INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID) VALUES
+(1, 1, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', 'Chưa kích hoạt', 1);
 
 -- Dữ liệu mẫu cho bảng TrainingRegistrations
 INSERT INTO TrainingRegistrations (MemberID, PlanID, TrainerID, StartDate, SessionsLeft, PaymentID) VALUES
 (1, 1, 1, CURRENT_DATE, 10, 2);
 
 -- Dữ liệu mẫu cho bảng MembershipRenewals
-INSERT INTO MembershipRenewals (MembershipID, NewEndDate, RenewalDate, PaymentID, StaffID, Notes) VALUES
-(1, CURRENT_DATE + INTERVAL '30 days', CURRENT_TIMESTAMP, 1, 1, 'Gia hạn gói tập 1 tháng'); 
+INSERT INTO MembershipRenewals (MembershipID, NewEndDate, RenewalDate, PaymentID, Notes) VALUES
+(1, CURRENT_DATE + INTERVAL '30 days', CURRENT_TIMESTAMP, 1, 'Gia hạn gói tập 1 tháng'); 

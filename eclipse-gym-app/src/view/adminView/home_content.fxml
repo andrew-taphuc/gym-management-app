@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    alignment="CENTER" spacing="20.0" style="-fx-padding: 40;">
+    <Label text="Nhập thông tin của bạn"
+        style="-fx-font-size: 22px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;" />
+    <TextField promptText="Họ và tên" maxWidth="300" />
+    <TextField promptText="Email" maxWidth="300" />
+    <TextField promptText="Số điện thoại" maxWidth="300" />
+    <Button text="Gửi thông tin" maxWidth="300"
+        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8;" />
+</VBox> 
