@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 public class UserController {
     private Connection connection;
@@ -72,5 +73,38 @@ public class UserController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int createUser(User user) {
+        String query = "INSERT INTO Users (Username, Password, Email, PhoneNumber, FullName, " +
+                "DateOfBirth, Gender, Address, CreatedAt, UpdateAt, Status, Role) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?::gender_enum, ?, ?, ?, ?::user_status_enum, ?::role_enum) " +
+                "RETURNING UserID";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPassword());
+            stmt.setString(3, user.getEmail());
+            stmt.setString(4, user.getPhoneNumber());
+            stmt.setString(5, user.getFullName());
+            stmt.setDate(6, java.sql.Date.valueOf(user.getDateOfBirth()));
+            stmt.setString(7, user.getGender().getValue());
+            stmt.setString(8, user.getAddress());
+
+            LocalDateTime now = LocalDateTime.now();
+            stmt.setTimestamp(9, java.sql.Timestamp.valueOf(now));
+            stmt.setTimestamp(10, java.sql.Timestamp.valueOf(now));
+
+            stmt.setString(11, user.getStatus().getValue());
+            stmt.setString(12, user.getRole().getValue());
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("UserID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
