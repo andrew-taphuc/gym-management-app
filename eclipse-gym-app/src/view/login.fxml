@@ -7,7 +7,6 @@
 
 <VBox xmlns="http://javafx.com/javafx"
 	xmlns:fx="http://javafx.com/fxml"
-	fx:controller="view.LoginView"
 	spacing="20"
 	alignment="CENTER"
 	style="-fx-background-color: white; -fx-padding: 40;">
@@ -28,8 +27,15 @@
 			prefWidth="250" prefHeight="30" />
 	</GridPane>
 
-	<Button text="Đăng nhập" onAction="#handleLogin"
-		style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
-		prefWidth="200" prefHeight="40" />
+	<Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+	<HBox spacing="20" alignment="CENTER">
+		<Button text="Đăng nhập" onAction="#handleLogin"
+			style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+			prefWidth="150" prefHeight="40" />
+		<Button text="Đăng ký" onAction="#handleRegister"
+			style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+			prefWidth="150" prefHeight="40" />
+	</HBox>
 
 </VBox>

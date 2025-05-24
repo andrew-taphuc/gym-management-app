@@ -1,0 +1,45 @@
+.dialog-pane {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #444;
+    -fx-border-width: 1px;
+    -fx-padding: 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 0 0 0;
+}
+
+.dialog-pane .content.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #dddddd;
+}
+
+.dialog-pane .button-bar {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 20px 0 0 0;
+}
+
+.button {
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 16px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 4, 0, 0, 2);
+}
+
+.button:cancel {
+    -fx-background-color: #555;
+    -fx-text-fill: #cccccc;
+}
+
+.button:default {
+    -fx-background-color: #2196f3;
+    -fx-text-fill: white;
+}
