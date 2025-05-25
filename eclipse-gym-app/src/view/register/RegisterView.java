@@ -10,7 +10,6 @@ import model.enums.enum_UserStatus;
 import view.BaseView;
 import view.LoginView;
 import controller.UserController;
-import java.time.LocalDate;
 
 public class RegisterView extends BaseView {
     @FXML
