@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    spacing="20"
+    style="-fx-background-color: white; -fx-padding: 40;">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Đăng ký tài khoản"
+            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Quay lại" onAction="#handleBack"
+            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+            prefWidth="100" prefHeight="35" />
+    </HBox>
+
+    <Separator />
+
+    <GridPane vgap="15" hgap="15" alignment="CENTER_LEFT">
+        <Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+            prefWidth="300" />
+
+        <Label text="Mật khẩu:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+            prefWidth="300" />
+
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2"
+            prefWidth="300" />
+
+        <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="3"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="3"
+            prefWidth="300" />
+
+        <Label text="Họ và tên:" GridPane.columnIndex="0" GridPane.rowIndex="4"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="fullNameField" GridPane.columnIndex="1" GridPane.rowIndex="4"
+            prefWidth="300" />
+
+        <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="5"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <DatePicker fx:id="dobPicker" GridPane.columnIndex="1" GridPane.rowIndex="5"
+            prefWidth="300" />
+
+        <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="6"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <ComboBox fx:id="genderComboBox" GridPane.columnIndex="1" GridPane.rowIndex="6"
+            prefWidth="300" />
+
+        <Label text="Địa chỉ:" GridPane.columnIndex="0" GridPane.rowIndex="7"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="addressField" GridPane.columnIndex="1" GridPane.rowIndex="7"
+            prefWidth="300" />
+    </GridPane>
+
+    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+    <Button text="Đăng ký" onAction="#handleRegister"
+        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+        prefWidth="200" prefHeight="40" />
+
+</VBox> 

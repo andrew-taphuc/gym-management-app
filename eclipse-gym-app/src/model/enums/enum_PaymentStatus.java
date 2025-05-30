@@ -1,10 +1,8 @@
 package model.enums;
 
 public enum enum_PaymentStatus {
-    PENDING("Chờ xử lý"),
-    COMPLETED("Hoàn thành"),
-    FAILED("Thất bại"),
-    REFUNDED("Đã hoàn tiền");
+    COMPLETED("Thành công"),
+    FAILED("Thất bại");
 
     private final String value;
 

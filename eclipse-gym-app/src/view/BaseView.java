@@ -12,8 +12,8 @@ import model.User;
 public class BaseView {
     protected Stage stage;
     protected User currentUser;
-    protected static final double WINDOW_WIDTH = 800;
-    protected static final double WINDOW_HEIGHT = 600;
+    protected static final double WINDOW_WIDTH = 1920;
+    protected static final double WINDOW_HEIGHT = 1080;
 
     public BaseView(Stage stage) {
         this.stage = stage;

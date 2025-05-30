@@ -24,13 +24,16 @@ CREATE TYPE member_status_enum AS ENUM ('Hoạt động', 'Tạm ngừng', 'Hế
 CREATE TYPE trainer_specialization_enum AS ENUM ('Gym', 'Yoga', 'Kickfit');
 
 -- ENUM trạng thái hội viên
-CREATE TYPE membership_status_enum AS ENUM ('Hoạt động', 'Hết hạn');
-
--- ENUM phương thức thanh toán
-CREATE TYPE payment_method_enum AS ENUM ('Tiền mặt', 'Thẻ ngân hàng', 'Ví điện tử', 'Chuyển khoản');
+CREATE TYPE membership_status_enum AS ENUM ('Hoạt động', 'Hết hạn', 'Chưa kích hoạt');
 
 -- ENUM trạng thái thanh toán
-CREATE TYPE payment_status_enum AS ENUM ('Thành công', 'Thất bại', 'Đang xử lý', 'Hoàn tiền');
+CREATE TYPE payment_status_enum AS ENUM ('Thành công', 'Thất bại');
+
+-- ENUM trạng thái phòng tập
+CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ngừng');
+
+-- ENUM trạng thái thiết bị
+CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
 
 -- Bảng người dùng chung
 CREATE TABLE Users (
@@ -103,20 +106,20 @@ CREATE TABLE Payments (
   PaymentID SERIAL PRIMARY KEY,
   Amount DECIMAL(12,2) NOT NULL CHECK (Amount >= 0),
   PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PaymentMethod payment_method_enum NOT NULL,
+  PaymentMethod VARCHAR(50) NOT NULL,
   Status payment_status_enum DEFAULT 'Thành công',
-  StaffID INT REFERENCES Staff(StaffID),
   Notes VARCHAR(500)
 );
 
 -- BẢNG ĐĂNG KÝ GÓI TRUY CẬP GYM (Thêm PaymentID)
 CREATE TABLE Memberships (
   MembershipID SERIAL PRIMARY KEY,
+  UserID INT NOT NULL REFERENCES Users(UserID) ON DELETE CASCADE,
   MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
   PlanID INT NOT NULL REFERENCES MembershipPlans(PlanID) ON DELETE CASCADE,
   StartDate DATE NOT NULL,
   EndDate DATE NOT NULL,
-  Status membership_status_enum DEFAULT 'Hoạt động',
+  Status membership_status_enum DEFAULT 'Chưa kích hoạt',
   PaymentID INT REFERENCES Payments(PaymentID)
 );
 
@@ -138,7 +141,6 @@ CREATE TABLE MembershipRenewals (
   NewEndDate DATE NOT NULL,
   RenewalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PaymentID INT REFERENCES Payments(PaymentID),
-  StaffID INT REFERENCES Staff(StaffID),
   Notes VARCHAR(500)
 );
 
@@ -160,7 +162,7 @@ CREATE TABLE Rooms (
     RoomName VARCHAR(100) NOT NULL,
     RoomType VARCHAR(50) NOT NULL, -- gym, yoga, etc.
     Description VARCHAR(500),
-    Status VARCHAR(20) DEFAULT 'Hoạt động' CHECK (Status IN ('Hoạt động', 'Bảo trì', 'Tạm ngừng')),
+    Status room_status_enum DEFAULT 'Hoạt động',
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CenterID INT REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE
@@ -180,7 +182,7 @@ CREATE TABLE RoomEquipment (
     EquipmentTypeID INT NOT NULL REFERENCES EquipmentTypes(EquipmentTypeID) ON DELETE CASCADE,
     EquipmentCode VARCHAR(20) NOT NULL,
     Quantity INT NOT NULL DEFAULT 1,
-    Status VARCHAR(20) DEFAULT 'Hoạt động' CHECK (Status IN ('Hoạt động', 'Bảo trì')),
+    Status equipment_status_enum DEFAULT 'Hoạt động',
     Description VARCHAR(500),
     CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

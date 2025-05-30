@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    spacing="20"
+    style="-fx-background-color: white; -fx-padding: 40;">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Thanh toán"
+            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Quay lại" onAction="#handleBack"
+            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+            prefWidth="100" prefHeight="35" />
+    </HBox>
+
+    <Separator />
+
+    <GridPane vgap="15" hgap="15" alignment="CENTER_LEFT">
+        <Label text="Số thẻ:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="cardNumberField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+            prefWidth="300" />
+
+        <Label text="CVV:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+        <TextField fx:id="cvvField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+            prefWidth="300" />
+    </GridPane>
+
+    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+    <Button text="Thanh toán" onAction="#handlePayment"
+        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+        prefWidth="200" prefHeight="40" />
+
+</VBox> 

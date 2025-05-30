@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Sidebar và label tiêu đề */
+.menu-btn {
+    -fx-background-color: #232930;
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-family: 'Be Vietnam Pro';
+    -fx-background-radius: 10;
+    -fx-border-color: #181c20;
+    -fx-border-width: 2;
+    -fx-padding: 20 0 20 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);
+}
+.menu-btn:hover {
+    -fx-background-color: #2c313a;
+}
+
+.label {
+    -fx-font-family: 'Be Vietnam Pro';
+}
+
+/* Nút logout */
+.button {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* StackPane nội dung */
+#contentPane {
+    -fx-background-color: #f5f5f6;
+}
+
+.menu-bar {
+    -fx-spacing: 10;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.menu-button {
+    -fx-min-width: 280;
+    -fx-min-height: 70;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Be Vietnam Pro';
+}
+
+.menu-button:hover {
+    -fx-background-color: #2c3238;
+} 
+
+/* Style cho tiêu đề trang */
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #232930;
+    -fx-font-family: 'Be Vietnam Pro';
+    -fx-padding: 20 0 20 0;
+    -fx-alignment: CENTER;  /* Căn giữa text */
+}
+
+/* Style cho vùng nội dung */
+.content-area {
+    -fx-background-color: #f5f5f6;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-alignment: CENTER;  /* Căn giữa các phần tử con */
+    -fx-pref-width: 800;   /* Chiều rộng cố định */
+    -fx-max-width: 800;    /* Giới hạn chiều rộng tối đa */
+}
+
+/* Thêm style cho VBox trong content-area */
+.content-area > VBox {
+    -fx-alignment: CENTER;  /* Căn giữa các phần tử trong VBox */
+    -fx-spacing: 20;       /* Khoảng cách giữa các phần tử */
+    -fx-padding: 20;       /* Padding bên trong */
+    -fx-pref-width: 600;   /* Chiều rộng cố định cho nội dung */
+    -fx-max-width: 600;    /* Giới hạn chiều rộng tối đa */
+    -fx-translate-x: 150;  /* Dịch chuyển sang phải 150px để căn giữa */
+}

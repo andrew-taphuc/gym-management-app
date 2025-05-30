@@ -5,6 +5,7 @@ import model.enums.enum_MembershipStatus;
 
 public class Membership {
     private int membershipId;
+    private int userId;
     private int memberId;
     private int planId;
     private LocalDate startDate;
@@ -18,9 +19,10 @@ public class Membership {
     public Membership() {
     }
 
-    public Membership(int membershipId, int memberId, int planId, LocalDate startDate,
+    public Membership(int membershipId, int userId, int memberId, int planId, LocalDate startDate,
             LocalDate endDate, enum_MembershipStatus status, int paymentId) {
         this.membershipId = membershipId;
+        this.userId = userId;
         this.memberId = memberId;
         this.planId = planId;
         this.startDate = startDate;
@@ -36,6 +38,14 @@ public class Membership {
 
     public void setMembershipId(int membershipId) {
         this.membershipId = membershipId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getMemberId() {

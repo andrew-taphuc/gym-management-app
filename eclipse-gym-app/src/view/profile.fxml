@@ -8,69 +8,74 @@
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
     spacing="20"
-    style="-fx-background-color: white; -fx-padding: 40;">
+    alignment="CENTER"
+    style="-fx-background-color: #232930; -fx-padding: 30;">
 
     <HBox alignment="CENTER_LEFT" spacing="20">
         <Label text="Thông tin cá nhân"
-            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
+            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: 'Courier New';" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="Quay lại" onAction="#handleBack"
-            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
-            prefWidth="100" prefHeight="35" />
+        <Button text="✕" onAction="#handleClose"
+            style="-fx-background-color: #e91e63; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 50%; -fx-min-width: 35px; -fx-min-height: 35px;"
+            prefWidth="35" prefHeight="35" />
     </HBox>
 
     <Separator />
 
-    <GridPane vgap="15" hgap="15" alignment="CENTER_LEFT">
-        <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="userIdLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+    <VBox alignment="CENTER" spacing="20"
+        style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);">
+        <GridPane vgap="15" hgap="15" alignment="CENTER_LEFT">
+            <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="userIdLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="1"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="usernameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="usernameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="emailLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="emailLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="3"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="phoneLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Số điện thoại:" GridPane.columnIndex="0" GridPane.rowIndex="3"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="phoneLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Họ và tên:" GridPane.columnIndex="0" GridPane.rowIndex="4"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="fullNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Họ và tên:" GridPane.columnIndex="0" GridPane.rowIndex="4"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="fullNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="5"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="dobLabel" GridPane.columnIndex="1" GridPane.rowIndex="5"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Ngày sinh:" GridPane.columnIndex="0" GridPane.rowIndex="5"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="dobLabel" GridPane.columnIndex="1" GridPane.rowIndex="5"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="6"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="genderLabel" GridPane.columnIndex="1" GridPane.rowIndex="6"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Giới tính:" GridPane.columnIndex="0" GridPane.rowIndex="6"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="genderLabel" GridPane.columnIndex="1" GridPane.rowIndex="6"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Địa chỉ:" GridPane.columnIndex="0" GridPane.rowIndex="7"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="addressLabel" GridPane.columnIndex="1" GridPane.rowIndex="7"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Địa chỉ:" GridPane.columnIndex="0" GridPane.rowIndex="7"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="addressLabel" GridPane.columnIndex="1" GridPane.rowIndex="7"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Vai trò:" GridPane.columnIndex="0" GridPane.rowIndex="8"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="roleLabel" GridPane.columnIndex="1" GridPane.rowIndex="8"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <Label text="Vai trò:" GridPane.columnIndex="0" GridPane.rowIndex="8"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="roleLabel" GridPane.columnIndex="1" GridPane.rowIndex="8"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
 
-        <Label text="Trạng thái:" GridPane.columnIndex="0" GridPane.rowIndex="9"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <Label fx:id="statusLabel" GridPane.columnIndex="1" GridPane.rowIndex="9"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-    </GridPane>
+            <Label text="Trạng thái:" GridPane.columnIndex="0" GridPane.rowIndex="9"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+            <Label fx:id="statusLabel" GridPane.columnIndex="1" GridPane.rowIndex="9"
+                style="-fx-font-size: 14px; -fx-text-fill: #232930; -fx-font-family: 'Courier New';" />
+        </GridPane>
+        <Label fx:id="errorLabel" style="-fx-text-fill: red; -fx-font-family: 'Courier New';" />
+    </VBox>
 
 </VBox> 

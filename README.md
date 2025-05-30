@@ -1,65 +1,59 @@
-# Gym Management System
+# Gym Management App
 
-Hệ thống quản lý phòng tập gym được phát triển bằng JavaFX và PostgreSQL.
+Ứng dụng quản lý phòng gym với giao diện JavaFX, hỗ trợ nhiều vai trò người dùng (Member, Trainer, Manager).
 
-## Tính năng
+## Chức năng chính
 
-- Đăng nhập/Đăng xuất
-- Quản lý thông tin người dùng
-- Xem thông tin cá nhân
-- Phân quyền người dùng (Admin, Staff, Trainer, Member)
+- Đăng ký, đăng nhập, quản lý tài khoản
+- Quản lý gói tập, thanh toán, lịch sử tập luyện
+- Quản lý khuyến mãi, phản hồi, thông tin cá nhân
+- Giao diện riêng cho từng vai trò: Member, Trainer, Manager
 
-## Yêu cầu hệ thống
-
-- Java JDK 17 trở lên
-- PostgreSQL 12 trở lên
-- Maven
-
-## Cài đặt
-
-1. Clone repository:
-
-```bash
-git clone [repository-url]
-```
-
-2. Cấu hình database:
-
-- Tạo database PostgreSQL
-- Import file `db.sql` vào database
-
-3. Cấu hình kết nối database:
-
-- Mở file `src/utils/DatabaseConnection.java`
-- Cập nhật thông tin kết nối:
-  - URL
-  - Username
-  - Password
-
-4. Build và chạy:
-
-```bash
-mvn clean install
-mvn javafx:run
-```
-
-## Tài khoản mẫu
-
-- Admin: admin/admin123
-- Staff: staff/staff123
-- Trainer: trainer/trainer123
-- Member: member/member123
-
-## Cấu trúc dự án
+## Cấu trúc thư mục
 
 ```
-src/
-├── controller/    # Xử lý logic nghiệp vụ
-├── model/        # Định nghĩa các entity
-├── utils/        # Tiện ích và helper
-└── view/         # Giao diện người dùng
+├── src/
+│   ├── view/
+│   │   ├── userView/         # Giao diện & controller cho Member
+│   │   ├── trainerView/      # Giao diện & controller cho Trainer
+│   │   ├── adminView/        # Giao diện & controller cho Manager
+│   │   └── ...
+│   ├── controller/           # Controller logic
+│   ├── model/                # Model dữ liệu
+│   ├── utils/                # Tiện ích, helper
+│   └── Main.java             # Điểm khởi động ứng dụng
 ```
 
-## Đóng góp
+## Hướng dẫn cài đặt & chạy
 
-Mọi đóng góp đều được hoan nghênh. Vui lòng tạo issue hoặc pull request để đóng góp.
+1. **Yêu cầu:**
+   - Java 17 trở lên
+   - JavaFX SDK
+2. **Chạy ứng dụng:**
+   - Mở project trong IDE (Eclipse/IntelliJ/VSCode)
+   - Thiết lập VM options để include JavaFX (ví dụ: `--module-path /path/to/javafx-sdk/lib --add-modules javafx.controls,javafx.fxml`)
+   - Chạy file `Main.java`
+
+## Hướng dẫn sử dụng
+
+- **Đăng ký:** Người dùng mới đăng ký, thanh toán gói tập, sau đó đăng nhập.
+- **Đăng nhập:**
+  - Member: truy cập các chức năng tập luyện, phản hồi, xem thông tin cá nhân.
+  - Trainer: quản lý lịch tập, xem phản hồi, quản lý học viên.
+  - Manager: quản lý toàn bộ hệ thống, gói tập, khuyến mãi, tài khoản.
+- **Chuyển trang:** Menu bar hiển thị các chức năng phù hợp với từng vai trò.
+
+## Một số lưu ý
+
+- File thẻ tín dụng mẫu: `CREDIT_CARD.txt` (dùng để test thanh toán)
+- Style giao diện được định nghĩa trong `view/style.css` và `view/dialog.css`
+- Để thay đổi giao diện từng vai trò, chỉnh sửa trong các thư mục `userView`, `trainerView`, `adminView`.
+
+## Đóng góp & phát triển
+
+- Fork, tạo branch mới và gửi pull request nếu muốn đóng góp thêm tính năng.
+- Mọi ý kiến đóng góp vui lòng gửi về email hoặc issue trên repository.
+
+---
+
+Chúc bạn sử dụng ứng dụng Gym Management App hiệu quả!
