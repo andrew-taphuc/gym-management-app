@@ -256,3 +256,48 @@ CREATE TABLE MemberProgress (
   TrainerID INT,
   Notes VARCHAR(500)
 );
+
+DROP TABLE IF EXISTS Promotions;
+DROP TYPE IF EXISTS discount_type;
+DROP TYPE IF EXISTS promotion_status;
+
+CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
+CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
+
+
+CREATE TABLE Promotions (
+  PromotionID SERIAL PRIMARY KEY,
+  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
+  PromotionName VARCHAR(100) NOT NULL,
+  Description VARCHAR(500),
+  DiscountType discount_type NOT NULL,
+  DiscountValue DECIMAL(10,2) NOT NULL,
+  StartDate TIMESTAMP NOT NULL,
+  EndDate TIMESTAMP NOT NULL,
+  Status promotion_status DEFAULT 'Còn hạn',
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION update_promotion_status()
+RETURNS void AS $$
+BEGIN
+  -- Hết hạn
+  UPDATE Promotions
+  SET Status = 'Hết hạn'
+  WHERE EndDate < NOW()
+    AND Status <> 'Hết hạn';
+
+  -- Còn hạn
+  UPDATE Promotions
+  SET Status = 'Còn hạn'
+  WHERE StartDate <= NOW() AND EndDate >= NOW()
+    AND Status <> 'Còn hạn';
+
+  -- Chưa khả dụng
+  UPDATE Promotions
+  SET Status = 'Chưa khả dụng'
+  WHERE StartDate > NOW()
+    AND Status <> 'Chưa khả dụng';
+END;
+$$ LANGUAGE plpgsql;
