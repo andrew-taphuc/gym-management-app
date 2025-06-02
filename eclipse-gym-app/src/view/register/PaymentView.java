@@ -133,6 +133,16 @@ public class PaymentView extends BaseView {
             }
             System.out.println("✅ Tạo gói tập thành công!");
 
+            // Hiển thị dialog thành công
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Đăng ký thành công");
+            alert.setHeaderText(null);
+            alert.setContentText("Đăng kí thành công, vui lòng đăng nhập để sử dụng dịch vụ.");
+            alert.getDialogPane().getStylesheets().clear();
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/view/dialog.css").toExternalForm());
+            alert.showAndWait();
+
             // Chuyển đến trang đăng nhập
             view.LoginView loginView = new view.LoginView(stage);
             loginView.loadView("/view/login.fxml");

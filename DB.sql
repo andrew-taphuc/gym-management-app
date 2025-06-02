@@ -35,6 +35,9 @@ CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ng�
 -- ENUM trạng thái thiết bị
 CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
 
+CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Hủy');
+
+
 -- Bảng người dùng chung
 CREATE TABLE Users (
   UserID SERIAL PRIMARY KEY,
@@ -191,4 +194,65 @@ CREATE TABLE RoomEquipment (
     CenterID INT NOT NULL,
     CONSTRAINT fk_center FOREIGN KEY (CenterID) REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE,
     CONSTRAINT uq_equipment_code_per_center UNIQUE (CenterID, EquipmentCode)
+);
+
+
+
+-- Bảng Check-in/Check-out
+CREATE TABLE Attendance (
+  AttendanceID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MembershipID INT NOT NULL,
+  CheckInTime TIMESTAMP NOT NULL,
+  Type trainer_specialization_enum
+);
+
+-- Bảng lịch tập
+CREATE TABLE TrainingSchedule (
+  ScheduleID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  TrainerID INT,
+  MembershipID INT NOT NULL,
+  ScheduleDate DATE NOT NULL,
+  StartTime TIME NOT NULL,
+  Duration INT,
+  RoomID INT,
+  Status training_status_enum DEFAULT 'Đã lên lịch',
+  Notes VARCHAR(500),
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng bài tập
+CREATE TABLE Exercises (
+  ExerciseID SERIAL PRIMARY KEY,
+  ExerciseCode VARCHAR(20) NOT NULL UNIQUE,
+  ExerciseName VARCHAR(100) NOT NULL,
+  Category VARCHAR(50),
+  Description VARCHAR(500)
+);
+
+-- Bảng liên kết lịch tập và bài tập
+CREATE TABLE TrainingScheduleExercises (
+  ScheduleID INT NOT NULL REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
+  ExerciseID INT NOT NULL REFERENCES Exercises(ExerciseID) ON DELETE CASCADE,
+  Comment VARCHAR(500), -- Nhận xét của PT cho bài tập này
+  PRIMARY KEY (ScheduleID, ExerciseID)
+);
+
+-- Bảng Đánh giá tiến độ hội viên
+CREATE TABLE MemberProgress (
+  ProgressID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MeasurementDate DATE NOT NULL,
+  Weight DECIMAL(5,2),
+  Height DECIMAL(5,2),
+  BMI DECIMAL(4,2),
+  BodyFatPercentage DECIMAL(4,2),
+  Chest DECIMAL(5,2),
+  Waist DECIMAL(5,2),
+  Hip DECIMAL(5,2),
+  Biceps DECIMAL(5,2),
+  Thigh DECIMAL(5,2),
+  TrainerID INT,
+  Notes VARCHAR(500)
 );

@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<AnchorPane xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    prefHeight="600.0" prefWidth="800.0"
-    styleClass="content-area">
+    prefHeight="700.0" prefWidth="1200.0">
 
-    <Label fx:id="pageTitle" styleClass="page-title" />
+    <VBox AnchorPane.topAnchor="0"
+        AnchorPane.leftAnchor="0"
+        AnchorPane.rightAnchor="0"
+        AnchorPane.bottomAnchor="0"
+        styleClass="content-area"
+        stylesheets="@workouts.css"
+        alignment="TOP_LEFT"
+        spacing="10">
 
-</VBox> 
+        <Label fx:id="pageTitle" styleClass="page-title" />
+
+        <TableView fx:id="scheduleTable" 
+                   prefHeight="400"
+                   maxHeight="400"
+                   styleClass="workout-table">
+            <columns>
+                <TableColumn fx:id="colDate" text="Ngày" prefWidth="200" />
+                <TableColumn fx:id="colTime" text="Giờ" prefWidth="150" />
+                <TableColumn fx:id="colTrainer" text="Huấn luyện viên" prefWidth="220" />
+                <TableColumn fx:id="colRoom" text="Phòng" prefWidth="180" />
+                <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="180" />
+                <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="270" />
+                <TableColumn fx:id="colAction" text="Bài tập" prefWidth="200" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </VBox>
+</AnchorPane>

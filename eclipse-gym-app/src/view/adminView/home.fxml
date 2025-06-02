@@ -3,6 +3,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <BorderPane stylesheets="/view/style.css" xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
@@ -18,7 +20,8 @@
                 onAction="#handleHomeClick" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Checkin"
                 onAction="#handleCheckinClick" />
-            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Plans &amp; Renewals"
+            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn"
+                text="Plans &amp; Renewals"
                 onAction="#handlePlansClick" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Promos"
                 onAction="#handlePromosClick" />
@@ -37,8 +40,13 @@
             <Button fx:id="profileButton" text="Profile" onAction="#handleProfile"
                 style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 5px; -fx-padding: 8 15;" />
             <Button fx:id="logoutButton" onAction="#handleLogout"
-                style="-fx-background-color: #e91e63; -fx-text-fill: white; -fx-font-size: 22px; -fx-background-radius: 50%; -fx-min-width: 40px; -fx-min-height: 40px;"
-                text="⎋" />
+                style="-fx-background-color: #181c20; -fx-background-radius: 50%; -fx-min-width: 40px; -fx-min-height: 40px;">
+                <graphic>
+                    <ImageView fitWidth="50" fitHeight="50">
+                        <Image url="@/view/resources/images/logout.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
     </top>
 

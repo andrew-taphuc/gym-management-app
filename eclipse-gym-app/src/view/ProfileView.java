@@ -52,7 +52,7 @@ public class ProfileView extends BaseView {
             if (user != null) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-                userIdLabel.setText(String.valueOf(user.getUserId()));
+                // userIdLabel.setText(String.valueOf(user.getUserId()));
                 usernameLabel.setText(user.getUsername());
                 emailLabel.setText(user.getEmail());
                 phoneLabel.setText(user.getPhoneNumber());
