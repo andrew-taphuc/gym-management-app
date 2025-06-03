@@ -18,6 +18,10 @@ public class TrainingSchedule {
     private String notes;
     private LocalDateTime createdDate;
 
+    // Thêm trường để lưu tên trainer và room
+    private String trainerName;
+    private String roomName;
+
     public TrainingSchedule() {
     }
 
@@ -124,5 +128,23 @@ public class TrainingSchedule {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    // Getter và Setter cho trainerName
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
+    }
+
+    // Getter và Setter cho roomName
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 }

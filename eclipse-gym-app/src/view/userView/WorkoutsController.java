@@ -9,6 +9,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.User;
 import model.TrainingSchedule;
+import model.ExerciseWithDetails;
 import model.enums.enum_TrainingStatus;
 import java.time.format.DateTimeFormatter;
 import controller.TrainingController;
@@ -53,10 +54,10 @@ public class WorkoutsController {
     public void initialize() {
         pageTitle.setText("Chào mừng đến với trang theo dõi lịch tập của bạn!");
         setupTable();
+        addButtonToTable();
         if (currentUser != null) {
             loadSchedulesByMember(currentUser.getUserId());
         }
-        addButtonToTable();
     }
 
     private void setupTable() {
@@ -71,8 +72,14 @@ public class WorkoutsController {
                 return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStartTime().toString());
             return new javafx.beans.property.SimpleStringProperty("");
         });
-        colTrainer.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Huấn luyện viên A")); // Placeholder
-        colRoom.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Phòng 1")); // Placeholder
+        colTrainer.setCellValueFactory(cellData -> {
+            String trainerName = cellData.getValue().getTrainerName();
+            return new javafx.beans.property.SimpleStringProperty(trainerName != null ? trainerName : "Chưa có HLV");
+        });
+        colRoom.setCellValueFactory(cellData -> {
+            String roomName = cellData.getValue().getRoomName();
+            return new javafx.beans.property.SimpleStringProperty(roomName != null ? roomName : "Chưa có phòng");
+        });
         colStatus.setCellValueFactory(cellData -> {
             enum_TrainingStatus status = cellData.getValue().getStatus();
             return new javafx.beans.property.SimpleStringProperty(status != null ? status.getValue() : "");
@@ -119,30 +126,51 @@ public class WorkoutsController {
 
     private void showExercisesPopup(int scheduleId) {
         TrainingController trainingController = new TrainingController();
-        java.util.List<Exercise> exercises = trainingController.getExercisesByScheduleId(scheduleId);
+        java.util.List<ExerciseWithDetails> exerciseDetails = trainingController.getExercisesByScheduleId(scheduleId);
         Stage popupStage = new Stage();
         popupStage.setTitle("Danh sách bài tập của buổi tập");
 
-        TableView<Exercise> exerciseTable = new TableView<>();
-        TableColumn<Exercise, String> colName = new TableColumn<>("Tên bài tập");
+        TableView<ExerciseWithDetails> exerciseTable = new TableView<>();
+
+        // Cột tên bài tập
+        TableColumn<ExerciseWithDetails, String> colName = new TableColumn<>("Tên bài tập");
         colName.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getExerciseName()));
-        colName.setPrefWidth(200);
-        TableColumn<Exercise, String> colCode = new TableColumn<>("Mã bài tập");
+        colName.setPrefWidth(180);
+
+        // Cột mã bài tập
+        TableColumn<ExerciseWithDetails, String> colCode = new TableColumn<>("Mã bài tập");
         colCode.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getExerciseCode()));
-        colCode.setPrefWidth(120);
-        TableColumn<Exercise, String> colCategory = new TableColumn<>("Loại");
+        colCode.setPrefWidth(100);
+
+        // Cột loại
+        TableColumn<ExerciseWithDetails, String> colCategory = new TableColumn<>("Loại");
         colCategory.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCategory()));
-        colCategory.setPrefWidth(120);
-        TableColumn<Exercise, String> colDesc = new TableColumn<>("Mô tả");
+        colCategory.setPrefWidth(80);
+
+        // Cột số lượng với định dạng "X reps x Y"
+        TableColumn<ExerciseWithDetails, String> colQuantity = new TableColumn<>("Số lượng");
+        colQuantity.setCellValueFactory(
+                cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getQuantityFormatted()));
+        colQuantity.setPrefWidth(120);
+
+        // Cột ghi chú
+        TableColumn<ExerciseWithDetails, String> colComment = new TableColumn<>("Ghi chú");
+        colComment.setCellValueFactory(
+                cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getComment()));
+        colComment.setPrefWidth(200);
+
+        // Cột mô tả
+        TableColumn<ExerciseWithDetails, String> colDesc = new TableColumn<>("Mô tả");
         colDesc.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
-        colDesc.setPrefWidth(250);
-        exerciseTable.getColumns().addAll(colName, colCode, colCategory, colDesc);
-        exerciseTable.setItems(javafx.collections.FXCollections.observableArrayList(exercises));
-        exerciseTable.setPrefWidth(700);
+        colDesc.setPrefWidth(220);
+
+        exerciseTable.getColumns().addAll(colName, colCode, colCategory, colQuantity, colComment, colDesc);
+        exerciseTable.setItems(javafx.collections.FXCollections.observableArrayList(exerciseDetails));
+        exerciseTable.setPrefWidth(920);
         exerciseTable.setPrefHeight(400);
 
         VBox vbox = new VBox(exerciseTable);
