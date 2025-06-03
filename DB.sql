@@ -1,3 +1,4 @@
+\c postgres;
 DROP DATABASE IF EXISTS gym_management;
 CREATE DATABASE gym_management;
 \c gym_management;
@@ -36,6 +37,10 @@ CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ng�
 CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
 
 CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Hủy');
+
+CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
+
+CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
 
 
 -- Bảng người dùng chung
@@ -148,16 +153,6 @@ CREATE TABLE MembershipRenewals (
 );
 
 -- Module quản lý phòng tập, thiết bị
--- 1. Fitness Center table
-CREATE TABLE FitnessCenter (
-    CenterID SERIAL PRIMARY KEY,
-    CenterName VARCHAR(100) NOT NULL,
-    Address VARCHAR(255),
-    PhoneNumber VARCHAR(20),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- 2. Rooms table
 CREATE TABLE Rooms (
     RoomID SERIAL PRIMARY KEY,
@@ -167,8 +162,7 @@ CREATE TABLE Rooms (
     Description VARCHAR(500),
     Status room_status_enum DEFAULT 'Hoạt động',
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CenterID INT REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 3. EquipmentTypes table (global catalog)
@@ -191,12 +185,8 @@ CREATE TABLE RoomEquipment (
     UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Ensure equipment code is unique within a fitness center
-    CenterID INT NOT NULL,
-    CONSTRAINT fk_center FOREIGN KEY (CenterID) REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE,
-    CONSTRAINT uq_equipment_code_per_center UNIQUE (CenterID, EquipmentCode)
+    CONSTRAINT uq_equipment_code_per_center UNIQUE (EquipmentCode)
 );
-
-
 
 -- Bảng Check-in/Check-out
 CREATE TABLE Attendance (
@@ -235,6 +225,8 @@ CREATE TABLE Exercises (
 CREATE TABLE TrainingScheduleExercises (
   ScheduleID INT NOT NULL REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
   ExerciseID INT NOT NULL REFERENCES Exercises(ExerciseID) ON DELETE CASCADE,
+  Set INT NOT NULL,
+  Rep INT NOT NULL,
   Comment VARCHAR(500), -- Nhận xét của PT cho bài tập này
   PRIMARY KEY (ScheduleID, ExerciseID)
 );
@@ -256,14 +248,6 @@ CREATE TABLE MemberProgress (
   TrainerID INT,
   Notes VARCHAR(500)
 );
-
-DROP TABLE IF EXISTS Promotions;
-DROP TYPE IF EXISTS discount_type;
-DROP TYPE IF EXISTS promotion_status;
-
-CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
-CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
-
 
 CREATE TABLE Promotions (
   PromotionID SERIAL PRIMARY KEY,
