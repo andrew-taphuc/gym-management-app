@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    prefHeight="600.0" prefWidth="800.0"
-    styleClass="content-area">
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="10" alignment="TOP_CENTER"
+      styleClass="content-area" prefWidth="800.0" prefHeight="600.0">
 
-    <Label fx:id="pageTitle" styleClass="page-title" />
+    <Label fx:id="pageTitle" styleClass="page-title" text="Trang Feedback của bạn" />
 
-</VBox> 
+    <Button text="Thêm Feedback" onAction="#handleAddFeedback" />
+
+    <TableView fx:id="feedbackTable" prefHeight="400" prefWidth="760">
+        <columns>
+            <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="150"/>
+            <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400"/>
+            <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="100"/>
+            <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="110"/>
+        </columns>
+    </TableView>
+
+</VBox>

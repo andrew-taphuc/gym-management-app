@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.userView.FeedbackFormController"
+      spacing="10" alignment="CENTER"
+      style="-fx-padding: 20;" prefWidth="400" prefHeight="300">
+
+    <Label text="Gửi phản hồi mới" style="-fx-font-size: 18;" />
+
+    <ComboBox fx:id="typeComboBox" promptText="Chọn loại phản hồi" prefWidth="350"/>
+
+    <TextArea fx:id="commentTextArea" promptText="Nhập nội dung phản hồi..." 
+              prefRowCount="5" wrapText="true" prefWidth="350"/>
+
+    <Button text="Gửi" onAction="#handleSubmit" prefWidth="100"/>
+
+</VBox>
