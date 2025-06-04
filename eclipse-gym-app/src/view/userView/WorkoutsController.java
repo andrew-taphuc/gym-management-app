@@ -98,7 +98,7 @@ public class WorkoutsController {
             @Override
             public TableCell<TrainingSchedule, Void> call(final TableColumn<TrainingSchedule, Void> param) {
                 return new TableCell<>() {
-                    private final Button btn = new Button("Xem bài tập");
+                    private final Button btn = new Button("Chi tiết");
                     {
                         btn.setPrefWidth(200);
                         btn.setOnAction(event -> {

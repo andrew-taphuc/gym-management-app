@@ -1,3 +1,11 @@
+.content-area {
+    -fx-padding: 24 24 24 24;
+    -fx-alignment: top-left;
+    -fx-background-color: #f5f5f6;
+    -fx-translate-x: 0;
+    -fx-translate-y: 0;
+}
+
 .workout-table {
     -fx-background-color: #fff;
     -fx-border-radius: 10px;
