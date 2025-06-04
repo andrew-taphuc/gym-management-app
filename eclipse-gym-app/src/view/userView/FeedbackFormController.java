@@ -1,4 +1,4 @@
-package controller;
+package view.userView;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -7,7 +7,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import model.User;
-import view.userView.FeedbackDAO;
+import controller.FeedbackController;
 
 import java.util.function.Consumer;
 
@@ -20,7 +20,7 @@ public class FeedbackFormController {
 
     private User user;
     private Consumer<Void> feedbackSubmittedCallback;
-    private FeedbackDAO feedbackDAO;
+    private FeedbackController feedbackController;
 
     @FXML
     public void initialize() {
@@ -40,8 +40,8 @@ public class FeedbackFormController {
         this.feedbackSubmittedCallback = callback;
     }
 
-    public void setFeedbackDAO(FeedbackDAO dao) {
-        this.feedbackDAO = dao;
+    public void setFeedbackController(FeedbackController controller) {
+        this.feedbackController = controller;
     }
 
     @FXML
@@ -62,7 +62,8 @@ public class FeedbackFormController {
 
         try {
             // Lưu feedback vào database
-            boolean success = feedbackDAO.insertFeedback(user.getUserId(), type, comment.trim());
+            int memberId = feedbackController.getMemberIdByUserId(user.getUserId());
+            boolean success = feedbackController.insertFeedback(memberId, type, comment.trim());
             
             if (success) {
                 System.out.printf("Feedback đã lưu vào DB: [%s] %s\n", type, comment.trim());

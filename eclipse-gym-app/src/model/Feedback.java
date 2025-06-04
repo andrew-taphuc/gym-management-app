@@ -8,16 +8,22 @@ public class Feedback {
     private final StringProperty comment;
     private final StringProperty status;
     private final StringProperty feedbackDate;
+    private final StringProperty responseComment;
 
-    public Feedback(String type, String comment, String status, String date) {
+    public Feedback(String type, String comment, String status, String date, String responseComment) {
+        
         this.feedbackType = new SimpleStringProperty(type);
         this.comment = new SimpleStringProperty(comment);
         this.status = new SimpleStringProperty(status);
         this.feedbackDate = new SimpleStringProperty(date);
+        this.responseComment = new SimpleStringProperty(responseComment);
     }
 
     public StringProperty feedbackTypeProperty() { return feedbackType; }
     public StringProperty commentProperty() { return comment; }
     public StringProperty statusProperty() { return status; }
     public StringProperty feedbackDateProperty() { return feedbackDate; }
+    public StringProperty responseCommentProperty() {
+        return responseComment; 
+    }
 }

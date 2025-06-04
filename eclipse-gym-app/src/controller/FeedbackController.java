@@ -1,122 +1,152 @@
 package controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import model.Feedback;
-import model.User;
-import view.userView.FeedbackDAO;
+import utils.DBConnection;
 
-import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FeedbackController {
 
-    @FXML
-    private Label pageTitle;
-    @FXML
-    private TableView<Feedback> feedbackTable;
-    @FXML
-    private TableColumn<Feedback, String> typeColumn;
-    @FXML
-    private TableColumn<Feedback, String> commentColumn;
-    @FXML
-    private TableColumn<Feedback, String> statusColumn;
-    @FXML
-    private TableColumn<Feedback, String> dateColumn;
+    //Lấy ID của member từ UserID
+    public Integer getMemberIdByUserId(int userId) {
+        String sql = "SELECT MemberID FROM Members WHERE UserID = ?";
 
-    private User currentUser;
-    private final ObservableList<Feedback> feedbackList = FXCollections.observableArrayList();
-    private final FeedbackDAO feedbackDAO = new FeedbackDAO();
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-        loadFeedbacks();
-    }
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
 
-    @FXML
-    public void initialize() {
-        pageTitle.setText("Danh sách Feedback của bạn");
-
-        typeColumn.setCellValueFactory(data -> data.getValue().feedbackTypeProperty());
-        commentColumn.setCellValueFactory(data -> data.getValue().commentProperty());
-        statusColumn.setCellValueFactory(data -> data.getValue().statusProperty());
-        dateColumn.setCellValueFactory(data -> data.getValue().feedbackDateProperty());
-
-        feedbackTable.setItems(feedbackList);
-    }
-
-    private void loadFeedbacks() {
-        if (currentUser == null) return;
-        
-        try {
-            // Lấy feedback từ database
-            List<Feedback> feedbacks = feedbackDAO.getFeedbacksByMemberID(currentUser.getUserId());
-            feedbackList.clear();
-            feedbackList.addAll(feedbacks);
-            
-            System.out.println("Đã load " + feedbacks.size() + " feedback từ database");
-            
-        } catch (Exception e) {
-            System.err.println("Lỗi khi load feedback: " + e.getMessage());
-            e.printStackTrace();
-            
-            // Fallback: hiển thị danh sách trống
-            feedbackList.clear();
-        }
-    }
-    @FXML
-    private void handleAddFeedback() {
-        try {
-            // File FXML cùng thư mục với Controller
-            String fxmlPath = "/view/userView/feedbackForm.fxml";
-            
-            // Debug: In ra đường dẫn để kiểm tra
-            System.out.println("Trying to load FXML from same package: " + fxmlPath);
-            
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource(fxmlPath));
-            
-            if (loader.getLocation() == null) {
-                showAlert("Lỗi", "Không tìm thấy file feedbackForm.fxml tại đường dẫn: " + fxmlPath);
-                return;
+            if (rs.next()) {
+                return rs.getInt("MemberID");
             }
 
-            Stage formStage = new Stage();
-            Scene scene = new Scene(loader.load());
-            formStage.setScene(scene);
-            formStage.setTitle("Thêm Feedback");
-            formStage.initModality(Modality.APPLICATION_MODAL);
-            formStage.setResizable(false);
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn MemberID từ UserID: " + e.getMessage());
+            e.printStackTrace();
+        }
 
-            FeedbackFormController controller = loader.getController();
-            controller.setUser(currentUser);
-            controller.setFeedbackDAO(feedbackDAO);
-            controller.setFeedbackSubmittedCallback(v -> loadFeedbacks()); // Reload từ DB
+        return null; // Không tìm thấy hoặc lỗi xảy ra
+    }
 
-            formStage.showAndWait();
+    // Thêm feedback mới vào DB
+    public boolean insertFeedback(int memberID, String feedbackType, String comment) {
+        String sql = "INSERT INTO Feedback (MemberID, FeedbackType, Comment) VALUES (?, ?::feedback_type, ?)";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-        } catch (IOException e) {
-            System.err.println("Lỗi khi mở form feedback: " + e.getMessage());
+            pstmt.setInt(1, memberID);
+            pstmt.setString(2, feedbackType);
+            pstmt.setString(3, comment);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm feedback: " + e.getMessage());
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể mở form thêm feedback. Lỗi: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Lỗi không xác định: " + e.getMessage());
-            e.printStackTrace();
-            showAlert("Lỗi", "Có lỗi không xác định xảy ra: " + e.getMessage());
+            return false;
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    // Lấy danh sách feedback của một member
+    public List<Feedback> getFeedbacksByMemberID(int memberID) {
+        List<Feedback> feedbacks = new ArrayList<>();
+        String sql = """
+            SELECT FeedbackType, Comment, Status, ResponseComment,
+                   TO_CHAR(FeedbackDate, 'YYYY-MM-DD') as FeedbackDate
+            FROM Feedback 
+            WHERE MemberID = ? 
+            ORDER BY FeedbackDate DESC
+        """;
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, memberID);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()) {
+                String type = rs.getString("FeedbackType");
+                String comment = rs.getString("Comment");
+                String status = rs.getString("Status");
+                String date = rs.getString("FeedbackDate");
+                String responseComment = rs.getString("ResponseComment");
+                
+                feedbacks.add(new Feedback(type, comment, status, date, responseComment));
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy danh sách feedback: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return feedbacks;
+    }
+
+    // Lấy tất cả feedback (cho admin)
+    public List<Feedback> getAllFeedbacks() {
+        List<Feedback> feedbacks = new ArrayList<>();
+        String sql = """
+            SELECT f.FeedbackID, f.MemberID, f.FeedbackType, f.Comment, f.Status,
+                   TO_CHAR(f.FeedbackDate, 'YYYY-MM-DD') as FeedbackDate,
+                   m.Username
+            FROM Feedback f
+            JOIN Member m ON f.MemberID = m.MemberID
+            ORDER BY f.FeedbackDate DESC
+        """;
+        
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                String type = rs.getString("FeedbackType");
+                String comment = rs.getString("Comment");
+                String status = rs.getString("Status");
+                String date = rs.getString("FeedbackDate");
+                String username = rs.getString("Username");
+                String responseComment = rs.getString("ResponseComment");
+                
+                // Có thể tạo FeedbackWithUser class hoặc dùng comment để hiển thị user
+                feedbacks.add(new Feedback(type, comment + " (" + username + ")", status, date, responseComment));
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy tất cả feedback: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return feedbacks;
+    }
+
+    // Cập nhật status feedback (cho admin)
+    public boolean updateFeedbackStatus(int feedbackID, String status, String responseComment, int responderID) {
+        String sql = """
+            UPDATE Feedback 
+            SET Status = ?::feedback_status, ResponseComment = ?, 
+                ResponseDate = CURRENT_TIMESTAMP, ResponderID = ? 
+            WHERE FeedbackID = ?
+        """;
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, status);
+            pstmt.setString(2, responseComment);
+            pstmt.setInt(3, responderID);
+            pstmt.setInt(4, feedbackID);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi cập nhật feedback: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

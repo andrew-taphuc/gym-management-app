@@ -6,14 +6,23 @@
     -fx-translate-y: 0;
 }
 
-.large-button {
-    -fx-font-size: 18px;
-    -fx-padding: 12 24;
-    -fx-background-color: #4CAF50;
+.add-fb-button {
+    -fx-background-color: linear-gradient(to bottom, #4caf50, #388e3c);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
     -fx-text-fill: white;
-    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.3), 4, 0.3, 0, 2);
 }
 
+.add-fb-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #66bb6a, #2e7d32);
+    -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.5), 8, 0.4, 0, 3);
+}
 .feedback-table {
     -fx-background-color: #fff;
     -fx-border-radius: 10px;
@@ -39,6 +48,9 @@
     -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
     -fx-text-fill: #232930;
     -fx-background-color: #f5f5f6;
+}
+.feedback-table .table-row-cell:selected {
+    -fx-background-color: #14d2eb;
 }
 .page-title {
     -fx-font-size: 28px;

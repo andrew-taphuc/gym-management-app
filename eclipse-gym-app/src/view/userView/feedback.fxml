@@ -28,7 +28,7 @@
 
            
             <HBox alignment="CENTER_RIGHT">
-                <Button text="Thêm Feedback" onAction="#handleAddFeedback" styleClass="large-button"/>
+                <Button fx:id="addFeedbackButton" text="+ Thêm Feedback" onAction="#handleAddFeedback" styleClass="add-fb-button"/>
             </HBox> 
 
             <TableView fx:id="feedbackTable" 
@@ -37,9 +37,10 @@
                 styleClass="feedback-table">
                     <columns>
                         <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="200"/>
-                        <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="500"/>
-                        <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="300"/>
-                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="180"/>
+                        <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400"/>
+                        <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="180"/>
+                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="150"/>
+                        <TableColumn fx:id="responseCommentColumn" text="Phản hồi từ chủ phòng tập" prefWidth="200"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
