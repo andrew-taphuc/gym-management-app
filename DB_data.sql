@@ -7,6 +7,9 @@ INSERT INTO Users (Username, Password, Email, PhoneNumber, FullName, DateOfBirth
 ('mana1', '1234', 'mana1@gym.com', '0123456781', 'Xuân Bắc', '1992-02-02', 
 'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Hoạt động', 'Nhân viên quản lý'),
 
+('mana2', '1234', 'mana2@gym.com', '0123456781', 'Tây Bắc', '1992-02-02', 
+'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Hoạt động', 'Nhân viên quản lý'),
+
 ('pt1', '1234', 'pt1@gym.com', '0123456782', 'Tự Long', '1993-03-03', 
 'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Hoạt động', 'Huấn luyện viên'),
 
@@ -34,15 +37,15 @@ INSERT INTO Staff (UserID, StaffCode, Status) VALUES
 
 -- Dữ liệu mẫu cho bảng Trainers
 INSERT INTO Trainers (UserID, TrainerCode, Specialization, Bio, Rating, Status) VALUES
-(3, 'TRAINER001', 'Gym', 'Huấn luyện viên chuyên nghiệp với 3 năm kinh nghiệm', 4.5, 'Đang làm việc'),
-(4, 'TRAINER002', 'Kickfit', 'Huấn luyện viên chuyên nghiệp với 4 năm kinh nghiệm', 4.5, 'Đang làm việc'),
-(5, 'TRAINER003', 'Yoga', 'Huấn luyện viên chuyên nghiệp với 5 năm kinh nghiệm', 4.5, 'Đang làm việc');
+(4, 'TRAINER001', 'Gym', 'Huấn luyện viên chuyên nghiệp với 3 năm kinh nghiệm', 4.5, 'Đang làm việc'),
+(5, 'TRAINER002', 'Kickfit', 'Huấn luyện viên chuyên nghiệp với 4 năm kinh nghiệm', 4.5, 'Đang làm việc'),
+(6, 'TRAINER003', 'Yoga', 'Huấn luyện viên chuyên nghiệp với 5 năm kinh nghiệm', 4.5, 'Đang làm việc');
 -- Dữ liệu mẫu cho bảng Members
 INSERT INTO Members (UserID, MemberCode, JoinDate, Status) VALUES
-(6, 'HV0001', CURRENT_DATE, 'Hoạt động'),
-(7, 'HV0002', CURRENT_DATE, 'Hoạt động'),
-(8, 'HV0003', CURRENT_DATE, 'Hoạt động'),
-(9, 'HV0004', CURRENT_DATE, 'Hoạt động');
+(7, 'HV0001', CURRENT_DATE, 'Hoạt động'),
+(8, 'HV0002', CURRENT_DATE, 'Hoạt động'),
+(9, 'HV0003', CURRENT_DATE, 'Hoạt động'),
+(10, 'HV0004', CURRENT_DATE, 'Hoạt động');
 
 -- Dữ liệu mẫu cho bảng Rooms
 INSERT INTO Rooms (RoomCode, RoomName, RoomType, Description, Status) VALUES
@@ -402,3 +405,16 @@ INSERT INTO Promotions (
 
 ('KM2514', 'Giảm giá dịp cuối tuần', 'Giảm giá cho các buổi tập cuối tuần', 'Phần trăm', 15.00,
  '2025-11-15 00:00:00', '2025-11-20 23:59:59', 'Chưa khả dụng');
+
+INSERT INTO Feedback (MemberID, FeedbackType,Comment, FeedbackDate, Status, ResponseComment, ResponseDate, ResponderID) VALUES
+(1, 'Cơ sở vật chất', 'Máy chạy bộ có vấn đề khi sử dụng', CURRENT_TIMESTAMP, 'Đã giải quyết', 'Máy đã được sửa chữa', CURRENT_TIMESTAMP, 2),
+(2, 'Nhân viên', 'Nhân viên tập luyện rất tận tâm', CURRENT_TIMESTAMP, 'Đã giải quyết', 'Cảm ơn bạn đã phản hồi', CURRENT_TIMESTAMP, 1),
+(3, 'Khác', 'Không gian tập luyện cần được cải thiện', CURRENT_TIMESTAMP, 'Đã giải quyết', 'Vui lòng cung cấp thêm thông tin chi tiết', CURRENT_TIMESTAMP, 1),
+(4, 'Cơ sở vật chất', 'Máy chạy bộ có vấn đề khi sử dụng', CURRENT_TIMESTAMP, 'Đã giải quyết', 'Máy đã được sửa chữa', CURRENT_TIMESTAMP, 1);
+
+INSERT INTO Feedback (MemberID, FeedbackType,Comment, FeedbackDate, Status) VALUES
+(1, 'Cơ sở vật chất', 'Máy chạy bộ có vấn đề khi sử dụng', CURRENT_TIMESTAMP, 'Đang giải quyết'),
+(2, 'Nhân viên', 'Nhân viên tập luyện rất tận tâm', CURRENT_TIMESTAMP, 'Đang giải quyết'),
+(3, 'Khác', 'Không gian tập luyện cần được cải thiện', CURRENT_TIMESTAMP, 'Đang giải quyết'),
+(4, 'Cơ sở vật chất', 'Máy chạy bộ có vấn đề khi sử dụng', CURRENT_TIMESTAMP, 'Đang giải quyết');
+
