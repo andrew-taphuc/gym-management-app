@@ -1,4 +1,4 @@
-package view.userView;
+package controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,19 +70,11 @@ public class FeedbackController {
             feedbackList.clear();
         }
     }
-
-    private void addNewFeedback(Feedback feedback) {
-        // Feedback đã được lưu vào DB trong FeedbackFormController
-        // Chỉ cần reload danh sách từ DB để đảm bảo đồng bộ
-        loadFeedbacks();
-        System.out.println("Đã reload danh sách feedback từ database");
-    }
-
     @FXML
     private void handleAddFeedback() {
         try {
             // File FXML cùng thư mục với Controller
-            String fxmlPath = "feedbackForm.fxml";
+            String fxmlPath = "/view/userView/feedbackForm.fxml";
             
             // Debug: In ra đường dẫn để kiểm tra
             System.out.println("Trying to load FXML from same package: " + fxmlPath);

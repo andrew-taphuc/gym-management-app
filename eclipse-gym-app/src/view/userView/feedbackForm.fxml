@@ -5,7 +5,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="view.userView.FeedbackFormController"
+      fx:controller="controller.FeedbackFormController"
       spacing="10" alignment="CENTER"
       style="-fx-padding: 20;" prefWidth="400" prefHeight="300">
 
