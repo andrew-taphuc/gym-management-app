@@ -95,4 +95,93 @@ public class TrainingController {
         }
         return exerciseDetails;
     }
+
+    public List<TrainingSchedule> getSchedulesByTrainerId(int trainerId) {
+        List<TrainingSchedule> list = new ArrayList<>();
+        String sql = "SELECT ts.*, " +
+                "u_member.fullname as member_name, " +
+                "r.roomname as room_name " +
+                "FROM TrainingSchedule ts " +
+                "JOIN Members m ON ts.memberid = m.memberid " +
+                "LEFT JOIN Users u_member ON m.userid = u_member.userid " +
+                "LEFT JOIN Rooms r ON ts.roomid = r.roomid " +
+                "WHERE ts.trainerid = ? " +
+                "ORDER BY ts.scheduledate DESC, ts.starttime DESC";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TrainingSchedule ts = new TrainingSchedule();
+                ts.setScheduleId(rs.getInt("scheduleid"));
+                ts.setMemberId(rs.getInt("memberid"));
+                ts.setTrainerId(rs.getInt("trainerid"));
+                ts.setMembershipId(rs.getInt("membershipid"));
+                ts.setScheduleDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setStartTime(rs.getTime("starttime").toLocalTime());
+                ts.setDuration(rs.getInt("duration"));
+                ts.setRoomId(rs.getInt("roomid"));
+                ts.setStatus(enum_TrainingStatus.fromValue(rs.getString("status")));
+                ts.setNotes(rs.getString("notes"));
+                ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
+
+                // Thêm thông tin tên học viên và room
+                ts.setMemberName(rs.getString("member_name"));
+                ts.setRoomName(rs.getString("room_name"));
+
+                list.add(ts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Thêm bài tập vào buổi tập
+    public boolean addExerciseToSchedule(int scheduleId, int exerciseId, int set, int rep, String comment) {
+        String sql = "INSERT INTO TrainingScheduleExercises (ScheduleID, ExerciseID, Set, Rep, Comment) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, scheduleId);
+            ps.setInt(2, exerciseId);
+            ps.setInt(3, set);
+            ps.setInt(4, rep);
+            ps.setString(5, comment);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Cập nhật thông tin bài tập trong buổi tập
+    public boolean updateExerciseInSchedule(int scheduleId, int exerciseId, int set, int rep, String comment) {
+        String sql = "UPDATE TrainingScheduleExercises SET Set = ?, Rep = ?, Comment = ? WHERE ScheduleID = ? AND ExerciseID = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, set);
+            ps.setInt(2, rep);
+            ps.setString(3, comment);
+            ps.setInt(4, scheduleId);
+            ps.setInt(5, exerciseId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Xóa bài tập khỏi buổi tập
+    public boolean deleteExerciseFromSchedule(int scheduleId, int exerciseId) {
+        String sql = "DELETE FROM TrainingScheduleExercises WHERE ScheduleID = ? AND ExerciseID = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, scheduleId);
+            ps.setInt(2, exerciseId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

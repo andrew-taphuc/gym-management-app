@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import model.User;
@@ -27,7 +28,7 @@ public class HomeView_trainer extends BaseView {
     private Button logoutButton;
 
     @FXML
-    private StackPane contentArea;
+    private AnchorPane contentArea;
 
     public HomeView_trainer(Stage stage) {
         super(stage);
@@ -61,6 +62,13 @@ public class HomeView_trainer extends BaseView {
             Parent view = loader.load();
             contentArea.getChildren().clear();
             contentArea.getChildren().add(view);
+            // Nếu contentArea là AnchorPane thì set anchor cho view con
+            if (contentArea instanceof AnchorPane) {
+                AnchorPane.setTopAnchor(view, 0.0);
+                AnchorPane.setBottomAnchor(view, 0.0);
+                AnchorPane.setLeftAnchor(view, 0.0);
+                AnchorPane.setRightAnchor(view, 0.0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    prefHeight="600.0" prefWidth="800.0"
-    styleClass="content-area">
+    spacing="20" styleClass="content-area">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
 
     <Label fx:id="pageTitle" styleClass="page-title" />
 
+    <TableView fx:id="scheduleTable" 
+                prefHeight="400"
+                maxHeight="400"
+                VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colDate" text="Ngày" prefWidth="120" />
+            <TableColumn fx:id="colTime" text="Giờ" prefWidth="100" />
+            <TableColumn fx:id="colMember" text="Học viên" prefWidth="150" />
+            <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="120" />
+            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="120" />
+            <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="200" />
+            <TableColumn fx:id="colAction" text="Thao tác" prefWidth="200" />
+        </columns>
+    </TableView>
 </VBox> 

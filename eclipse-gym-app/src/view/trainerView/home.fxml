@@ -50,9 +50,9 @@
         </HBox>
     </top>
 
-    <right>
-        <StackPane fx:id="contentArea" style="-fx-background-color: #f5f5f6;"
+    <center>
+        <AnchorPane fx:id="contentArea" style="-fx-background-color: #f5f5f6;"
             BorderPane.alignment="CENTER" />
-    </right>
+    </center>
 
 </BorderPane>
