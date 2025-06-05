@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Feedback;
@@ -56,7 +57,17 @@ public class FeedbackView {
         dateColumn.setCellValueFactory(data -> data.getValue().feedbackDateProperty());
         actionColumn.setCellFactory(data -> new TableCell<Feedback, Void>() {
             private final Button replyButton = new Button("Trả lời");
+            private final HBox hbox = new HBox(replyButton);
             {
+                hbox.setAlignment(javafx.geometry.Pos.CENTER); // căn giữa nút trong cell
+                replyButton.setStyle(
+                    "-fx-background-color: #2196f3;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-background-radius: 6;" +
+                    "-fx-padding: 6 16 6 16;" +
+                    "-fx-cursor: hand;"
+                );
                 replyButton.setOnAction(e -> {
                     Feedback feedback = getTableView().getItems().get(getIndex());
 
@@ -105,7 +116,7 @@ public class FeedbackView {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(replyButton);
+                    setGraphic(hbox);
                 }
             }
         });

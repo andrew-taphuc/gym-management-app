@@ -20,7 +20,7 @@
             styleClass="content-area"
             alignment="TOP_LEFT"
             spacing="10"
-            stylesheets="@feedback.css">
+            stylesheets="/view/userView/feedback.css">
 
             <HBox alignment="TOP_LEFT">
                 <Label fx:id="pageTitle" styleClass="page-title" />
@@ -40,8 +40,8 @@
                         <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="150"/>
                         <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400"/>
                         <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="150"/>
-                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="150"/>
-                        <TableColumn fx:id="actionColumn" text="Trả lời" prefWidth="200"/>
+                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="250"/>
+                        <TableColumn fx:id="actionColumn" text="Trả lời" prefWidth="100"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
