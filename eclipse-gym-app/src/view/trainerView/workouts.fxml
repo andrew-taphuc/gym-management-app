@@ -4,28 +4,90 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    spacing="20" styleClass="content-area">
+<ScrollPane fitToWidth="true" styleClass="content-area">
+    <VBox xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        spacing="20">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20" />
-    </padding>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20" />
+        </padding>
 
-    <Label fx:id="pageTitle" styleClass="page-title" />
+        <Label fx:id="pageTitle" styleClass="page-title" style="-fx-font-size: 24px;" />
 
-    <TableView fx:id="scheduleTable" 
+        <!-- Bảng danh sách hội viên đang quản lý -->
+        <VBox spacing="10">
+            <Label text="Danh sách hội viên đang quản lý" styleClass="section-title"
+                style="-fx-text-alignment: left; -fx-font-size: 24px; -fx-font-weight: bold;" />
+
+            <!-- Controls để thêm hội viên -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Thêm hội viên:" style="-fx-font-size: 18px;" />
+                <TextField fx:id="registrationIdField" promptText="Nhập Registration ID"
+                    prefWidth="200"
+                    style="-fx-font-size: 18px;" />
+                <Button fx:id="addByIdButton" text="Thêm theo ID" onAction="#addMemberById"
+                    style="-fx-font-size: 18px;" />
+                <Button fx:id="showUnassignedButton" text="Chọn từ danh sách"
+                    onAction="#showUnassignedMembers" style="-fx-font-size: 18px;" />
+                <Button fx:id="refreshMembersButton" text="Làm mới" onAction="#refreshMembersList"
+                    style="-fx-font-size: 18px;" />
+            </HBox>
+
+            <TableView fx:id="managedMembersTable"
+                prefHeight="300"
+                maxHeight="300"
+                VBox.vgrow="ALWAYS"
+                style="-fx-font-size: 18px;">
+                <columns>
+                    <TableColumn fx:id="colMemberCode" text="Mã hội viên" prefWidth="150"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMemberName" text="Tên hội viên" prefWidth="250"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMemberPlan" text="Gói tập" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colStartDate" text="Ngày bắt đầu" prefWidth="150"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colSessionsLeft" text="Buổi còn lại" prefWidth="120"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMemberAction" text="Thao tác" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Bảng lịch dạy của HLV -->
+        <VBox spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Lịch dạy của bạn" styleClass="section-title"
+                    style="-fx-text-alignment: left; -fx-font-size: 24px; -fx-font-weight: bold;" />
+                <Button fx:id="addScheduleButton" text="Thêm lịch tập"
+                    onAction="#showAddScheduleDialog"
+                    style="-fx-font-size: 18px;" />
+            </HBox>
+
+            <TableView fx:id="scheduleTable"
                 prefHeight="400"
                 maxHeight="400"
-                VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colDate" text="Ngày" prefWidth="120" />
-            <TableColumn fx:id="colTime" text="Giờ" prefWidth="100" />
-            <TableColumn fx:id="colMember" text="Học viên" prefWidth="150" />
-            <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="120" />
-            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="120" />
-            <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="200" />
-            <TableColumn fx:id="colAction" text="Thao tác" prefWidth="200" />
-        </columns>
-    </TableView>
-</VBox> 
+                VBox.vgrow="ALWAYS"
+                style="-fx-font-size: 18px;">
+                <columns>
+                    <TableColumn fx:id="colDate" text="Ngày" prefWidth="150"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colTime" text="Giờ" prefWidth="120"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMember" text="Học viên" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="150"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="250"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="230"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+</ScrollPane> 

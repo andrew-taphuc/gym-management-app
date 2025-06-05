@@ -1,7 +1,8 @@
 package model.enums;
 
 public enum enum_TrainerStatus {
-    ACTIVE("Hoạt động"),
+    WORKING("Đang làm việc"),
+    BUSY("Bận"),
     ON_LEAVE("Nghỉ phép"),
     TERMINATED("Đã nghỉ việc");
 
