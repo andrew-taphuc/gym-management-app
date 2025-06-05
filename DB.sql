@@ -136,7 +136,7 @@ CREATE TABLE TrainingRegistrations (
   RegistrationID SERIAL PRIMARY KEY,
   MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
   PlanID INT NOT NULL REFERENCES TrainingPlans(PlanID) ON DELETE CASCADE,
-  TrainerID INT NOT NULL REFERENCES Trainers(TrainerID) ON DELETE CASCADE,
+  TrainerID INT NULL REFERENCES Trainers(TrainerID) ON DELETE CASCADE,
   StartDate DATE NOT NULL,
   SessionsLeft INT DEFAULT 0 CHECK (SessionsLeft >= 0),
   PaymentID INT REFERENCES Payments(PaymentID)
