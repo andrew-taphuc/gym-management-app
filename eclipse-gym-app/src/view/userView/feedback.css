@@ -64,3 +64,7 @@
     -fx-translate-y: 0;
     -fx-max-width: 10000;
 }
+
+.combo-box, .combo-box .list-cell, .combo-box-popup .list-view .list-cell {
+    -fx-font-size: 30px;
+}

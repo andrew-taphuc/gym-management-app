@@ -5,10 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.text.Text;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import model.Feedback;
 import model.User;
 
@@ -60,15 +60,54 @@ public class FeedbackView {
                 btn.setPrefWidth(200);
                 btn.setOnAction(event -> {
                     Feedback feedback = getTableView().getItems().get(getIndex());
-
                     // Lấy nội dung phản hồi
-                    String response = feedback.responseCommentProperty().get();
+                    
 
                     // Hiển thị trong Alert (popup)
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Chi tiết phản hồi");
-                    alert.setHeaderText("Phản hồi từ chủ phòng tập");
-                    alert.setContentText(response != null && !response.isEmpty() ? response : "Không có phản hồi.");
+                    Label headerLabel = new Label("📩 Phản hồi từ phòng tập");
+                    headerLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e88e5;");
+
+                    alert.setHeaderText(null); // Tắt header mặc định
+                    alert.getDialogPane().setHeader(headerLabel); // Đặt header mới
+
+                    String response = feedback.responseCommentProperty().get();
+                    String content = (response != null && !response.isEmpty()) ? response : "Không có phản hồi.";
+
+                    // Dùng Text để có thể tăng font và xuống dòng
+                    Text contentText = new Text(content);
+                    contentText.setWrappingWidth(520);
+                    contentText.setStyle("-fx-font-size: 16px; -fx-fill: #333333;");
+                    alert.getDialogPane().setContent(contentText);
+                    // Tùy chỉnh giao diện popup
+                    // Tùy chỉnh DialogPane
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.setMinWidth(640);
+                    dialogPane.setMinHeight(360);
+                    dialogPane.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom right, #ffffff, #e3f2fd);" +
+                        "-fx-border-color: #90caf9;" +
+                        "-fx-border-width: 2px;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-padding: 24;" +
+                        "-fx-font-family: 'Segoe UI', sans-serif;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 4);"
+                    );
+                    // Tùy chỉnh nút OK
+                    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+                    okButton.setStyle(
+                        "-fx-background-color: #42a5f5;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-padding: 8 20;" +
+                        "-fx-cursor: hand;"
+                    );
+
+                    //Hiển thị
                     alert.showAndWait();
                 });
                 btn.setStyle("-fx-background-color: #4FC3F7; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");

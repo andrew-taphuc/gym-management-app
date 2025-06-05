@@ -91,12 +91,20 @@ public class FeedbackController {
     public List<Feedback> getAllFeedbacks() {
         List<Feedback> feedbacks = new ArrayList<>();
         String sql = """
-            SELECT f.FeedbackID, f.MemberID, f.FeedbackType, f.Comment, f.Status,
-                   TO_CHAR(f.FeedbackDate, 'YYYY-MM-DD') as FeedbackDate,
-                   m.Username
+            SELECT 
+                f.FeedbackID,
+                u.FullName AS MemberName,
+                u.Username,
+                f.FeedbackType,
+                f.Comment,
+                f.FeedbackDate,
+                f.Status,
+                f.ResponseComment,
+                f.ResponseDate
             FROM Feedback f
-            JOIN Member m ON f.MemberID = m.MemberID
-            ORDER BY f.FeedbackDate DESC
+            JOIN Members m ON f.MemberID = m.MemberID
+            JOIN Users u ON m.UserID = u.UserID
+            ORDER BY f.FeedbackDate DESC;
         """;
         
         try (Connection conn = DBConnection.getConnection();
@@ -109,10 +117,13 @@ public class FeedbackController {
                 String status = rs.getString("Status");
                 String date = rs.getString("FeedbackDate");
                 String username = rs.getString("Username");
+                String memberName = rs.getString("MemberName");
                 String responseComment = rs.getString("ResponseComment");
+                String responseDate = rs.getString("ResponseDate");
+                int feedbackID = rs.getInt("FeedbackID");
                 
                 // Có thể tạo FeedbackWithUser class hoặc dùng comment để hiển thị user
-                feedbacks.add(new Feedback(type, comment + " (" + username + ")", status, date, responseComment));
+                feedbacks.add(new Feedback(feedbackID, memberName, type, comment + " (" + username + ")", status, date, responseComment, responseDate));
             }
             
         } catch (SQLException e) {
@@ -148,5 +159,10 @@ public class FeedbackController {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean replyFeedback(int feedbackID, String responseComment, int responderID) {
+        String status = "Đã giải quyết";
+        return updateFeedbackStatus(feedbackID, status, responseComment, responderID);
     }
 }
