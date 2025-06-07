@@ -1,3 +1,4 @@
+\c postgres;
 DROP DATABASE IF EXISTS gym_management;
 CREATE DATABASE gym_management;
 \c gym_management;
@@ -34,6 +35,13 @@ CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ng�
 
 -- ENUM trạng thái thiết bị
 CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
+
+CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Hủy');
+
+CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
+
+CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
+
 
 -- Bảng người dùng chung
 CREATE TABLE Users (
@@ -145,16 +153,6 @@ CREATE TABLE MembershipRenewals (
 );
 
 -- Module quản lý phòng tập, thiết bị
--- 1. Fitness Center table
-CREATE TABLE FitnessCenter (
-    CenterID SERIAL PRIMARY KEY,
-    CenterName VARCHAR(100) NOT NULL,
-    Address VARCHAR(255),
-    PhoneNumber VARCHAR(20),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- 2. Rooms table
 CREATE TABLE Rooms (
     RoomID SERIAL PRIMARY KEY,
@@ -164,8 +162,7 @@ CREATE TABLE Rooms (
     Description VARCHAR(500),
     Status room_status_enum DEFAULT 'Hoạt động',
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CenterID INT REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 3. EquipmentTypes table (global catalog)
@@ -188,7 +185,95 @@ CREATE TABLE RoomEquipment (
     UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- Ensure equipment code is unique within a fitness center
-    CenterID INT NOT NULL,
-    CONSTRAINT fk_center FOREIGN KEY (CenterID) REFERENCES FitnessCenter(CenterID) ON DELETE CASCADE,
-    CONSTRAINT uq_equipment_code_per_center UNIQUE (CenterID, EquipmentCode)
+    CONSTRAINT uq_equipment_code_per_center UNIQUE (EquipmentCode)
+);
+
+-- Bảng Check-in/Check-out
+CREATE TABLE Attendance (
+  AttendanceID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MembershipID INT NOT NULL,
+  CheckInTime TIMESTAMP NOT NULL,
+  Type trainer_specialization_enum
+);
+
+-- Bảng lịch tập
+CREATE TABLE TrainingSchedule (
+  ScheduleID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  TrainerID INT,
+  MembershipID INT NOT NULL,
+  ScheduleDate DATE NOT NULL,
+  StartTime TIME NOT NULL,
+  Duration INT,
+  RoomID INT,
+  Status training_status_enum DEFAULT 'Đã lên lịch',
+  Notes VARCHAR(500),
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng bài tập
+CREATE TABLE Exercises (
+  ExerciseID SERIAL PRIMARY KEY,
+  ExerciseCode VARCHAR(20) NOT NULL UNIQUE,
+  ExerciseName VARCHAR(100) NOT NULL,
+  Category VARCHAR(50),
+  Description VARCHAR(500)
+);
+
+-- Bảng liên kết lịch tập và bài tập
+CREATE TABLE TrainingScheduleExercises (
+  ScheduleID INT NOT NULL REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
+  ExerciseID INT NOT NULL REFERENCES Exercises(ExerciseID) ON DELETE CASCADE,
+  Set INT NOT NULL,
+  Rep INT NOT NULL,
+  Comment VARCHAR(500), -- Nhận xét của PT cho bài tập này
+  PRIMARY KEY (ScheduleID, ExerciseID)
+);
+
+-- Bảng Đánh giá tiến độ hội viên
+CREATE TABLE MemberProgress (
+  ProgressID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MeasurementDate DATE NOT NULL,
+  Weight DECIMAL(5,2),
+  Height DECIMAL(5,2),
+  BMI DECIMAL(4,2),
+  BodyFatPercentage DECIMAL(4,2),
+  Chest DECIMAL(5,2),
+  Waist DECIMAL(5,2),
+  Hip DECIMAL(5,2),
+  Biceps DECIMAL(5,2),
+  Thigh DECIMAL(5,2),
+  TrainerID INT,
+  Notes VARCHAR(500)
+);
+
+CREATE TABLE Promotions (
+  PromotionID SERIAL PRIMARY KEY,
+  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
+  PromotionName VARCHAR(100) NOT NULL,
+  Description VARCHAR(500),
+  DiscountType discount_type NOT NULL,
+  DiscountValue DECIMAL(10,2) NOT NULL,
+  StartDate TIMESTAMP NOT NULL,
+  EndDate TIMESTAMP NOT NULL,
+  Status promotion_status DEFAULT 'Còn hạn',
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
+CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
+
+CREATE TABLE Feedback (
+    FeedbackID SERIAL PRIMARY KEY,
+    MemberID INT NOT NULL,
+    FeedbackType feedback_type NOT NULL,
+    Comment VARCHAR(1000),
+    FeedbackDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Status feedback_status DEFAULT 'Đang giải quyết',
+    ResponseComment VARCHAR(1000),
+    ResponseDate TIMESTAMP,
+    ResponderID INT -- Người phản hồi
 );
