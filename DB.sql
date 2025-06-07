@@ -194,7 +194,7 @@ CREATE TABLE Attendance (
   MemberID INT NOT NULL,
   MembershipID INT NOT NULL,
   CheckInTime TIMESTAMP NOT NULL,
-  Type trainer_specialization_enum
+  TrainingScheduleID INT REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
 );
 
 -- Bảng lịch tập
