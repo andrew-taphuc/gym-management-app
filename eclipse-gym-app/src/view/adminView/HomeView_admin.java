@@ -89,7 +89,7 @@ public class HomeView_admin extends BaseView {
 
     @FXML
     private void handleFeedbackClick() {
-        view.adminView.FeedbackController controller = new view.adminView.FeedbackController();
+        view.adminView.FeedbackView controller = new view.adminView.FeedbackView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("feedback.fxml", controller);
     }

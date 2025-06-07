@@ -1,0 +1,70 @@
+.content-area {
+    -fx-padding: 24 24 24 24;
+    -fx-alignment: top-left;
+    -fx-background-color: #f5f5f6;
+    -fx-translate-x: 0;
+    -fx-translate-y: 0;
+}
+
+.add-fb-button {
+    -fx-background-color: linear-gradient(to bottom, #4caf50, #388e3c);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.3), 4, 0.3, 0, 2);
+}
+
+.add-fb-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #66bb6a, #2e7d32);
+    -fx-effect: dropshadow(gaussian, rgba(76,175,80,0.5), 8, 0.4, 0, 3);
+}
+.feedback-table {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);
+    -fx-padding: 10 0 10 0;
+    -fx-table-cell-border-color: #e0e0e0;
+    -fx-alignment: top-center;
+}
+.feedback-table .column-header-background {
+    -fx-background-color: #4FC3F7;
+    -fx-background-radius: 10px 10px 0 0;
+}
+.feedback-table .column-header, .feedback-table .filler {
+    -fx-size: 40px;
+    -fx-font-size: 18px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-font-weight: bold;
+    -fx-text-fill: #232930;
+}
+.feedback-table .table-row-cell {
+    -fx-font-size: 18px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-text-fill: #232930;
+    -fx-background-color: #f5f5f6;
+}
+.feedback-table .table-row-cell:selected {
+    -fx-background-color: #14d2eb;
+}
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #232930;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-padding: 10 0 10 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-label-align: left;
+    -fx-translate-x: 0;
+    -fx-translate-y: 0;
+    -fx-max-width: 10000;
+}
+
+.combo-box, .combo-box .list-cell, .combo-box-popup .list-view .list-cell {
+    -fx-font-size: 30px;
+}
