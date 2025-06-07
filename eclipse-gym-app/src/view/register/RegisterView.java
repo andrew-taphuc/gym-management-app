@@ -33,6 +33,23 @@ public class RegisterView extends BaseView {
 
     private UserController userController;
 
+    // Mật khẩu cần có ít nhất 6 ký tự
+    private boolean isValidPassword(String password) {
+        return password != null && password.matches("^\\d{6,}$");
+    }
+    
+    // Kiểm tra định dạng email
+    private boolean isValidEmail(String email) {
+        if (email == null) return false;
+        return email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0
+    private boolean isValidPhone(String phone) {
+        if (phone == null) return false;
+        return phone.matches("^0\\d{9}$");
+    }
+
     public RegisterView(Stage stage) {
         super(stage);
         this.userController = new UserController();
@@ -52,6 +69,23 @@ public class RegisterView extends BaseView {
                 fullNameField.getText().isEmpty() || dobPicker.getValue() == null ||
                 addressField.getText().isEmpty()) {
             errorLabel.setText("Vui lòng điền đầy đủ thông tin!");
+            return;
+        }
+        if (!isValidPassword(passwordField.getText())) {
+            errorLabel.setText("Mật khẩu phải có ít nhất 6 ký tự!");
+            return;
+        }
+        if (!isValidEmail(emailField.getText())) {
+            errorLabel.setText("Email không đúng định dạng!");
+            return;
+        }
+        if (!isValidPhone(phoneField.getText())) {
+            errorLabel.setText("Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0!");
+            return;
+        }
+
+        if (userController.isUsernameExists(usernameField.getText())) {
+            errorLabel.setText("Tên đăng nhập đã tồn tại!");
             return;
         }
 
