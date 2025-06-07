@@ -48,6 +48,7 @@ public class PaymentView extends BaseView {
         loadValidCards();
     }
 
+    // Làm thêm check số dư và cập nhật số dư sau khi thanh toán
     private void loadValidCards() {
         validCardNumbers = new ArrayList<>();
         validCVVs = new ArrayList<>();
