@@ -166,6 +166,10 @@ INSERT INTO TrainingRegistrations (MemberID, PlanID, TrainerID, StartDate, Sessi
 (3, 7, 3, CURRENT_DATE, 10, 7), -- Member 3 đăng ký gói Yoga 10 buổi với trainer 3
 (4, 4, 1, CURRENT_DATE, 10, 8);  -- Member 4 đăng ký gói Kickfit 10 buổi với trainer 1
 
+INSERT INTO TrainingRegistrations (MemberID, PlanID, StartDate, SessionsLeft, PaymentID) VALUES
+(1, 1, CURRENT_DATE, 10, 5); -- Member 1 đăng ký gói Gym 10 buổi với trainer 1
+
+
 -- Dữ liệu mẫu cho bảng MembershipRenewals
 -- INSERT INTO MembershipRenewals (MembershipID, NewEndDate, RenewalDate, PaymentID, Notes) VALUES
 -- (1, CURRENT_DATE + INTERVAL '30 days', CURRENT_TIMESTAMP, 1, 'Gia hạn gói tập 1 tháng');

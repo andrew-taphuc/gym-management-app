@@ -4,6 +4,10 @@ import model.TrainingSchedule;
 import model.Exercise;
 import model.TrainingScheduleExercise;
 import model.ExerciseWithDetails;
+import model.Member;
+import model.User;
+import model.TrainingRegistration;
+import model.TrainingPlan;
 import model.enums.enum_TrainingStatus;
 import utils.DBConnection;
 
@@ -12,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TrainingController {
@@ -33,15 +38,14 @@ public class TrainingController {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 TrainingSchedule ts = new TrainingSchedule();
-                ts.setScheduleId(rs.getInt("scheduleid"));
+                ts.setId(rs.getInt("scheduleid"));
                 ts.setMemberId(rs.getInt("memberid"));
                 ts.setTrainerId(rs.getInt("trainerid"));
                 ts.setMembershipId(rs.getInt("membershipid"));
-                ts.setScheduleDate(rs.getDate("scheduledate").toLocalDate());
-                ts.setStartTime(rs.getTime("starttime").toLocalTime());
-                ts.setDuration(rs.getInt("duration"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
                 ts.setRoomId(rs.getInt("roomid"));
-                ts.setStatus(enum_TrainingStatus.fromValue(rs.getString("status")));
+                ts.setStatus(rs.getString("status"));
                 ts.setNotes(rs.getString("notes"));
                 ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
 
@@ -60,7 +64,7 @@ public class TrainingController {
     public List<ExerciseWithDetails> getExercisesByScheduleId(int scheduleId) {
         List<ExerciseWithDetails> exerciseDetails = new ArrayList<>();
         String sql = "SELECT e.exerciseid, e.exercisecode, e.exercisename, e.category, e.description, " +
-                "tse.scheduleid, tse.set, tse.rep, tse.comment " +
+                "tse.scheduleid, tse.rep, tse.set, tse.comment " +
                 "FROM TrainingScheduleExercises tse " +
                 "JOIN Exercises e ON tse.exerciseid = e.exerciseid " +
                 "WHERE tse.scheduleid = ? " +
@@ -82,8 +86,8 @@ public class TrainingController {
                 TrainingScheduleExercise scheduleExercise = new TrainingScheduleExercise();
                 scheduleExercise.setScheduleId(rs.getInt("scheduleid"));
                 scheduleExercise.setExerciseId(rs.getInt("exerciseid"));
-                scheduleExercise.setSet(rs.getInt("set"));
                 scheduleExercise.setRep(rs.getInt("rep"));
+                scheduleExercise.setSet(rs.getInt("set"));
                 scheduleExercise.setComment(rs.getString("comment"));
 
                 // Tạo ExerciseWithDetails object
@@ -113,15 +117,14 @@ public class TrainingController {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 TrainingSchedule ts = new TrainingSchedule();
-                ts.setScheduleId(rs.getInt("scheduleid"));
+                ts.setId(rs.getInt("scheduleid"));
                 ts.setMemberId(rs.getInt("memberid"));
                 ts.setTrainerId(rs.getInt("trainerid"));
                 ts.setMembershipId(rs.getInt("membershipid"));
-                ts.setScheduleDate(rs.getDate("scheduledate").toLocalDate());
-                ts.setStartTime(rs.getTime("starttime").toLocalTime());
-                ts.setDuration(rs.getInt("duration"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
                 ts.setRoomId(rs.getInt("roomid"));
-                ts.setStatus(enum_TrainingStatus.fromValue(rs.getString("status")));
+                ts.setStatus(rs.getString("status"));
                 ts.setNotes(rs.getString("notes"));
                 ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
 
@@ -138,14 +141,14 @@ public class TrainingController {
     }
 
     // Thêm bài tập vào buổi tập
-    public boolean addExerciseToSchedule(int scheduleId, int exerciseId, int set, int rep, String comment) {
-        String sql = "INSERT INTO TrainingScheduleExercises (ScheduleID, ExerciseID, Set, Rep, Comment) VALUES (?, ?, ?, ?, ?)";
+    public boolean addExerciseToSchedule(int scheduleId, int exerciseId, int rep, int set, String comment) {
+        String sql = "INSERT INTO TrainingScheduleExercises (ScheduleID, ExerciseID, Rep, Set, Comment) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, scheduleId);
             ps.setInt(2, exerciseId);
-            ps.setInt(3, set);
-            ps.setInt(4, rep);
+            ps.setInt(3, rep);
+            ps.setInt(4, set);
             ps.setString(5, comment);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -183,5 +186,356 @@ public class TrainingController {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // Lấy thông tin tất cả hội viên được quản lý bởi huấn luyện viên
+    public List<Member> getMembersByTrainerId(int trainerId) {
+        List<Member> members = new ArrayList<>();
+        String sql = "SELECT DISTINCT m.memberid, m.userid, m.membercode, m.joindate, m.status, " +
+                "u.username, u.email, u.phonenumber, u.fullname, u.dateofbirth, u.gender, u.address, " +
+                "u.createdat, u.updateat, u.status as user_status, u.role " +
+                "FROM Members m " +
+                "JOIN Users u ON m.userid = u.userid " +
+                "JOIN TrainingRegistrations tr ON m.memberid = tr.memberid " +
+                "WHERE tr.trainerid = ? " +
+                "ORDER BY u.fullname";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                // Tạo User object
+                User user = new User();
+                user.setUserId(rs.getInt("userid"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phonenumber"));
+                user.setFullName(rs.getString("fullname"));
+                if (rs.getDate("dateofbirth") != null) {
+                    user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
+                }
+                user.setGender(model.enums.enum_Gender.fromValue(rs.getString("gender")));
+                user.setAddress(rs.getString("address"));
+                if (rs.getTimestamp("createdat") != null) {
+                    user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
+                }
+                if (rs.getTimestamp("updateat") != null) {
+                    user.setUpdatedAt(rs.getTimestamp("updateat").toLocalDateTime());
+                }
+                user.setStatus(model.enums.enum_UserStatus.fromValue(rs.getString("user_status")));
+                user.setRole(model.enums.enum_Role.fromValue(rs.getString("role")));
+
+                // Tạo Member object
+                Member member = new Member();
+                member.setMemberId(rs.getInt("memberid"));
+                member.setUserId(rs.getInt("userid"));
+                member.setMemberCode(rs.getString("membercode"));
+                if (rs.getDate("joindate") != null) {
+                    member.setJoinDate(rs.getDate("joindate").toLocalDate());
+                }
+                member.setStatus(model.enums.enum_MemberStatus.fromValue(rs.getString("status")));
+                member.setUser(user);
+
+                members.add(member);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return members;
+    }
+
+    // Phân công hội viên cho huấn luyện viên (cập nhật trainerID cho registration
+    // chưa có trainer)
+    public boolean assignMemberToTrainer(int memberId, int trainerId) {
+        String sql = "UPDATE TrainingRegistrations SET trainerid = ? WHERE memberid = ? AND (trainerid IS NULL OR trainerid = 0)";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ps.setInt(2, memberId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Phân công hội viên cho huấn luyện viên theo registration ID cụ thể
+    public boolean assignMemberToTrainerByRegistrationId(int registrationId, int trainerId) {
+        String sql = "UPDATE TrainingRegistrations SET trainerid = ? WHERE registrationid = ? AND (trainerid IS NULL OR trainerid = 0)";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ps.setInt(2, registrationId);
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Lấy danh sách hội viên chưa được phân công huấn luyện viên
+    public List<TrainingRegistration> getUnassignedTrainingRegistrations() {
+        List<TrainingRegistration> registrations = new ArrayList<>();
+        String sql = "SELECT tr.*, " +
+                "m.membercode, " +
+                "u.fullname as member_name, " +
+                "tp.planname " +
+                "FROM TrainingRegistrations tr " +
+                "JOIN Members m ON tr.memberid = m.memberid " +
+                "JOIN Users u ON m.userid = u.userid " +
+                "JOIN TrainingPlans tp ON tr.planid = tp.planid " +
+                "WHERE tr.trainerid IS NULL OR tr.trainerid = 0 " +
+                "ORDER BY tr.startdate DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                TrainingRegistration registration = new TrainingRegistration();
+                registration.setRegistrationId(rs.getInt("registrationid"));
+                registration.setMemberId(rs.getInt("memberid"));
+                registration.setPlanId(rs.getInt("planid"));
+                registration.setTrainerId(rs.getInt("trainerid"));
+                if (rs.getDate("startdate") != null) {
+                    registration.setStartDate(rs.getDate("startdate").toLocalDate());
+                }
+                registration.setSessionsLeft(rs.getInt("sessionsleft"));
+                registration.setPaymentId(rs.getInt("paymentid"));
+
+                // Tạo Member object với thông tin cơ bản
+                Member member = new Member();
+                member.setMemberId(rs.getInt("memberid"));
+                member.setMemberCode(rs.getString("membercode"));
+
+                // Tạo User object với tên
+                User user = new User();
+                user.setFullName(rs.getString("member_name"));
+                member.setUser(user);
+
+                // Tạo TrainingPlan object với tên
+                TrainingPlan plan = new TrainingPlan();
+                plan.setPlanId(rs.getInt("planid"));
+                plan.setPlanName(rs.getString("planname"));
+
+                registration.setMember(member);
+                registration.setPlan(plan);
+
+                registrations.add(registration);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return registrations;
+    }
+
+    // Lấy danh sách hội viên chưa được phân công huấn luyện viên theo
+    // specialization
+    public List<TrainingRegistration> getUnassignedTrainingRegistrationsBySpecialization(
+            model.enums.enum_TrainerSpecialization specialization) {
+        List<TrainingRegistration> registrations = new ArrayList<>();
+        String sql = "SELECT tr.*, " +
+                "m.membercode, " +
+                "u.fullname as member_name, " +
+                "tp.planname, tp.type " +
+                "FROM TrainingRegistrations tr " +
+                "JOIN Members m ON tr.memberid = m.memberid " +
+                "JOIN Users u ON m.userid = u.userid " +
+                "JOIN TrainingPlans tp ON tr.planid = tp.planid " +
+                "WHERE (tr.trainerid IS NULL OR tr.trainerid = 0) AND tp.type = ?::trainer_specialization_enum " +
+                "ORDER BY tr.startdate DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, specialization.getValue());
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                TrainingRegistration registration = new TrainingRegistration();
+                registration.setRegistrationId(rs.getInt("registrationid"));
+                registration.setMemberId(rs.getInt("memberid"));
+                registration.setPlanId(rs.getInt("planid"));
+                registration.setTrainerId(rs.getInt("trainerid"));
+                if (rs.getDate("startdate") != null) {
+                    registration.setStartDate(rs.getDate("startdate").toLocalDate());
+                }
+                registration.setSessionsLeft(rs.getInt("sessionsleft"));
+                registration.setPaymentId(rs.getInt("paymentid"));
+
+                // Tạo Member object với thông tin cơ bản
+                Member member = new Member();
+                member.setMemberId(rs.getInt("memberid"));
+                member.setMemberCode(rs.getString("membercode"));
+
+                // Tạo User object với tên
+                User user = new User();
+                user.setFullName(rs.getString("member_name"));
+                member.setUser(user);
+
+                // Tạo TrainingPlan object với tên và type
+                TrainingPlan plan = new TrainingPlan();
+                plan.setPlanId(rs.getInt("planid"));
+                plan.setPlanName(rs.getString("planname"));
+                plan.setType(model.enums.enum_TrainerSpecialization.fromValue(rs.getString("type")));
+
+                registration.setMember(member);
+                registration.setPlan(plan);
+
+                registrations.add(registration);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return registrations;
+    }
+
+    // Lấy thông tin trainer theo trainerId
+    public model.Trainer getTrainerById(int trainerId) {
+        String sql = "SELECT t.trainerid, t.userid, t.trainercode, t.specialization, t.bio, t.rating, t.status as trainer_status, "
+                +
+                "u.username, u.email, u.phonenumber, u.fullname, u.dateofbirth, u.gender, u.address, " +
+                "u.createdat, u.updateat, u.status as user_status, u.role " +
+                "FROM Trainers t " +
+                "JOIN Users u ON t.userid = u.userid " +
+                "WHERE t.trainerid = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // Tạo User object
+                User user = new User();
+                user.setUserId(rs.getInt("userid"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phonenumber"));
+                user.setFullName(rs.getString("fullname"));
+                if (rs.getDate("dateofbirth") != null) {
+                    user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
+                }
+                user.setGender(model.enums.enum_Gender.fromValue(rs.getString("gender")));
+                user.setAddress(rs.getString("address"));
+                if (rs.getTimestamp("createdat") != null) {
+                    user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
+                }
+                if (rs.getTimestamp("updateat") != null) {
+                    user.setUpdatedAt(rs.getTimestamp("updateat").toLocalDateTime());
+                }
+                user.setStatus(model.enums.enum_UserStatus.fromValue(rs.getString("user_status")));
+                user.setRole(model.enums.enum_Role.fromValue(rs.getString("role")));
+
+                // Tạo Trainer object
+                model.Trainer trainer = new model.Trainer();
+                trainer.setTrainerId(rs.getInt("trainerid"));
+                trainer.setUserId(rs.getInt("userid"));
+                trainer.setTrainerCode(rs.getString("trainercode"));
+                trainer.setSpecialization(
+                        model.enums.enum_TrainerSpecialization.fromValue(rs.getString("specialization")));
+                trainer.setBio(rs.getString("bio"));
+                trainer.setRating(rs.getDouble("rating"));
+                trainer.setStatus(model.enums.enum_TrainerStatus.fromValue(rs.getString("trainer_status")));
+                trainer.setUser(user);
+
+                return trainer;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean addTrainingSchedule(TrainingSchedule schedule) throws SQLException {
+        String sql = "INSERT INTO TrainingSchedule (memberid, trainerid, membershipid, scheduledate, starttime, duration, roomid, status, notes) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?::training_status_enum, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setInt(1, schedule.getMemberId());
+            pstmt.setInt(2, schedule.getTrainerId());
+            pstmt.setInt(3, schedule.getMembershipId());
+            pstmt.setDate(4, java.sql.Date.valueOf(schedule.getDate()));
+
+            // Xử lý format thời gian: thêm ":00" nếu chỉ có "HH:mm"
+            String timeString = schedule.getTime();
+            if (timeString.length() == 5 && timeString.matches("\\d{2}:\\d{2}")) {
+                timeString += ":00"; // Thêm giây
+            }
+            pstmt.setTime(5, java.sql.Time.valueOf(timeString));
+
+            pstmt.setInt(6, schedule.getDuration() > 0 ? schedule.getDuration() : 60);
+            pstmt.setInt(7, schedule.getRoomId());
+            pstmt.setString(8, schedule.getStatus());
+            pstmt.setString(9, schedule.getNotes());
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        schedule.setId(generatedKeys.getInt(1));
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean addExercisesToSchedule(int scheduleId, List<TrainingScheduleExercise> exercises)
+            throws SQLException {
+        String sql = "INSERT INTO TrainingScheduleExercises (ScheduleID, ExerciseID, Rep, Set, Comment) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (TrainingScheduleExercise exercise : exercises) {
+                pstmt.setInt(1, scheduleId);
+                pstmt.setInt(2, exercise.getExerciseId());
+                pstmt.setInt(3, exercise.getRep());
+                pstmt.setInt(4, exercise.getSet());
+                pstmt.setString(5, exercise.getComment());
+                pstmt.addBatch();
+            }
+
+            int[] results = pstmt.executeBatch();
+            return Arrays.stream(results).allMatch(r -> r > 0);
+        }
+    }
+
+    public List<TrainingScheduleExercise> getExercisesForSchedule(int scheduleId) throws SQLException {
+        String sql = "SELECT tse.*, e.exercisecode, e.exercisename, e.category, e.description " +
+                "FROM TrainingScheduleExercises tse " +
+                "JOIN Exercises e ON tse.ExerciseID = e.ExerciseID " +
+                "WHERE tse.ScheduleID = ?";
+
+        List<TrainingScheduleExercise> exercises = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, scheduleId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    TrainingScheduleExercise exercise = new TrainingScheduleExercise();
+                    exercise.setScheduleId(rs.getInt("ScheduleID"));
+                    exercise.setExerciseId(rs.getInt("ExerciseID"));
+                    exercise.setRep(rs.getInt("Rep"));
+                    exercise.setSet(rs.getInt("Set"));
+                    exercise.setComment(rs.getString("Comment"));
+                    exercises.add(exercise);
+                }
+            }
+        }
+
+        return exercises;
     }
 }

@@ -6,16 +6,17 @@ import java.time.LocalTime;
 import model.enums.enum_TrainingStatus;
 
 public class TrainingSchedule {
-    private int scheduleId;
+    private int id;
     private int memberId;
     private int trainerId;
     private int membershipId;
-    private LocalDate scheduleDate;
-    private LocalTime startTime;
-    private int duration;
+    private LocalDate date;
+    private String time;
+    private String type;
     private int roomId;
-    private enum_TrainingStatus status;
+    private int duration;
     private String notes;
+    private String status;
     private LocalDateTime createdDate;
 
     // Thêm trường để lưu tên trainer, member và room
@@ -26,29 +27,12 @@ public class TrainingSchedule {
     public TrainingSchedule() {
     }
 
-    public TrainingSchedule(int scheduleId, int memberId, int trainerId, int membershipId, LocalDate scheduleDate,
-            LocalTime startTime, int duration, int roomId, enum_TrainingStatus status, String notes,
-            LocalDateTime createdDate) {
-        this.scheduleId = scheduleId;
-        this.memberId = memberId;
-        this.trainerId = trainerId;
-        this.membershipId = membershipId;
-        this.scheduleDate = scheduleDate;
-        this.startTime = startTime;
-        this.duration = duration;
-        this.roomId = roomId;
-        this.status = status;
-        this.notes = notes;
-        this.createdDate = createdDate;
+    public int getId() {
+        return id;
     }
 
-    // Getters and Setters
-    public int getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(int scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getMemberId() {
@@ -75,28 +59,28 @@ public class TrainingSchedule {
         this.membershipId = membershipId;
     }
 
-    public LocalDate getScheduleDate() {
-        return scheduleDate;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setScheduleDate(LocalDate scheduleDate) {
-        this.scheduleDate = scheduleDate;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public String getTime() {
+        return time;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public int getDuration() {
-        return duration;
+    public String getType() {
+        return type;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getRoomId() {
@@ -107,12 +91,12 @@ public class TrainingSchedule {
         this.roomId = roomId;
     }
 
-    public enum_TrainingStatus getStatus() {
-        return status;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setStatus(enum_TrainingStatus status) {
-        this.status = status;
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public String getNotes() {
@@ -121,6 +105,14 @@ public class TrainingSchedule {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedDate() {
