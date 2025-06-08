@@ -631,7 +631,7 @@ public class WorkoutsController {
         TableColumn<ExerciseWithDetails, String> colComment = new TableColumn<>("Ghi chú");
         colComment.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getComment()));
-        colComment.setPrefWidth(150);
+        colComment.setPrefWidth(280);
 
         // Cột mô tả
         TableColumn<ExerciseWithDetails, String> colDesc = new TableColumn<>("Mô tả");
@@ -1011,9 +1011,18 @@ public class WorkoutsController {
             DatePicker datePicker = new DatePicker();
             datePicker.setPromptText("Chọn ngày");
 
-            // TextField nhập giờ
-            TextField timeField = new TextField();
-            timeField.setPromptText("Giờ (HH:mm)");
+            // ComboBox chọn giờ
+            ComboBox<String> timeComboBox = new ComboBox<>();
+            timeComboBox.setPromptText("Chọn giờ");
+            // Tạo danh sách thời gian từ 7h đến 20h, cách 30 phút
+            ObservableList<String> timeList = FXCollections.observableArrayList();
+            for (int hour = 7; hour <= 20; hour++) {
+                timeList.add(String.format("%02d:00", hour));
+                if (hour < 20) { // Không thêm 20:30 vì kết thúc lúc 20:00
+                    timeList.add(String.format("%02d:30", hour));
+                }
+            }
+            timeComboBox.setItems(timeList);
 
             // TextArea nhập ghi chú
             TextArea notesArea = new TextArea();
@@ -1027,7 +1036,7 @@ public class WorkoutsController {
                 TrainingRegistration selectedRegistration = registrationComboBox.getValue();
                 Room selectedRoom = roomComboBox.getValue();
                 java.time.LocalDate selectedDate = datePicker.getValue();
-                String time = timeField.getText();
+                String time = timeComboBox.getValue();
                 String notes = notesArea.getText();
 
                 if (selectedMember == null || selectedRegistration == null || selectedRoom == null
@@ -1088,7 +1097,7 @@ public class WorkoutsController {
                     new Label("Chọn ngày:"),
                     datePicker,
                     new Label("Giờ:"),
-                    timeField,
+                    timeComboBox,
                     new Label("Ghi chú:"),
                     notesArea,
                     addButton);
