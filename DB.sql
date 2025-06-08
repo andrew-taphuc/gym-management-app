@@ -213,6 +213,15 @@ CREATE TABLE TrainingSchedule (
   CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Bảng Check-in/Check-out
+CREATE TABLE Attendance (
+  AttendanceID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MembershipID INT NOT NULL,
+  CheckInTime TIMESTAMP NOT NULL,
+  TrainingScheduleID INT REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE
+);
+
 -- Bảng bài tập
 CREATE TABLE Exercises (
   ExerciseID SERIAL PRIMARY KEY,
