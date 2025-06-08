@@ -69,7 +69,8 @@ public class MembershipPlanView extends BaseView {
                 "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                 "-fx-max-width: 400px;" +
                 "-fx-min-width: 350px;" +
-                "-fx-alignment: center;"
+                "-fx-alignment: center;" +
+                "-fx-font-size: 18px;" 
             );
             VBox.setMargin(card, new Insets(12, 0, 12, 0));
 
@@ -87,7 +88,8 @@ public class MembershipPlanView extends BaseView {
                         "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                         "-fx-max-width: 400px;" +
                         "-fx-min-width: 350px;" +
-                        "-fx-alignment: center;"
+                        "-fx-alignment: center;" +
+                        "-fx-font-size: 18px;" 
                     );
                 }
                 // Chọn card mới
@@ -101,7 +103,8 @@ public class MembershipPlanView extends BaseView {
                     "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                     "-fx-max-width: 400px;" +
                     "-fx-min-width: 350px;" +
-                    "-fx-alignment: center;"
+                    "-fx-alignment: center;" +
+                    "-fx-font-size: 18px;" 
                 );
                 selectedCard = card;
                 selectedPlanId = plan.getPlanId();

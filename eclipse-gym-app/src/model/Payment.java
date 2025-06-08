@@ -9,18 +9,20 @@ public class Payment {
     private LocalDateTime paymentDate;
     private String paymentMethod;
     private enum_PaymentStatus status;
+    private Integer promotionId;
     private String notes;
 
     public Payment() {
     }
 
     public Payment(int paymentId, double amount, LocalDateTime paymentDate, String paymentMethod,
-            enum_PaymentStatus status, String notes) {
+            enum_PaymentStatus status,Integer promotionId, String notes) {
         this.paymentId = paymentId;
         this.amount = amount;
         this.paymentDate = paymentDate;
         this.paymentMethod = paymentMethod;
         this.status = status;
+        this.promotionId = promotionId; // Default value, can be set later
         this.notes = notes;
     }
 
@@ -63,6 +65,14 @@ public class Payment {
 
     public void setStatus(enum_PaymentStatus status) {
         this.status = status;
+    }
+
+    public Integer getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Integer promotionId) {
+        this.promotionId = promotionId;
     }
 
     public String getNotes() {
