@@ -135,18 +135,6 @@ CREATE TABLE Payments (
   Notes VARCHAR(500)
 );
 
--- BẢNG ĐĂNG KÝ GÓI TRUY CẬP GYM (Thêm PaymentID)
-CREATE TABLE Memberships (
-  MembershipID SERIAL PRIMARY KEY,
-  UserID INT NOT NULL REFERENCES Users(UserID) ON DELETE CASCADE,
-  MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
-  PlanID INT NOT NULL REFERENCES MembershipPlans(PlanID) ON DELETE CASCADE,
-  StartDate DATE NOT NULL,
-  EndDate DATE NOT NULL,
-  Status membership_status_enum DEFAULT 'Chưa kích hoạt',
-  PaymentID INT REFERENCES Payments(PaymentID)
-);
-
 -- BẢNG ĐĂNG KÝ GÓI HUẤN LUYỆN (Thêm PaymentID)
 CREATE TABLE Memberships (
   MembershipID SERIAL PRIMARY KEY,
@@ -158,9 +146,8 @@ CREATE TABLE Memberships (
   Status membership_status_enum DEFAULT 'Chưa kích hoạt',
   PaymentID INT REFERENCES Payments(PaymentID),
   RenewalTo INT REFERENCES Memberships(MembershipID),
-  RenewalDate TIMESTAMP;
+  RenewalDate TIMESTAMP
 );
-
 
 -- Module quản lý phòng tập, thiết bị
 -- 2. Rooms table
