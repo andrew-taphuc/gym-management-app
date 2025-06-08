@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import model.enums.enum_MembershipStatus;
 
 public class Membership {
@@ -16,12 +17,14 @@ public class Membership {
     private MembershipPlan plan; // Reference to MembershipPlan
     private Payment payment; // Reference to Payment
     private Integer renewalTo; // Reference to previous membership ID
+    private LocalDateTime renewalDate;
 
     public Membership() {
     }
 
     public Membership(int membershipId, int userId, int memberId, int planId, LocalDate startDate,
-            LocalDate endDate, enum_MembershipStatus status, int paymentId, Integer renewalTo) {
+            LocalDate endDate, enum_MembershipStatus status, int paymentId, Integer renewalTo,
+            LocalDateTime renewalDate) {
         this.membershipId = membershipId;
         this.userId = userId;
         this.memberId = memberId;
@@ -31,6 +34,7 @@ public class Membership {
         this.status = status;
         this.paymentId = paymentId;
         this.renewalTo = renewalTo;
+        this.renewalDate = renewalDate;
     }
 
     // Getters and Setters
@@ -128,5 +132,13 @@ public class Membership {
 
     public void setRenewalTo(Integer renewalTo) {
         this.renewalTo = renewalTo;
+    }
+
+    public LocalDateTime getRenewalDate() {
+        return renewalDate;
+    }
+
+    public void setRenewalDate(LocalDateTime renewalDate) {
+        this.renewalDate = renewalDate;
     }
 }

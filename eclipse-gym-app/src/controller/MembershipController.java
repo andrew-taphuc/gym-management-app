@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class MembershipController {
     private Connection connection;
@@ -155,5 +156,57 @@ public class MembershipController {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean createMembershipRenewal(Membership membership) {
+        String sql = "INSERT INTO Memberships (UserID, MemberID, PlanID, StartDate, EndDate, PaymentID, RenewalTo, RenewalDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, membership.getUserId());
+            pstmt.setInt(2, membership.getMemberId());
+            pstmt.setInt(3, membership.getPlanId());
+            pstmt.setDate(4, java.sql.Date.valueOf(membership.getStartDate()));
+            pstmt.setDate(5, java.sql.Date.valueOf(membership.getEndDate()));
+            pstmt.setInt(6, membership.getPaymentId());
+            pstmt.setInt(7, membership.getRenewalTo());
+            pstmt.setTimestamp(8, java.sql.Timestamp.valueOf(membership.getRenewalDate()));
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateRenewalDate(int membershipId, LocalDateTime renewalDate) {
+        String sql = "UPDATE Memberships SET RenewalDate = ? WHERE MembershipID = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setTimestamp(1, java.sql.Timestamp.valueOf(renewalDate));
+            pstmt.setInt(2, membershipId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Kiểm tra xem một membership đã được gia hạn chưa
+     * 
+     * @param membershipId ID của membership cần kiểm tra
+     * @return true nếu đã được gia hạn, false nếu chưa
+     */
+    public boolean isMembershipAlreadyRenewed(int membershipId) {
+        String query = "SELECT COUNT(*) FROM Memberships WHERE RenewalTo = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, membershipId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

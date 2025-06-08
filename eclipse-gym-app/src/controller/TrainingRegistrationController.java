@@ -57,4 +57,22 @@ public class TrainingRegistrationController {
         }
         return registrations;
     }
+
+    public boolean createTrainingRegistration(TrainingRegistration registration) {
+        String query = "INSERT INTO TrainingRegistrations (memberid, planid, startdate, sessionsleft, paymentid) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, registration.getMemberId());
+            stmt.setInt(2, registration.getPlanId());
+            stmt.setDate(3, java.sql.Date.valueOf(registration.getStartDate()));
+            stmt.setInt(4, registration.getSessionsLeft());
+            stmt.setInt(5, registration.getPaymentId());
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

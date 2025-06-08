@@ -7,6 +7,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.User;
 import model.Membership;
+import model.enums.enum_MembershipStatus;
 import controller.MembershipController;
 import controller.UserController;
 import java.util.List;
@@ -23,10 +24,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import utils.DBConnection;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import java.io.IOException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import java.time.LocalDate;
+import view.userView.renewals.RenewMembershipController;
+import view.userView.trainingRegister.TrainingPlanSelectionController;
 
 public class PlansRenewalsController {
     @FXML
     private Label pageTitle;
+
+    @FXML
+    private Label expirationNoticeLabel;
 
     @FXML
     private TableView<Membership> membershipsTable;
@@ -62,6 +76,9 @@ public class PlansRenewalsController {
     private TableColumn<TrainingRegistration, String> planNameColumn;
 
     @FXML
+    private TableColumn<TrainingRegistration, String> planTypeColumn;
+
+    @FXML
     private TableColumn<TrainingRegistration, String> trainerNameColumn;
 
     @FXML
@@ -69,6 +86,15 @@ public class PlansRenewalsController {
 
     @FXML
     private TableColumn<TrainingRegistration, String> sessionsLeftColumn;
+
+    @FXML
+    private Button renewButton;
+
+    @FXML
+    private Button refreshButton;
+
+    @FXML
+    private Button buyTrainerButton;
 
     private User currentUser;
     private MembershipController membershipController;
@@ -139,7 +165,13 @@ public class PlansRenewalsController {
                 }
                 return new SimpleStringProperty("");
             });
-            statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+            statusColumn.setCellValueFactory(cellData -> {
+                Membership membership = cellData.getValue();
+                if (membership != null && membership.getStatus() != null) {
+                    return new SimpleStringProperty(membership.getStatus().getValue());
+                }
+                return new SimpleStringProperty("");
+            });
         }
 
         if (trainingRegistrationsTable != null) {
@@ -151,6 +183,13 @@ public class PlansRenewalsController {
                 String planName = cellData.getValue().getPlan() != null ? cellData.getValue().getPlan().getPlanName()
                         : "";
                 return new SimpleStringProperty(planName);
+            });
+
+            planTypeColumn.setCellValueFactory(cellData -> {
+                String planType = cellData.getValue().getPlan() != null
+                        ? cellData.getValue().getPlan().getType().getValue()
+                        : "";
+                return new SimpleStringProperty(planType);
             });
 
             trainerNameColumn.setCellValueFactory(cellData -> {
@@ -186,7 +225,26 @@ public class PlansRenewalsController {
                         System.out.println("- Không có thông tin gói tập");
                     }
                 }
+
+                // Sắp xếp danh sách: ACTIVE lên trên, sau đó sắp xếp theo ngày bắt đầu
+                memberships.sort((m1, m2) -> {
+                    // Ưu tiên ACTIVE lên trên
+                    if (m1.getStatus() == model.enums.enum_MembershipStatus.ACTIVE &&
+                            m2.getStatus() != model.enums.enum_MembershipStatus.ACTIVE) {
+                        return -1;
+                    }
+                    if (m1.getStatus() != model.enums.enum_MembershipStatus.ACTIVE &&
+                            m2.getStatus() == model.enums.enum_MembershipStatus.ACTIVE) {
+                        return 1;
+                    }
+                    // Nếu cùng trạng thái, sắp xếp theo ngày bắt đầu
+                    return m1.getStartDate().compareTo(m2.getStartDate());
+                });
+
                 membershipsTable.getItems().setAll(memberships);
+
+                // Tìm ngày hết hạn cuối cùng của các gói "Hoạt động"
+                updateExpirationNotice(memberships);
             }
         }
     }
@@ -200,6 +258,111 @@ public class PlansRenewalsController {
                 trainingRegistrationsTable.getItems().setAll(registrations);
                 trainingRegistrationsTable.refresh();
             }
+        }
+    }
+
+    private void updateExpirationNotice(List<Membership> memberships) {
+        if (expirationNoticeLabel == null) {
+            return;
+        }
+
+        // Tìm ngày hết hạn cuối cùng trong số các gói có trạng thái "Hoạt động"
+        LocalDate latestEndDate = null;
+        for (Membership membership : memberships) {
+            if (membership.getStatus() == model.enums.enum_MembershipStatus.ACTIVE &&
+                    membership.getEndDate() != null) {
+                if (latestEndDate == null || membership.getEndDate().isAfter(latestEndDate)) {
+                    latestEndDate = membership.getEndDate();
+                }
+            }
+        }
+
+        // Hiển thị thông báo
+        if (latestEndDate != null) {
+            String formattedDate = latestEndDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            expirationNoticeLabel.setText("Thẻ tập của bạn sẽ hết hạn vào ngày " + formattedDate);
+        } else {
+            expirationNoticeLabel.setText("Bạn chưa có gói tập nào đang hoạt động");
+        }
+    }
+
+    @FXML
+    private void handleRenewClick() {
+        // Lấy gói tập hiện tại
+        Membership currentMembership = membershipsTable.getSelectionModel().getSelectedItem();
+        if (currentMembership == null) {
+            showAlert("Vui lòng chọn gói tập cần gia hạn");
+            return;
+        }
+
+        // Kiểm tra trạng thái gói tập
+        if (currentMembership.getStatus() != model.enums.enum_MembershipStatus.ACTIVE) {
+            showAlert("Chỉ có thể gia hạn gói tập đang hoạt động");
+            return;
+        }
+
+        // Kiểm tra xem gói tập đã được gia hạn chưa
+        if (membershipController.isMembershipAlreadyRenewed(currentMembership.getMembershipId())) {
+            showAlert("Gói tập này đã được gia hạn trước đó và không thể gia hạn lại");
+            return;
+        }
+
+        // Mở màn hình gia hạn
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("renewals/renew_membership.fxml"));
+            Parent root = loader.load();
+
+            RenewMembershipController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+            controller.setCurrentMembership(currentMembership);
+
+            Stage stage = new Stage();
+            stage.setTitle("Gia hạn gói tập");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Không thể mở màn hình gia hạn");
+        }
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Thông báo");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // Phương thức để refresh dữ liệu sau khi có thay đổi
+    public void refreshData() {
+        if (currentUser != null) {
+            loadMemberships();
+            loadTrainingRegistrations();
+        }
+    }
+
+    @FXML
+    private void handleRefreshClick() {
+        refreshData();
+    }
+
+    @FXML
+    private void handleBuyTrainerClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("trainingRegister/training_plan_selection.fxml"));
+            Parent root = loader.load();
+
+            TrainingPlanSelectionController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+
+            Stage stage = new Stage();
+            stage.setTitle("Chọn gói tập với HLV");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Không thể mở màn hình chọn gói HLV");
         }
     }
 }
