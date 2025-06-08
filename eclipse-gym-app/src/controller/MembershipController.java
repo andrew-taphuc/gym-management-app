@@ -16,7 +16,30 @@ public class MembershipController {
     public MembershipController() {
         this.connection = DBConnection.getConnection();
     }
+    public List<Membership> getMembershipsByMemberID(int memberID) {
+        List<Membership> memberships = new ArrayList<>();
+        String query = "SELECT * FROM Memberships WHERE MemberID = ? ORDER BY MembershipID DESC";
 
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, memberID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Membership membership = new Membership();
+                membership.setMembershipId(rs.getInt("MembershipID"));
+                membership.setUserId(rs.getInt("UserID"));
+                membership.setMemberId(rs.getInt("MemberID"));
+                membership.setPlanId(rs.getInt("PlanID"));
+                membership.setStartDate(rs.getDate("StartDate").toLocalDate());
+                membership.setEndDate(rs.getDate("EndDate").toLocalDate());
+                membership.setStatus(enum_MembershipStatus.fromValue(rs.getString("Status")));
+                membership.setPaymentId(rs.getInt("PaymentID"));
+                memberships.add(membership);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return memberships;
+    }
     public List<Membership> getAllMemberships() {
         List<Membership> memberships = new ArrayList<>();
         String query = "SELECT * FROM Memberships ORDER BY MembershipID DESC";
