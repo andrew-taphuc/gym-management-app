@@ -164,7 +164,7 @@ INSERT INTO TrainingRegistrations (MemberID, PlanID, TrainerID, StartDate, Sessi
 (1, 1, 1, CURRENT_DATE, 10, 5), -- Member 1 đăng ký gói Gym 10 buổi với trainer 1
 (2, 2, 2, CURRENT_DATE, 20, 6), -- Member 2 đăng ký gói Gym 20 buổi với trainer 2
 (3, 7, 3, CURRENT_DATE, 10, 7), -- Member 3 đăng ký gói Yoga 10 buổi với trainer 3
-(4, 4, 1, CURRENT_DATE, 10, 8);  -- Member 4 đăng ký gói Kickfit 10 buổi với trainer 1
+(4, 4, 1, CURRENT_DATE, 10, 8); -- Member 4 đăng ký gói Kickfit 10 buổi với trainer 1
 
 INSERT INTO TrainingRegistrations (MemberID, PlanID, StartDate, SessionsLeft, PaymentID) VALUES
 (1, 1, CURRENT_DATE, 10, 5); -- Member 1 đăng ký gói Gym 10 buổi với trainer 1

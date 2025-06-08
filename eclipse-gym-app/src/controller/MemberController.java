@@ -158,7 +158,7 @@ public class MemberController {
                 a.setAttendanceId(rs.getInt("AttendanceID"));
                 a.setMemberId(rs.getInt("MemberID"));
                 a.setCheckInTime(rs.getTimestamp("CheckinTime").toLocalDateTime());
-                a.setType(rs.getString("Type")); // "GYM" hoặc "PT"
+                // a.setType(rs.getString("Type")); // "GYM" hoặc "PT"
                 // a.setPlanId(rs.getInt("PlanID"));
                 list.add(a);
             }

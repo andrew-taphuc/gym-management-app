@@ -1,5 +1,7 @@
 package view.adminView;
 
+import controller.TrainingRegistrationController;
+import controller.TrainingScheduleController;
 import controller.MemberController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -7,6 +9,7 @@ import javafx.scene.layout.VBox;
 import model.Member;
 import model.User;
 import model.Membership;
+import model.TrainingRegistration;
 import model.Attendance;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -116,27 +119,44 @@ public class MemberTrackController {
 
     @FXML
     public void handleCheckinPT() {
-        // 1. Kiểm tra còn gói PT hợp lệ không
-        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
-        Membership ptMembership = memberships.stream()
-            .filter(m -> m.isPersonalTraining() && m.isActive()) // Bạn cần hiện thực 2 hàm này
+        // Lấy danh sách gói PT còn hiệu lực
+        List<TrainingRegistration> ptRegistrations = TrainingRegistrationController.getActivePTRegistrationsByMemberId(member.getMemberId());
+        TrainingRegistration ptRegistration = ptRegistrations.stream()
+            .filter(r -> r.isActive())
             .findFirst()
             .orElse(null);
 
-        if (ptMembership == null) {
+        if (ptRegistration == null) {
             showAlert("Bạn không còn gói PT hợp lệ hoặc gói PT đã hết hạn!");
             return;
         }
 
-        // 2. Lấy TrainingScheduleID của buổi PT hôm nay (hoặc cho phép chọn)
-        int trainingScheduleId = MemberController.getTodayPTScheduleId(member.getMemberId(), ptMembership.getMembershipId());
+        // Lấy gói Membership đang hoạt động (để lấy membershipId cho Attendance)
+        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
+        Membership activeMembership = memberships.stream()
+            .filter(Membership::isActive)
+            .findFirst()
+            .orElse(null);
+
+        if (activeMembership == null) {
+            showAlert("Bạn không còn gói tập hợp lệ!");
+            return;
+        }
+
+        // Lấy TrainingScheduleID của buổi PT hôm nay
+        int trainingScheduleId = TrainingScheduleController.getTodayPTScheduleId(member.getMemberId(), ptRegistration.getRegistrationId());
         if (trainingScheduleId == -1) {
             showAlert("Không tìm thấy lịch PT hôm nay!");
             return;
         }
 
-        // 3. Thực hiện check-in
-        boolean success = MemberController.checkinPT(member.getMemberId(), ptMembership.getMembershipId(), trainingScheduleId);
+        // Thực hiện check-in
+        boolean success = TrainingRegistrationController.checkinPT(
+            member.getMemberId(),
+            activeMembership.getMembershipId(),
+            ptRegistration.getRegistrationId(),
+            trainingScheduleId
+        );
         if (success) {
             loadAttendance();
             loadSessionCount();
