@@ -1,6 +1,8 @@
 package controller;
-
+import model.enums.enum_MembershipStatus;
+import model.Attendance;
 import model.Member;
+import model.Membership;
 import model.enums.enum_MemberStatus;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -8,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.sql.Date;
 
 public class MemberController {
     private Connection connection;
@@ -84,4 +89,146 @@ public class MemberController {
         }
         return -1;
     }
+
+    public Member findMemberByCodeOrPhone(String keyword) {
+        String query = "SELECT m.*, u.PhoneNumber, u.FullName " +
+                       "FROM Members m " +
+                       "JOIN Users u ON m.UserID = u.UserID " +
+                       "WHERE m.MemberCode = ? OR u.PhoneNumber = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, keyword);
+            stmt.setString(2, keyword);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Member member = new Member();
+                member.setMemberId(rs.getInt("MemberID"));
+                member.setUserId(rs.getInt("UserID"));
+                member.setMemberCode(rs.getString("MemberCode"));
+                if (rs.getDate("JoinDate") != null) {
+                    member.setJoinDate(rs.getDate("JoinDate").toLocalDate());
+                }
+                member.setStatus(enum_MemberStatus.fromValue(rs.getString("Status")));
+                // Nếu cần, có thể set thêm số điện thoại, tên, ...
+                // member.setPhoneNumber(rs.getString("PhoneNumber"));
+                // member.setFullName(rs.getString("FullName"));
+                return member;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Lấy danh sách các gói tập của hội viên
+    public static List<Membership> getMembershipsByMemberId(int memberId) {
+        List<Membership> list = new ArrayList<>();
+        String query = "SELECT * FROM Memberships WHERE MemberID = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Membership m = new Membership();
+                m.setMembershipId(rs.getInt("MembershipID"));
+                m.setPlanId(rs.getInt("PlanID"));
+                m.setMemberId(rs.getInt("MemberID"));
+                m.setStartDate(rs.getDate("StartDate").toLocalDate());
+                m.setEndDate(rs.getDate("EndDate").toLocalDate());
+                m.setStatus(enum_MembershipStatus.fromValue(rs.getString("Status")));
+                list.add(m);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    // Lấy 5 lần check-in gần nhất
+    public static List<Attendance> getRecentAttendance(int memberId, int limit) {
+        List<Attendance> list = new ArrayList<>();
+        String query = "SELECT * FROM Attendance WHERE MemberID = ? ORDER BY CheckinTime DESC LIMIT ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, limit);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Attendance a = new Attendance();
+                a.setAttendanceId(rs.getInt("AttendanceID"));
+                a.setMemberId(rs.getInt("MemberID"));
+                a.setCheckInTime(rs.getTimestamp("CheckinTime").toLocalDateTime());
+                a.setType(rs.getString("Type")); // "GYM" hoặc "PT"
+                // a.setPlanId(rs.getInt("PlanID"));
+                list.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Đếm số buổi đã tập trong tháng này
+    public static int countAttendanceThisMonth(int memberId, LocalDate now) {
+        int count = 0;
+        String query = "SELECT COUNT(*) FROM Attendance WHERE MemberID = ? AND EXTRACT(MONTH FROM CheckinTime) = ? AND EXTRACT(YEAR FROM CheckinTime) = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, now.getMonthValue());
+            stmt.setInt(3, now.getYear());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    // Check-in phòng tập (GYM)
+    public static boolean checkinGym(int memberId) {
+        String query = "INSERT INTO Attendance (MemberID, CheckinTime, Type) VALUES (?, NOW(), 'GYM')";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            int affected = stmt.executeUpdate();
+            return affected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    // Check-in dịch vụ PT
+    public static boolean checkinPT(int memberId, int membershipId, int trainingScheduleId) {
+        String query = "INSERT INTO Attendance (MemberID, MembershipID, CheckInTime, TrainingScheduleID) VALUES (?, ?, NOW(), ?)";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, membershipId);
+            stmt.setInt(3, trainingScheduleId);
+            int affected = stmt.executeUpdate();
+            return affected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static int getTodayPTScheduleId(int memberId, int membershipId) {
+    String query = "SELECT ScheduleID FROM TrainingSchedule " +
+                   "WHERE MemberID = ? AND MembershipID = ? AND DATE(CreatedDate) = ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, memberId);
+        stmt.setInt(2, membershipId);
+        stmt.setDate(3, Date.valueOf(LocalDate.now()));
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("ScheduleID");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return -1;
+}
 }

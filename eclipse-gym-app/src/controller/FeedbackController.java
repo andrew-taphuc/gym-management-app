@@ -2,13 +2,11 @@ package controller;
 
 import model.Feedback;
 import utils.DBConnection;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FeedbackController {
-
     //Lấy ID của member từ UserID
     public Integer getMemberIdByUserId(int userId) {
         String sql = "SELECT MemberID FROM Members WHERE UserID = ?";

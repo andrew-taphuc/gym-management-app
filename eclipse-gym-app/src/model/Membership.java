@@ -119,4 +119,14 @@ public class Membership {
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
+    public boolean isPersonalTraining() {
+    if (plan != null) {
+        return plan.getPlanName() != null && plan.getPlanName().toLowerCase().contains("pt");
+    }
+    return false;
+}
+
+    public boolean isActive() {
+        return status == enum_MembershipStatus.ACTIVE && (endDate == null || endDate.isAfter(LocalDate.now()));
+    }
 }

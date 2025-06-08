@@ -2,12 +2,16 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
-
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
     prefHeight="600.0" prefWidth="800.0"
     styleClass="content-area">
 
     <Label fx:id="pageTitle" styleClass="page-title" />
+    <TextField fx:id="inputField" promptText="Nhập số điện thoại hoặc mã hội viên" />
+    <Button fx:id="searchButton" text="Tìm kiếm" styleClass="primary-button" />
 
 </VBox> 

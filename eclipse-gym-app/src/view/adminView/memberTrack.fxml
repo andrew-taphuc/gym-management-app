@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.adminView.MemberTrackController"
+      spacing="16" padding="20">
+
+    <HBox spacing="32">
+        <VBox spacing="8">
+            <Label text="Họ tên:"/>
+            <Label fx:id="lblFullName" style="-fx-font-weight: bold"/>
+            <Label text="Số điện thoại:"/>
+            <Label fx:id="lblPhone"/>
+            <Label text="Mã hội viên:"/>
+            <Label fx:id="lblMemberCode"/>
+            <Label text="Ngày tham gia:"/>
+            <Label fx:id="lblJoinDate"/>
+            <Label text="Trạng thái:"/>
+            <Label fx:id="lblStatus"/>
+            <Label text="Số buổi đã tập tháng này:"/>
+            <Label fx:id="lblSessionCount"/>
+        </VBox>
+        <VBox spacing="12" alignment="TOP_CENTER">
+            <Button fx:id="btnCheckinGym" text="Check-in phòng tập" onAction="#handleCheckinGym" styleClass="primary-button"/>
+            <Button fx:id="btnCheckinPT" text="Check-in dịch vụ PT" onAction="#handleCheckinPT" styleClass="secondary-button"/>
+        </VBox>
+    </HBox>
+
+    <Label text="Danh sách gói tập"/>
+    <TableView fx:id="tblMemberships" prefHeight="120">
+        <columns>
+            <TableColumn text="Tên gói" prefWidth="150"/>
+            <TableColumn text="Ngày bắt đầu" prefWidth="100"/>
+            <TableColumn text="Ngày kết thúc" prefWidth="100"/>
+            <TableColumn text="Trạng thái" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <Label text="Lịch sử check-in (5 lần gần nhất)"/>
+    <TableView fx:id="tblAttendance" prefHeight="180">
+        <columns>
+            <TableColumn text="Thời gian check-in" prefWidth="180"/>
+            <TableColumn text="Gói tập" prefWidth="120"/>
+            <TableColumn text="Loại check-in" prefWidth="120"/>
+        </columns>
+    </TableView>
+</VBox>
