@@ -12,6 +12,7 @@ import model.User;
 import view.register.RegisterView;
 import view.userView.HomeView;
 import view.adminView.HomeView_admin;
+import view.ownerView.HomeView_Owner;
 import view.trainerView.HomeView_trainer;
 import model.enums.enum_Role;
 import javafx.application.Platform;
@@ -82,6 +83,12 @@ public class LoginView extends BaseView {
                         System.out.println("Họ tên: " + user.getFullName());
                         HomeView_trainer homeView_trainer = new HomeView_trainer(stage);
                         navigateToView("/view/trainerView/home.fxml", homeView_trainer);
+                    } else if (user.getRole().getValue().equals("Chủ phòng tập")) {
+                        System.out.println("Đăng nhập thành công!");
+                        System.out.println("Vai trò: " + user.getRole().getValue());
+                        System.out.println("Họ tên: " + user.getFullName());
+                        HomeView_Owner homeView_Owner = new HomeView_Owner(stage);
+                        navigateToView("/view/ownerView/home.fxml", homeView_Owner);
                     } else {
                         System.out.println("Đăng nhập thành công!");
                         System.out.println("Vai trò: " + user.getRole().getValue());
