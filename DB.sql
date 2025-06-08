@@ -188,15 +188,6 @@ CREATE TABLE RoomEquipment (
     CONSTRAINT uq_equipment_code_per_center UNIQUE (EquipmentCode)
 );
 
--- Bảng Check-in/Check-out
-CREATE TABLE Attendance (
-  AttendanceID SERIAL PRIMARY KEY,
-  MemberID INT NOT NULL,
-  MembershipID INT NOT NULL,
-  CheckInTime TIMESTAMP NOT NULL,
-  TrainingScheduleID INT REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
-);
-
 -- Bảng lịch tập
 CREATE TABLE TrainingSchedule (
   ScheduleID SERIAL PRIMARY KEY,
