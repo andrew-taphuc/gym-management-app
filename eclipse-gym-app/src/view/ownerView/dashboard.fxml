@@ -59,14 +59,33 @@
         </VBox>
 
         <!-- Khối 2: Thống kê chung về số lượng -->
-        <VBox spacing="10" prefWidth="770" prefHeight="400"
+        <VBox spacing="20" prefWidth="770" prefHeight="400"
             alignment="TOP_CENTER"
             style="-fx-border-color: black; -fx-background-color: #f9f9f9; -fx-border-radius: 5; -fx-background-radius: 5;">
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
-            <Label text="Các thống kê chung về số lượng" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
-            <Label text="[Biểu đồ/thống kê sẽ hiển thị tại đây]" style="-fx-text-fill: gray;" />
+            <Label text="Thống kê chung" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+            <!-- Thống kê theo ngày hiện tại -->
+            <VBox spacing="5" style="-fx-background-radius: 5;">
+                <Label fx:id="todayTitleLabel" text="Thống kê ngày 08/06/2025" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+                <Label fx:id="todayRevenueLabel" text="Doanh thu: 0 VNĐ" style="-fx-font-size: 18px" />
+                <Label fx:id="todayNewMemberLabel" text="Đăng ký mới: 0" style="-fx-font-size: 18px" />
+                <Label fx:id="todayRenewMemberLabel" text="Gia hạn thêm: 0" style="-fx-font-size: 18px" />
+            </VBox>
+            <Separator />
+            <!-- Thống kê trong tháng/năm hiện tại -->
+            <VBox spacing="5" style="-fx-background-radius: 5;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Thống kê tháng " style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+                    <ComboBox fx:id="monthComboBox" prefWidth="80" style="-fx-font-size: 16px"/>
+                    <ComboBox fx:id="yearComboBox" prefWidth="100" style="-fx-font-size: 16px"/>
+                </HBox>
+                <Label fx:id="monthNewMemberLabel" text="Thành viên mới: 0" style="-fx-font-size: 18px"/>
+                <Label fx:id="monthRenewMemberLabel" text="Gia hạn thêm: 0" style="-fx-font-size: 18px"/>
+                <Label fx:id="monthRevenueLabel" text="Doanh thu: 0 VNĐ" style="-fx-font-size: 18px"/>
+            </VBox>
         </VBox>
     </HBox>
 

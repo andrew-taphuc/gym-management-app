@@ -2,9 +2,9 @@ package view.ownerView;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ComboBox;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import model.User;
 import utils.DBConnection;
@@ -14,8 +14,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.text.NumberFormat;
 
 public class DashboardController {
     @FXML
@@ -30,6 +32,26 @@ public class DashboardController {
     private Label planCountLabel;
     @FXML
     private BarChart<String, Number> ptBarChart;
+
+    // Thêm các biến cho thống kê chung
+    @FXML
+    private Label todayTitleLabel;
+    @FXML
+    private Label todayRevenueLabel;
+    @FXML
+    private Label todayNewMemberLabel;
+    @FXML
+    private Label todayRenewMemberLabel;
+    @FXML
+    private ComboBox<Integer> monthComboBox;
+    @FXML
+    private ComboBox<Integer> yearComboBox;
+    @FXML
+    private Label monthNewMemberLabel;
+    @FXML
+    private Label monthRenewMemberLabel;
+    @FXML
+    private Label monthRevenueLabel;
 
     private User currentUser;
 
@@ -56,6 +78,32 @@ public class DashboardController {
         // Số gói tập
         planCountLabel.setText(String.valueOf(getCount(conn, "SELECT COUNT(*) FROM MembershipPlans")));
 
+        // Thống kê trong ngày hôm nay
+        LocalDate today = LocalDate.now();
+        todayTitleLabel.setText("Thống kê ngày " + today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        todayRevenueLabel.setText("Doanh thu: " + formatCurrency(getTodayRevenue(conn)));
+        todayNewMemberLabel.setText("Đăng ký mới: " + getTodayNewMemberCount(conn));
+        todayRenewMemberLabel.setText("Gia hạn thêm: " + getTodayRenewMemberCount(conn));
+
+        // Thống kê trong tháng/năm hiện tại
+        monthComboBox.getItems().clear();
+        yearComboBox.getItems().clear();
+        LocalDate now = LocalDate.now();
+        for (int m = 1; m <= 12; m++) monthComboBox.getItems().add(m);
+        int currentYear = now.getYear();
+        for (int y = currentYear; y >= currentYear - 3; y--) {
+            yearComboBox.getItems().add(y);
+        }
+
+        monthComboBox.setValue(now.getMonthValue());
+        yearComboBox.setValue(currentYear);
+
+        // Lắng nghe thay đổi để cập nhật thống kê
+        monthComboBox.setOnAction(e -> updateMonthStats());
+        yearComboBox.setOnAction(e -> updateMonthStats());
+
+        updateMonthStats();
+
         // Thiết lập trục y cho biểu đồ cột
         setupBarChartYAxis();
         // Vẽ biểu đồ cột PT vs không PT 6 tháng gần nhất
@@ -71,6 +119,54 @@ public class DashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return 0;
+    }
+
+    // Thống kê thành viên mới trong ngày hôm nay
+    private int getTodayNewMemberCount(Connection conn) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Role = 'Hội viên' AND DATE(CreatedAt) = CURRENT_DATE";
+        return getCount(conn, sql);
+    }
+
+    // Thống kê doanh thu trong ngày hôm nay
+    private int getTodayRevenue(Connection conn) {
+        String sql = "SELECT COALESCE(SUM(Amount),0) FROM Payments WHERE DATE(PaymentDate) = CURRENT_DATE";
+        return getCount(conn, sql);
+    }
+
+    // Thống kê thành viên mới trong tháng hiện tại
+    private int getMonthNewMemberCount(Connection conn, int month, int year) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE Role = 'Hội viên' AND EXTRACT(MONTH FROM CreatedAt) = ? AND EXTRACT(YEAR FROM CreatedAt) = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // Thống kê số người gia hạn trong tháng/năm
+    private int getMonthRenewMemberCount(Connection conn, int month, int year) {
+        String sql = "SELECT COUNT(*) FROM Memberships WHERE EXTRACT(MONTH FROM RenewalDate) = ? AND EXTRACT(YEAR FROM RenewalDate) = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // Doanh thu theo tháng/năm
+    private int getMonthRevenue(Connection conn, int month, int year) {
+        String sql = "SELECT COALESCE(SUM(Amount),0) FROM Payments WHERE EXTRACT(MONTH FROM PaymentDate) = ? AND EXTRACT(YEAR FROM PaymentDate) = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, month);
+            stmt.setInt(2, year);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
         return 0;
     }
 
@@ -140,5 +236,26 @@ public class DashboardController {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // Thống kê số lượng thành viên gia hạn trong ngày hôm nay
+    private int getTodayRenewMemberCount(Connection conn) {
+        String sql = "SELECT COUNT(*) FROM Memberships WHERE DATE(RenewalDate) = CURRENT_DATE";
+        return getCount(conn, sql);
+    }
+
+    private void updateMonthStats() {
+        int month = monthComboBox.getValue();
+        int year = yearComboBox.getValue();
+        Connection conn = DBConnection.getConnection();
+
+        monthNewMemberLabel.setText("Thành viên mới: " + getMonthNewMemberCount(conn, month, year));
+        monthRenewMemberLabel.setText("Gia hạn thêm: " + getMonthRenewMemberCount(conn, month, year));
+        monthRevenueLabel.setText("Doanh thu: " + formatCurrency(getMonthRevenue(conn, month, year)));
+    }
+
+    private String formatCurrency(int amount) {
+        NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return vnFormat.format(amount);
     }
 }
