@@ -107,4 +107,28 @@ public class UserController {
         }
         return -1;
     }
+
+    public boolean isUsernameExists(String username) {
+        String query = "SELECT * FROM Users WHERE Username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Nếu có bản ghi nào trả về thì đã tồn tại
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isEmailExists(String email) {
+        String query = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Nếu có bản ghi nào trả về thì đã tồn tại
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

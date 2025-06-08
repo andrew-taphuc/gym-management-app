@@ -37,7 +37,7 @@ public class MembershipPlanController {
         }
         return plans;
     }
-
+ 
     public MembershipPlan getPlanByID(int planId) {
         String query = "SELECT * FROM MembershipPlans WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {

@@ -4,42 +4,53 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<VBox xmlns="http://javafx.com/javafx"
-	xmlns:fx="http://javafx.com/fxml"
-	spacing="20"
-	alignment="CENTER"
-	style="-fx-background-color: white; -fx-padding: 40;">
 
-	<Label text="Gym Management System"
-		style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
-	<Label text="Đăng nhập" style="-fx-font-size: 24px; -fx-text-fill: black;" />
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+		   alignment="TOP_CENTER"
+           style="-fx-background-color: #f7f7f7; -fx-padding: -300 0 0 0;">
 
-	<GridPane vgap="15" hgap="15" alignment="CENTER">
-		<Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="0"
-			style="-fx-font-size: 14px; -fx-text-fill: black;" />
-		<TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0"
-			prefWidth="250" prefHeight="30" />
+    <VBox spacing="20"
+          alignment="CENTER"
+          style="-fx-background-color: white; -fx-padding: 40; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, #bbb, 8, 0, 0, 2);">
+        <ImageView fitHeight="500" fitWidth="500" preserveRatio="true">
+            <image>
+                <Image url="@resources/images/logo.png" />
+            </image>
+        </ImageView>
 
-		<Label text="Mật khẩu:" GridPane.columnIndex="0" GridPane.rowIndex="1"
-			style="-fx-font-size: 14px; -fx-text-fill: black;" />
-		<PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"
-			prefWidth="250" prefHeight="30" />
-	</GridPane>
+        <Label text="Gym Management System"
+               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black; " />
+        <Label text="Đăng nhập" style="-fx-font-size: 24px; -fx-text-fill: black;" />
 
-	<Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+        <GridPane vgap="15" hgap="15" alignment="CENTER">
+            <Label text="Tên đăng nhập:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                       prefWidth="250" prefHeight="30" />
 
-	<StackPane>
-		<HBox spacing="20" alignment="CENTER">
-			<Button fx:id="loginButton" text="Đăng nhập" onAction="#handleLogin"
-				style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
-				prefWidth="150" prefHeight="40" />
-			<Button text="Đăng ký" onAction="#handleRegister"
-				style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
-				prefWidth="150" prefHeight="40" />
-		</HBox>
-		<ProgressIndicator fx:id="loadingIndicator" visible="false"
-			style="-fx-progress-color: #4CAF50;" />
-	</StackPane>
+            <Label text="Mật khẩu:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                   style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                           prefWidth="250" prefHeight="30" />
+        </GridPane>
 
-</VBox>
+        <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+        <StackPane>
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="loginButton" text="Đăng nhập" onAction="#handleLogin"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
+                        prefWidth="150" prefHeight="40" />
+                <Button text="Đăng ký" onAction="#handleRegister"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+                        prefWidth="150" prefHeight="40" />
+            </HBox>
+            <ProgressIndicator fx:id="loadingIndicator" visible="false"
+                               style="-fx-progress-color: #4CAF50;" />
+        </StackPane>
+    </VBox>
+</StackPane>
