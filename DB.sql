@@ -200,6 +200,7 @@ CREATE TABLE Attendance (
 -- Bảng lịch tập
 CREATE TABLE TrainingSchedule (
   ScheduleID SERIAL PRIMARY KEY,
+  RegistrationID INT NOT NULL REFERENCES TrainingRegistrations(RegistrationID) ON DELETE CASCADE,
   MemberID INT NOT NULL,
   TrainerID INT,
   MembershipID INT NOT NULL,
