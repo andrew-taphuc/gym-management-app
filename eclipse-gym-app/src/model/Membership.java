@@ -15,12 +15,13 @@ public class Membership {
     private Member member; // Reference to Member
     private MembershipPlan plan; // Reference to MembershipPlan
     private Payment payment; // Reference to Payment
+    private Integer renewalTo; // Reference to previous membership ID
 
     public Membership() {
     }
 
     public Membership(int membershipId, int userId, int memberId, int planId, LocalDate startDate,
-            LocalDate endDate, enum_MembershipStatus status, int paymentId) {
+            LocalDate endDate, enum_MembershipStatus status, int paymentId, Integer renewalTo) {
         this.membershipId = membershipId;
         this.userId = userId;
         this.memberId = memberId;
@@ -29,6 +30,7 @@ public class Membership {
         this.endDate = endDate;
         this.status = status;
         this.paymentId = paymentId;
+        this.renewalTo = renewalTo;
     }
 
     // Getters and Setters
@@ -118,5 +120,13 @@ public class Membership {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    public Integer getRenewalTo() {
+        return renewalTo;
+    }
+
+    public void setRenewalTo(Integer renewalTo) {
+        this.renewalTo = renewalTo;
     }
 }

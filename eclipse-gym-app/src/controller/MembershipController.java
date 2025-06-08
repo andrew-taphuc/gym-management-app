@@ -1,6 +1,7 @@
 package controller;
 
 import model.Membership;
+import model.MembershipPlan;
 import model.enums.enum_MembershipStatus;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -16,9 +17,14 @@ public class MembershipController {
     public MembershipController() {
         this.connection = DBConnection.getConnection();
     }
+
     public List<Membership> getMembershipsByMemberID(int memberID) {
         List<Membership> memberships = new ArrayList<>();
-        String query = "SELECT * FROM Memberships WHERE MemberID = ? ORDER BY MembershipID DESC";
+        String query = "SELECT m.*, mp.planname, mp.plancode, mp.duration, mp.price, mp.description " +
+                "FROM Memberships m " +
+                "JOIN MembershipPlans mp ON m.planid = mp.planid " +
+                "WHERE m.MemberID = ? " +
+                "ORDER BY m.MembershipID DESC";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, memberID);
@@ -33,6 +39,18 @@ public class MembershipController {
                 membership.setEndDate(rs.getDate("EndDate").toLocalDate());
                 membership.setStatus(enum_MembershipStatus.fromValue(rs.getString("Status")));
                 membership.setPaymentId(rs.getInt("PaymentID"));
+                membership.setRenewalTo(rs.getObject("RenewalTo") != null ? rs.getInt("RenewalTo") : null);
+
+                // Tạo và set thông tin gói tập
+                MembershipPlan plan = new MembershipPlan();
+                plan.setPlanId(rs.getInt("PlanID"));
+                plan.setPlanCode(rs.getString("PlanCode"));
+                plan.setPlanName(rs.getString("PlanName"));
+                plan.setDuration(rs.getInt("Duration"));
+                plan.setPrice(rs.getDouble("Price"));
+                plan.setDescription(rs.getString("Description"));
+                membership.setPlan(plan);
+
                 memberships.add(membership);
             }
         } catch (SQLException e) {
@@ -40,6 +58,7 @@ public class MembershipController {
         }
         return memberships;
     }
+
     public List<Membership> getAllMemberships() {
         List<Membership> memberships = new ArrayList<>();
         String query = "SELECT * FROM Memberships ORDER BY MembershipID DESC";

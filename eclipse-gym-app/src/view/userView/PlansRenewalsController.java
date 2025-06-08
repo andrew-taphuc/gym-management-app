@@ -35,13 +35,19 @@ public class PlansRenewalsController {
     private TableColumn<Membership, Integer> membershipIdColumn;
 
     @FXML
-    private TableColumn<Membership, Integer> planIdColumn;
+    private TableColumn<Membership, String> membershipNameColumn;
+
+    @FXML
+    private TableColumn<Membership, String> durationColumn;
 
     @FXML
     private TableColumn<Membership, String> startDateColumn;
 
     @FXML
     private TableColumn<Membership, String> endDateColumn;
+
+    @FXML
+    private TableColumn<Membership, String> membershipTypeColumn;
 
     @FXML
     private TableColumn<Membership, String> statusColumn;
@@ -98,9 +104,41 @@ public class PlansRenewalsController {
     private void initializeTable() {
         if (membershipsTable != null) {
             membershipIdColumn.setCellValueFactory(new PropertyValueFactory<>("membershipId"));
-            planIdColumn.setCellValueFactory(new PropertyValueFactory<>("planId"));
-            startDateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
-            endDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+            membershipNameColumn.setCellValueFactory(cellData -> {
+                Membership membership = cellData.getValue();
+                if (membership != null && membership.getPlan() != null) {
+                    return new SimpleStringProperty(membership.getPlan().getPlanName());
+                }
+                return new SimpleStringProperty("");
+            });
+            durationColumn.setCellValueFactory(cellData -> {
+                Membership membership = cellData.getValue();
+                if (membership != null && membership.getPlan() != null) {
+                    return new SimpleStringProperty(membership.getPlan().getDuration() + " ngày");
+                }
+                return new SimpleStringProperty("");
+            });
+            startDateColumn.setCellValueFactory(cellData -> {
+                if (cellData.getValue().getStartDate() != null) {
+                    return new SimpleStringProperty(
+                            cellData.getValue().getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+                return new SimpleStringProperty("");
+            });
+            endDateColumn.setCellValueFactory(cellData -> {
+                if (cellData.getValue().getEndDate() != null) {
+                    return new SimpleStringProperty(
+                            cellData.getValue().getEndDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+                return new SimpleStringProperty("");
+            });
+            membershipTypeColumn.setCellValueFactory(cellData -> {
+                Membership membership = cellData.getValue();
+                if (membership != null) {
+                    return new SimpleStringProperty(membership.getRenewalTo() == null ? "Đăng ký mới" : "Gia hạn");
+                }
+                return new SimpleStringProperty("");
+            });
             statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         }
 
@@ -139,6 +177,15 @@ public class PlansRenewalsController {
             Integer memberId = userController.getMemberIDByUserID(currentUser.getUserId());
             if (memberId != null) {
                 List<Membership> memberships = membershipController.getMembershipsByMemberID(memberId);
+                System.out.println("Danh sách gói tập của hội viên:");
+                for (Membership membership : memberships) {
+                    System.out.println("Membership ID: " + membership.getMembershipId());
+                    if (membership.getPlan() != null) {
+                        System.out.println("- Tên gói tập: " + membership.getPlan().getPlanName());
+                    } else {
+                        System.out.println("- Không có thông tin gói tập");
+                    }
+                }
                 membershipsTable.getItems().setAll(memberships);
             }
         }
