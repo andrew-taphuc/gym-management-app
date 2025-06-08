@@ -12,6 +12,6 @@
 
     <Label fx:id="pageTitle" styleClass="page-title" />
     <TextField fx:id="inputField" promptText="Nhập số điện thoại hoặc mã hội viên" />
-    <Button fx:id="searchButton" text="Tìm kiếm" styleClass="primary-button" />
+    <Button fx:id="searchButton" text="Tìm kiếm" onAction="#handleSearchClick"/>
 
 </VBox> 

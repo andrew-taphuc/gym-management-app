@@ -8,6 +8,8 @@ import model.Member;
 import model.User;
 import model.Membership;
 import model.Attendance;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +25,14 @@ public class MemberTrackController {
     @FXML private TableView<Attendance> tblAttendance;
     @FXML private Button btnCheckinGym;
     @FXML private Button btnCheckinPT;
+
+    @FXML private TableColumn<Membership, String> colPlanName;
+    @FXML private TableColumn<Membership, LocalDate> colStartDate;
+    @FXML private TableColumn<Membership, LocalDate> colEndDate;
+    @FXML private TableColumn<Membership, String> colStatus;
+
+    @FXML private TableColumn<Attendance, String> colCheckinTime;
+    @FXML private TableColumn<Attendance, String> colType;
 
     private User currentUser;
     private Member member;
@@ -40,16 +50,26 @@ public class MemberTrackController {
     }
 
     private void loadMemberInfo() {
-        if (currentUser != null) {
-            lblFullName.setText(currentUser.getFullName());
-            lblPhone.setText(currentUser.getPhoneNumber());
+        if (member != null) {
+            MemberController memberController = new MemberController();
+            User user = memberController.getUserById(member.getUserId());
+            if (user != null) {
+                lblFullName.setText(user.getFullName());
+                lblPhone.setText(user.getPhoneNumber());
+            } else {
+                lblFullName.setText("");
+                lblPhone.setText("");
+            }
+            lblMemberCode.setText(member.getMemberCode());
+            lblJoinDate.setText(member.getJoinDate() != null ? member.getJoinDate().toString() : "");
+            lblStatus.setText(member.getStatus() != null ? member.getStatus().toString() : "");
         } else {
             lblFullName.setText("");
             lblPhone.setText("");
+            lblMemberCode.setText("");
+            lblJoinDate.setText("");
+            lblStatus.setText("");
         }
-        lblMemberCode.setText(member.getMemberCode());
-        lblJoinDate.setText(member.getJoinDate() != null ? member.getJoinDate().toString() : "");
-        lblStatus.setText(member.getStatus().toString());
     }
 
     private void loadMemberships() {
@@ -71,10 +91,20 @@ public class MemberTrackController {
     }
 
     @FXML
-    private void handleCheckinGym() {
-        // Xử lý check-in phòng tập
-        // Gọi hàm trong MemberController để lưu check-in
-        boolean success = MemberController.checkinGym(member.getMemberId());
+    public void handleCheckinGym() {
+        // Lấy gói GYM hợp lệ (không phải PT, còn hạn)
+        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
+        Membership gymMembership = memberships.stream()
+            .filter(m -> !m.isPersonalTraining() && m.isActive()) // isPersonalTraining() == false là GYM
+            .findFirst()
+            .orElse(null);
+
+        if (gymMembership == null) {
+            showAlert("Bạn không còn gói GYM hợp lệ hoặc gói đã hết hạn!");
+            return;
+        }
+
+        boolean success = MemberController.checkinGym(member.getMemberId(), gymMembership.getMembershipId());
         if (success) {
             loadAttendance();
             loadSessionCount();
@@ -85,7 +115,7 @@ public class MemberTrackController {
     }
 
     @FXML
-    private void handleCheckinPT() {
+    public void handleCheckinPT() {
         // 1. Kiểm tra còn gói PT hợp lệ không
         List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
         Membership ptMembership = memberships.stream()
@@ -122,5 +152,30 @@ public class MemberTrackController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void initialize() {
+        // Memberships
+        colPlanName.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getPlanName()) // hoặc getPlanId() nếu chưa có getPlanName()
+        );
+        colStartDate.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<>(cellData.getValue().getStartDate())
+        );
+        colEndDate.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<>(cellData.getValue().getEndDate())
+        );
+        colStatus.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getStatus().toString())
+        );
+
+        // Attendance
+        colCheckinTime.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getCheckInTime().toString())
+        );
+        colType.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getType())
+        );
     }
 }

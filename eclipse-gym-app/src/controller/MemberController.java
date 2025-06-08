@@ -3,6 +3,7 @@ import model.enums.enum_MembershipStatus;
 import model.Attendance;
 import model.Member;
 import model.Membership;
+import model.User;
 import model.enums.enum_MemberStatus;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -187,11 +188,12 @@ public class MemberController {
     }
 
     // Check-in phòng tập (GYM)
-    public static boolean checkinGym(int memberId) {
-        String query = "INSERT INTO Attendance (MemberID, CheckinTime, Type) VALUES (?, NOW(), 'GYM')";
+    public static boolean checkinGym(int memberId, int membershipId) {
+        String query = "INSERT INTO Attendance (MemberID, MembershipID, CheckInTime, TrainingScheduleID) VALUES (?, ?, NOW(), NULL)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
+            stmt.setInt(2, membershipId);
             int affected = stmt.executeUpdate();
             return affected > 0;
         } catch (SQLException e) {
@@ -215,20 +217,39 @@ public class MemberController {
         return false;
     }
     public static int getTodayPTScheduleId(int memberId, int membershipId) {
-    String query = "SELECT ScheduleID FROM TrainingSchedule " +
-                   "WHERE MemberID = ? AND MembershipID = ? AND DATE(CreatedDate) = ?";
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query)) {
-        stmt.setInt(1, memberId);
-        stmt.setInt(2, membershipId);
-        stmt.setDate(3, Date.valueOf(LocalDate.now()));
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
-            return rs.getInt("ScheduleID");
+        String query = "SELECT ScheduleID FROM TrainingSchedule " +
+                    "WHERE MemberID = ? AND MembershipID = ? AND DATE(CreatedDate) = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, memberId);
+            stmt.setInt(2, membershipId);
+            stmt.setDate(3, Date.valueOf(LocalDate.now()));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("ScheduleID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return -1;
     }
-    return -1;
-}
+
+    public User getUserById(int userId) {
+        String query = "SELECT * FROM Users WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setFullName(rs.getString("FullName"));
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                // Thêm các trường khác nếu cần
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

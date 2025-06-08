@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -23,6 +24,8 @@ public class CheckinController {
     private TextField inputField;
     @FXML 
     private Button searchButton;
+    @FXML
+    private StackPane contentArea;
 
     private User currentUser;
     private MemberController memberController = new MemberController();
@@ -35,34 +38,9 @@ public class CheckinController {
     public void initialize() {
         System.out.println("Trang: Workouts | User: " + (currentUser != null ? currentUser.getUsername() : "null"));
         pageTitle.setText("Tìm kiếm hội viên");
-        searchButton.setOnAction(this::handleSearchButtonClick);
+        searchButton.setOnAction(e -> handleSearchClick());
     }
 
-    private void handleSearchButtonClick(ActionEvent event) {
-        String keyword = inputField.getText().trim();
-        if (keyword.isEmpty()) {
-            showAlert("Vui lòng nhập mã hội viên hoặc số điện thoại.");
-            return;
-        }
-        Member member = memberController.findMemberByCodeOrPhone(keyword);
-        if (member == null) {
-            showAlert("Không tìm thấy hội viên phù hợp.");
-            return;
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("memberTrack.fxml"));
-            Parent root = loader.load();
-            MemberTrackController controller = loader.getController();
-            controller.setCurrentUser(currentUser);
-            controller.setMember(member);
-            Stage stage = (Stage) searchButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Không thể mở trang thông tin hội viên.");
-        }
-    }
 
     private void showAlert(String message) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -72,9 +50,40 @@ public class CheckinController {
         alert.showAndWait();
     }
 
-    // private void loadViewWithUser(String fxml, Object controller) {
-    //     // Code chuyển scene ở đây
-    // }
+    private void loadMemberTrackView(User currentUser, Member member) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("memberTrack.fxml"));
+            Parent view = loader.load();
+            view.adminView.MemberTrackController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+            controller.setMember(member);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Không thể mở trang thông tin hội viên.");
+        }
+    }
+
+    @FXML
+    private void handleSearchClick() {
+        String keyword = inputField.getText().trim();
+        if (keyword.isEmpty()) {
+            showAlert("Vui lòng nhập mã hội viên hoặc số điện thoại.");
+            return;
+        }
+        MemberController memberController = new MemberController();
+        Member member = memberController.findMemberByCodeOrPhone(keyword);
+        if (member == null) {
+            showAlert("Không tìm thấy hội viên phù hợp.");
+            return;
+        }
+        loadMemberTrackView(currentUser, member);
+    }
+
+    public void setContentArea(StackPane contentArea) {
+        this.contentArea = contentArea;
+    }
     
 
 }

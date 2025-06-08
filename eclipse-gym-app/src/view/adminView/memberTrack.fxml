@@ -7,8 +7,10 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="view.adminView.MemberTrackController"
-      spacing="16" padding="20">
-
+      spacing="16.0">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
     <HBox spacing="32">
         <VBox spacing="8">
             <Label text="Họ tên:"/>
@@ -33,19 +35,18 @@
     <Label text="Danh sách gói tập"/>
     <TableView fx:id="tblMemberships" prefHeight="120">
         <columns>
-            <TableColumn text="Tên gói" prefWidth="150"/>
-            <TableColumn text="Ngày bắt đầu" prefWidth="100"/>
-            <TableColumn text="Ngày kết thúc" prefWidth="100"/>
-            <TableColumn text="Trạng thái" prefWidth="100"/>
+            <TableColumn fx:id="colPlanName" text="Tên gói"/>
+            <TableColumn fx:id="colStartDate" text="Ngày bắt đầu"/>
+            <TableColumn fx:id="colEndDate" text="Ngày kết thúc"/>
+            <TableColumn fx:id="colStatus" text="Trạng thái"/>
         </columns>
     </TableView>
 
     <Label text="Lịch sử check-in (5 lần gần nhất)"/>
     <TableView fx:id="tblAttendance" prefHeight="180">
         <columns>
-            <TableColumn text="Thời gian check-in" prefWidth="180"/>
-            <TableColumn text="Gói tập" prefWidth="120"/>
-            <TableColumn text="Loại check-in" prefWidth="120"/>
+            <TableColumn fx:id="colCheckinTime" text="Thời gian check-in"/>
+            <TableColumn fx:id="colType" text="Loại check-in"/>
         </columns>
     </TableView>
 </VBox>
