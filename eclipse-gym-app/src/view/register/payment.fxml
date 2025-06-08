@@ -28,9 +28,9 @@
 
         <!-- Thông tin gói tập đã chọn -->
         <Label fx:id="planInfoLabel"
-               style="-fx-font-size: 18px; -fx-text-fill: #1976D2; -fx-font-weight: bold;" />
+               style="-fx-font-size: 24px; -fx-text-fill: #1976D2; -fx-font-weight: bold;" />
         <Label fx:id="amountLabel"
-               style="-fx-font-size: 18px; -fx-text-fill: #388E3C; -fx-font-weight: bold;" />
+               style="-fx-font-size: 24px; -fx-text-fill: #388E3C; -fx-font-weight: bold;" />
 
         <!-- Hướng dẫn -->
         <Label text="Vui lòng nhập thông tin thẻ"
@@ -51,6 +51,16 @@
 
         <!-- Label lỗi -->
         <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+        <!-- Mã giảm giá và thông báo -->
+        <VBox alignment="CENTER" spacing="5">
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Mã giảm giá:" style="-fx-font-size: 14px;" />
+                <TextField fx:id="promoCodeField" promptText="Nhập mã giảm giá nếu có"  prefWidth="185"/>
+                <Button text="Áp dụng" onAction="#handleApplyPromo" />
+            </HBox>
+            <Label fx:id="promoStatusLabel" style="-fx-text-fill: green;" />
+        </VBox>
 
         <!-- Nút thanh toán -->
         <Button text="Thanh toán" onAction="#handlePayment"

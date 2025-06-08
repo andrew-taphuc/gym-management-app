@@ -6,11 +6,13 @@ import javafx.stage.Stage;
 import model.MembershipPlan;
 import model.User;
 import model.Payment;
+import model.Promotion;
 import model.Membership;
 import controller.PaymentController;
 import controller.UserController;
 import controller.MembershipController;
 import controller.MemberController;
+import controller.PromosController;
 import model.enums.enum_PaymentStatus;
 import view.BaseView;
 import view.userView.HomeView;
@@ -35,6 +37,10 @@ public class PaymentView extends BaseView {
     private Label planInfoLabel;
     @FXML
     private Label amountLabel;
+    @FXML
+    private TextField promoCodeField;
+    @FXML
+    private Label promoStatusLabel;
 
     private MembershipPlan selectedPlan;
     private User newUser;
@@ -45,6 +51,9 @@ public class PaymentView extends BaseView {
     private List<String> validCardNumbers;
     private List<String> validCVVs;
     private List<Double> balances; // Thêm biến lưu số dư
+    private double discountedAmount = 0;
+    private Promotion appliedPromotion;
+    private PromosController promosController = new PromosController();
 
     public PaymentView(Stage stage) {
         super(stage);
@@ -55,7 +64,7 @@ public class PaymentView extends BaseView {
         loadValidCards();
     }
 
-    // Làm thêm check số dư và cập nhật số dư sau khi thanh toán
+    // Đọc danh sách thẻ và số dư
     private void loadValidCards() {
         validCardNumbers = new ArrayList<>();
         validCVVs = new ArrayList<>();
@@ -77,11 +86,9 @@ public class PaymentView extends BaseView {
 
     public void setMembershipPlan(MembershipPlan plan) {
         this.selectedPlan = plan;
-        if (planInfoLabel != null && amountLabel != null && plan != null) {
-            planInfoLabel.setText("Bạn đã chọn gói  "  + plan.getDuration() + " ngày");
-            java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
-            amountLabel.setText("Số tiền cần đóng: " + currencyFormat.format(plan.getPrice()));
-        }
+        discountedAmount = selectedPlan.getPrice();
+        // Không gọi updateAmountLabel() ở đây!
+        // Để updateAmountLabel() trong initialize()
     }
 
     public void setNewUser(User user) {
@@ -101,15 +108,15 @@ public class PaymentView extends BaseView {
         }
 
         double balance = balances.get(cardIndex);
-        double price = selectedPlan.getPrice();
-        if (balance < price) {
+        double priceToPay = discountedAmount > 0 ? discountedAmount : selectedPlan.getPrice();
+        if (balance < priceToPay) {
             errorLabel.setText("Số dư không đủ để thanh toán");
             return;
         }
 
         try {
             // Trừ số dư và cập nhật file
-            balances.set(cardIndex, balance - price);
+            balances.set(cardIndex, balance - priceToPay);
             updateCardBalanceFile();
 
             // 1. Tạo user
@@ -130,10 +137,11 @@ public class PaymentView extends BaseView {
 
             // 3. Tạo payment
             Payment payment = new Payment();
-            payment.setAmount(selectedPlan.getPrice());
+            payment.setAmount(priceToPay); // Sử dụng số tiền đã giảm giá (nếu có)
             payment.setPaymentMethod("Credit Card");
             payment.setPaymentDate(LocalDateTime.now());
             payment.setStatus(enum_PaymentStatus.COMPLETED);
+            payment.setPromotionId(appliedPromotion != null ? appliedPromotion.getPromotionId() : null);
             payment.setNotes("Thanh toán gói tập " + selectedPlan.getPlanName());
 
             int paymentId = paymentController.createPayment(payment);
@@ -180,7 +188,6 @@ public class PaymentView extends BaseView {
         }
     }
 
-
     private int getCardIndex(String cardNumber, String cvv) {
         for (int i = 0; i < validCardNumbers.size(); i++) {
             if (validCardNumbers.get(i).equals(cardNumber) && validCVVs.get(i).equals(cvv)) {
@@ -213,9 +220,67 @@ public class PaymentView extends BaseView {
     @FXML
     public void initialize() {
         if (selectedPlan != null) {
-            planInfoLabel.setText("Bạn đã chọn gói "  + selectedPlan.getDuration() + " ngày");
-            java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
-            amountLabel.setText("Số tiền cần đóng: " + currencyFormat.format(selectedPlan.getPrice()));
+            discountedAmount = selectedPlan.getPrice();
+            updateAmountLabel();
+            planInfoLabel.setText("Bạn đã chọn gói " + selectedPlan.getDuration() + " ngày");
         }
+    }
+
+    @FXML
+    private void handleApplyPromo() {
+        String code = promoCodeField.getText().trim();
+        if (code.isEmpty()) {
+            promoStatusLabel.setText("Vui lòng nhập mã giảm giá nếu có");
+            promoStatusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+        Promotion promo = promosController.getPromotionByCode(code);
+        if (promo == null) {
+            promoStatusLabel.setText("Mã không tồn tại");
+            promoStatusLabel.setStyle("-fx-text-fill: red;");
+            appliedPromotion = null;
+            discountedAmount = selectedPlan.getPrice();
+            updateAmountLabel();
+            return;
+        }
+        // Kiểm tra trạng thái và thời gian
+        if (!"Còn hạn".equalsIgnoreCase(promo.getStatus())) {
+            promoStatusLabel.setText("Mã không còn hiệu lực hoặc chưa khả dụng");
+            promoStatusLabel.setStyle("-fx-text-fill: red;");
+            appliedPromotion = null;
+            discountedAmount = selectedPlan.getPrice();
+            updateAmountLabel();
+            return;
+        }
+        // Kiểm tra thời gian
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        if (now.isBefore(promo.getStartDate()) || now.isAfter(promo.getEndDate())) {
+            promoStatusLabel.setText("Mã đã hết hạn");
+            promoStatusLabel.setStyle("-fx-text-fill: red;");
+            appliedPromotion = null;
+            discountedAmount = selectedPlan.getPrice();
+            updateAmountLabel();
+            return;
+        }
+        // Áp dụng giảm giá
+        appliedPromotion = promo;
+        discountedAmount = calculateDiscountedAmount(selectedPlan.getPrice(), promo);
+        promoStatusLabel.setText("Áp dụng thành công!");
+        promoStatusLabel.setStyle("-fx-text-fill: green;");
+        updateAmountLabel();
+    }
+
+    private double calculateDiscountedAmount(double original, Promotion promo) {
+        if ("Phần trăm".equalsIgnoreCase(promo.getDiscountType())) {
+            return Math.max(0, original - (original * promo.getDiscountValue() / 100.0));
+        } else if ("Tiền mặt".equalsIgnoreCase(promo.getDiscountType())) {
+            return Math.max(0, original - promo.getDiscountValue());
+        }
+        return original;
+    }
+
+    private void updateAmountLabel() {
+        java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+        amountLabel.setText("Số tiền cần đóng: " + currencyFormat.format(discountedAmount));
     }
 }
