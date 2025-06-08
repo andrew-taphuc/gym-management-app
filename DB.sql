@@ -144,23 +144,21 @@ CREATE TABLE Memberships (
   StartDate DATE NOT NULL,
   EndDate DATE NOT NULL,
   Status membership_status_enum DEFAULT 'Chưa kích hoạt',
-  PaymentID INT REFERENCES Payments(PaymentID)
+  PaymentID INT REFERENCES Payments(PaymentID),
+  RenewalTo INT REFERENCES Memberships(MembershipID),
+  RenewalDate TIMESTAMP
 );
 
 -- BẢNG ĐĂNG KÝ GÓI HUẤN LUYỆN (Thêm PaymentID)
-CREATE TABLE Memberships (
-  MembershipID SERIAL PRIMARY KEY,
-  UserID INT NOT NULL REFERENCES Users(UserID) ON DELETE CASCADE,
+CREATE TABLE TrainingRegistrations (
+  RegistrationID SERIAL PRIMARY KEY,
   MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
-  PlanID INT NOT NULL REFERENCES MembershipPlans(PlanID) ON DELETE CASCADE,
+  PlanID INT NOT NULL REFERENCES TrainingPlans(PlanID) ON DELETE CASCADE,
+  TrainerID INT NULL REFERENCES Trainers(TrainerID) ON DELETE CASCADE,
   StartDate DATE NOT NULL,
-  EndDate DATE NOT NULL,
-  Status membership_status_enum DEFAULT 'Chưa kích hoạt',
-  PaymentID INT REFERENCES Payments(PaymentID),
-  RenewalTo INT REFERENCES Memberships(MembershipID),
-  RenewalDate TIMESTAMP;
+  SessionsLeft INT DEFAULT 0 CHECK (SessionsLeft >= 0),
+  PaymentID INT REFERENCES Payments(PaymentID)
 );
-
 
 -- Module quản lý phòng tập, thiết bị
 -- 2. Rooms table
