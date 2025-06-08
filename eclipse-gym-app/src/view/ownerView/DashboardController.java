@@ -275,7 +275,7 @@ public class DashboardController {
             while (rs.next()) {
                 LocalDate dob = rs.getDate(1).toLocalDate();
                 int age = today.getYear() - dob.getYear();
-                if (dob.plusYears(age).isAfter(today)) age--;
+                if (dob.plusYears(age).isAfter(today)) age--; // Điều chỉnh nếu chưa đến sinh nhật
                 if (age < 18) under18++;
                 else if (age <= 45) from18to45++;
                 else above45++;
@@ -285,14 +285,8 @@ public class DashboardController {
         }
 
         agePieChart.getData().clear();
-        PieChart.Data d1 = new PieChart.Data("Dưới 18", under18);
-        PieChart.Data d2 = new PieChart.Data("18-45", from18to45);
-        PieChart.Data d3 = new PieChart.Data("Trên 45", above45);
-        agePieChart.getData().addAll(d1, d2, d3);
-
-        // Đổi màu
-        d1.getNode().setStyle("-fx-pie-color: #2196f3;"); 
-        d2.getNode().setStyle("-fx-pie-color:rgb(231, 130, 130);"); 
-        d3.getNode().setStyle("-fx-pie-color: #4caf50;"); 
+        agePieChart.getData().add(new PieChart.Data("Dưới 18 (" + under18 + ")", under18));
+        agePieChart.getData().add(new PieChart.Data("18-45 (" + from18to45 + ")", from18to45));
+        agePieChart.getData().add(new PieChart.Data("Trên 45 (" + above45 + ")", above45));
     }
 }
