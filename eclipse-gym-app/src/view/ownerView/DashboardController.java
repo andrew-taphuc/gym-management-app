@@ -1,10 +1,10 @@
-package view.adminView;
+package view.ownerView;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import model.User;
 
-public class FeedbackController {
+public class DashboardController {
     @FXML
     private Label pageTitle;
 
@@ -16,7 +16,7 @@ public class FeedbackController {
 
     @FXML
     public void initialize() {
-        System.out.println("Trang: Feedback | User: " + (currentUser != null ? currentUser.getUsername() : "null"));
-        pageTitle.setText("Đây là trang Feedback admin");
+        System.out.println("Trang: Workouts | User: " + (currentUser != null ? currentUser.getUsername() : "null"));
+        pageTitle.setText("Đây là trang để Tùng làm báo cáo");
     }
 }

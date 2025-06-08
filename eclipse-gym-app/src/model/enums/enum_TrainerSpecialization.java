@@ -1,12 +1,9 @@
 package model.enums;
 
 public enum enum_TrainerSpecialization {
-    FITNESS("Fitness"),
+    GYM("Gym"),
     YOGA("Yoga"),
-    PILATES("Pilates"),
-    CARDIO("Cardio"),
-    STRENGTH("Strength"),
-    CROSSFIT("CrossFit");
+    KICKFIT("Kickfit");
 
     private final String value;
 

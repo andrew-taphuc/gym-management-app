@@ -82,14 +82,14 @@ public class HomeView_admin extends BaseView {
 
     @FXML
     private void handlePromosClick() {
-        view.adminView.PromosController controller = new view.adminView.PromosController();
+        view.adminView.PromosView controller = new view.adminView.PromosView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("promos.fxml", controller);
     }
 
     @FXML
     private void handleFeedbackClick() {
-        view.adminView.FeedbackController controller = new view.adminView.FeedbackController();
+        view.adminView.FeedbackView controller = new view.adminView.FeedbackView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("feedback.fxml", controller);
     }

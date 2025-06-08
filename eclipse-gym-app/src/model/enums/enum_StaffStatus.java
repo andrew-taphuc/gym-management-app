@@ -1,7 +1,7 @@
 package model.enums;
 
 public enum enum_StaffStatus {
-    ACTIVE("Hoạt động"),
+    WORKING("Đang làm việc"),
     ON_LEAVE("Nghỉ phép"),
     TERMINATED("Đã nghỉ việc");
 

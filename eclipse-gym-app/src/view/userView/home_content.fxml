@@ -7,12 +7,8 @@
 
 <VBox xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    alignment="CENTER" spacing="20.0" style="-fx-padding: 40;">
-    <Label text="Nhập thông tin của bạn"
-        style="-fx-font-size: 22px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;" />
-    <TextField promptText="Họ và tên" maxWidth="300" />
-    <TextField promptText="Email" maxWidth="300" />
-    <TextField promptText="Số điện thoại" maxWidth="300" />
-    <Button text="Gửi thông tin" maxWidth="300"
-        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8;" />
+    alignment="TOP_LEFT" spacing="20.0" style="-fx-padding: 40;">
+    <Label text="Chào mừng bạn đến với TPH FITNESS!"
+        style="-fx-font-size: 28px; -fx-font-family: 'Be Vietnam Pro'; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #4FC3F7; -fx-padding: 20; -fx-background-radius: 12; -fx-alignment: top-left; -fx-label-padding: 0;"
+        alignment="TOP_LEFT" maxWidth="1.0E7" />
 </VBox> 

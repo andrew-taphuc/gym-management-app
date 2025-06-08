@@ -3,6 +3,7 @@ package view.userView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -12,6 +13,8 @@ import model.enums.enum_Role;
 import view.BaseView;
 import view.LoginView;
 import view.ProfileView;
+
+import java.io.IOException;
 
 public class HomeView extends BaseView {
     @FXML
@@ -38,7 +41,7 @@ public class HomeView extends BaseView {
         if (currentUser != null) {
             welcomeLabel.setText("Welcome, " + currentUser.getUsername());
             roleLabel.setText("Role: " + currentUser.getRole());
-            
+
         }
         // Load home content by default
         handleHomeClick();
@@ -83,14 +86,14 @@ public class HomeView extends BaseView {
 
     @FXML
     private void handlePromosClick() {
-        view.userView.PromosController controller = new view.userView.PromosController();
+        view.userView.PromosView controller = new view.userView.PromosView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("promos.fxml", controller);
     }
 
     @FXML
     private void handleFeedbackClick() {
-        view.userView.FeedbackController controller = new view.userView.FeedbackController();
+        view.userView.FeedbackView controller = new view.userView.FeedbackView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("feedback.fxml", controller);
     }
