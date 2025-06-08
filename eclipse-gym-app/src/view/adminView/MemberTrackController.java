@@ -13,6 +13,7 @@ import model.TrainingRegistration;
 import model.Attendance;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.Node;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -143,27 +144,74 @@ public class MemberTrackController {
             return;
         }
 
-        // Lấy TrainingScheduleID của buổi PT hôm nay
-        int trainingScheduleId = TrainingScheduleController.getTodayPTScheduleId(member.getMemberId(), ptRegistration.getRegistrationId());
-        if (trainingScheduleId == -1) {
-            showAlert("Không tìm thấy lịch PT hôm nay!");
+        // Lấy danh sách tất cả các buổi PT đã lên lịch của hội viên
+        List<model.TrainingSchedule> schedules = TrainingScheduleController.getScheduledPTByMemberId(member.getMemberId());
+        if (schedules.isEmpty()) {
+            showAlert("Không có buổi PT nào đã lên lịch!");
             return;
         }
 
-        // Thực hiện check-in
-        boolean success = TrainingRegistrationController.checkinPT(
-            member.getMemberId(),
-            activeMembership.getMembershipId(),
-            ptRegistration.getRegistrationId(),
-            trainingScheduleId
-        );
-        if (success) {
-            loadAttendance();
-            loadSessionCount();
-            showAlert("Check-in PT thành công!");
-        } else {
-            showAlert("Check-in PT thất bại!");
-        }
+        showScheduleTableDialog(schedules, activeMembership, ptRegistration);
+    }
+
+    private void showScheduleTableDialog(List<model.TrainingSchedule> schedules, Membership activeMembership, TrainingRegistration ptRegistration) {
+        Dialog<model.TrainingSchedule> dialog = new Dialog<>();
+        dialog.setTitle("Chọn buổi PT để check-in");
+        dialog.setHeaderText("Chọn một buổi tập PT đã lên lịch để check-in:");
+
+        ButtonType checkinButtonType = new ButtonType("Check-in", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(checkinButtonType, ButtonType.CANCEL);
+
+        TableView<model.TrainingSchedule> tableView = new TableView<>();
+        TableColumn<model.TrainingSchedule, String> colDate = new TableColumn<>("Ngày");
+        colDate.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().toString()));
+        TableColumn<model.TrainingSchedule, String> colTime = new TableColumn<>("Giờ");
+        colTime.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTime()));
+        TableColumn<model.TrainingSchedule, String> colRoom = new TableColumn<>("Phòng");
+        colRoom.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getRoomId())));
+        TableColumn<model.TrainingSchedule, String> colNotes = new TableColumn<>("Ghi chú");
+        colNotes.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNotes()));
+
+        tableView.getColumns().addAll(colDate, colTime, colRoom, colNotes);
+        tableView.getItems().setAll(schedules);
+        tableView.setPrefHeight(250);
+
+        dialog.getDialogPane().setContent(tableView);
+
+        // Chỉ enable nút Check-in khi có chọn dòng
+        Node checkinButton = dialog.getDialogPane().lookupButton(checkinButtonType);
+        checkinButton.setDisable(true);
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            checkinButton.setDisable(newSel == null);
+        });
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == checkinButtonType) {
+                return tableView.getSelectionModel().getSelectedItem();
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(selectedSchedule -> {
+            // Chỉ cho phép check-in nếu ScheduleDate là hôm nay
+            if (!selectedSchedule.getDate().equals(java.time.LocalDate.now())) {
+                showAlert("Chỉ được phép check-in buổi tập trong ngày hôm nay!");
+                return;
+            }
+            boolean success = TrainingRegistrationController.checkinPT(
+                member.getMemberId(),
+                activeMembership.getMembershipId(),
+                ptRegistration.getRegistrationId(),
+                selectedSchedule.getId()
+            );
+            if (success) {
+                loadAttendance();
+                loadSessionCount();
+                showAlert("Check-in PT thành công!");
+            } else {
+                showAlert("Check-in PT thất bại!");
+            }
+        });
     }
 
     private void showAlert(String message) {

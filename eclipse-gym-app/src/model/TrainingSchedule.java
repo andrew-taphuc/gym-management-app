@@ -149,4 +149,12 @@ public class TrainingSchedule {
     public void setMemberName(String memberName) {
         this.memberName = memberName;
     }
+
+    @Override
+    public String toString() {
+        return "Ngày: " + date +
+               ", Giờ: " + time +
+               ", Phòng: " + roomId +
+               ", Ghi chú: " + notes;
+    }
 }
