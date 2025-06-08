@@ -152,12 +152,29 @@ INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, Notes) VALUES
 (2200000, CURRENT_TIMESTAMP, 'Credit Card', 'Thành công', 'Thanh toán gói tập 10 buổi Kickfit'),
 (1800000, CURRENT_TIMESTAMP, 'Credit Card', 'Thành công', 'Thanh toán gói tập 10 buổi Yoga');
 
+-- Thêm các payment cho các lần gia hạn
+INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, Notes)
+VALUES
+(1400000, CURRENT_DATE, 'Credit Card', 'Thành công', 'Gia hạn gói tập cho Member 1'),
+(2500000, CURRENT_DATE, 'Credit Card', 'Thành công', 'Gia hạn gói tập cho Member 2'),
+(4500000, CURRENT_DATE - INTERVAL '30 days', 'Credit Card', 'Thành công', 'Gia hạn gói tập cho Member 3'),
+(1200000, '2025-05-10', 'Credit Card', 'Thành công', 'Gia hạn gói tập cho Member 4');
+
 -- Dữ liệu mẫu cho bảng Memberships
 INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID) VALUES
 (1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 1),
 (2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '180 days', 'Chưa kích hoạt', 2),
 (3, 7, 3, CURRENT_DATE, CURRENT_DATE + INTERVAL '365 days', 'Chưa kích hoạt', 3), 
 (4, 8, 5, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 4);
+-- Thêm gia hạn cho các member
+INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+VALUES (1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 9, 1, CURRENT_DATE);
+INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+VALUES (2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '180 days', 'Chưa kích hoạt', 10, 2, CURRENT_DATE);
+INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+VALUES (3, 7, 3, CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE + INTERVAL '150 days', 'Chưa kích hoạt', 11, 3, CURRENT_DATE - INTERVAL '30 days');
+INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+VALUES (4, 8, 5, '2025-05-10', '2025-08-10', 'Chưa kích hoạt', 12, 4, '2025-05-10');
 
 -- Dữ liệu mẫu cho bảng TrainingRegistrations
 INSERT INTO TrainingRegistrations (MemberID, PlanID, TrainerID, StartDate, SessionsLeft, PaymentID) VALUES
