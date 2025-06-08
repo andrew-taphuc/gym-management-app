@@ -181,30 +181,30 @@ INSERT INTO TrainingRegistrations (MemberID, PlanID, StartDate, SessionsLeft, Pa
 -- (1, 1, CURRENT_TIMESTAMP, 'Gym');
 
 -- Dữ liệu mẫu cho bảng TrainingSchedule
-INSERT INTO TrainingSchedule (MemberID, TrainerID, MembershipID, ScheduleDate, StartTime, Duration, RoomID, Status, Notes, CreatedDate) VALUES
+INSERT INTO TrainingSchedule (MemberID, RegistrationID, TrainerID, MembershipID, ScheduleDate, StartTime, Duration, RoomID, Status, Notes, CreatedDate) VALUES
 -- Member 1 - Gym với trainer 1
-(1, 1, 1, CURRENT_DATE + INTERVAL '1 day', '09:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 1', CURRENT_TIMESTAMP),
-(1, 1, 1, CURRENT_DATE + INTERVAL '3 day', '09:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
-(1, 1, 1, CURRENT_DATE + INTERVAL '5 day', '09:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 3', CURRENT_TIMESTAMP),
-(1, 1, 1, CURRENT_DATE + INTERVAL '7 day', '09:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
+(1, 1, 1, 1, CURRENT_DATE + INTERVAL '1 day', '09:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 1', CURRENT_TIMESTAMP),
+(1, 1, 1, 1, CURRENT_DATE + INTERVAL '3 day', '09:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
+(1, 1, 1, 1, CURRENT_DATE + INTERVAL '5 day', '09:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 3', CURRENT_TIMESTAMP),
+(1, 1, 1, 1, CURRENT_DATE + INTERVAL '7 day', '09:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
 
 -- Member 2 - Gym với trainer 2 
-(2, 2, 2, CURRENT_DATE + INTERVAL '1 day', '10:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 1', CURRENT_TIMESTAMP),
-(2, 2, 2, CURRENT_DATE + INTERVAL '3 day', '10:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 2', CURRENT_TIMESTAMP),
-(2, 2, 2, CURRENT_DATE + INTERVAL '5 day', '10:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
-(2, 2, 2, CURRENT_DATE + INTERVAL '7 day', '10:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
+(2, 2, 2, 2, CURRENT_DATE + INTERVAL '1 day', '10:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 1', CURRENT_TIMESTAMP),
+(2, 2, 2, 2, CURRENT_DATE + INTERVAL '3 day', '10:00', 60, 1, 'Đã lên lịch', 'Buổi tập Gym 2', CURRENT_TIMESTAMP),
+(2, 2, 2, 2, CURRENT_DATE + INTERVAL '5 day', '10:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
+(2, 2, 2, 2, CURRENT_DATE + INTERVAL '7 day', '10:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
 
 -- Member 3 - Yoga với trainer 3
-(3, 3, 3, CURRENT_DATE + INTERVAL '1 day', '14:00', 60, 2, 'Đã lên lịch', 'Buổi tập Yoga 1', CURRENT_TIMESTAMP),
-(3, 3, 3, CURRENT_DATE + INTERVAL '3 day', '14:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
-(3, 3, 3, CURRENT_DATE + INTERVAL '5 day', '14:00', 60, 2, 'Đã lên lịch', 'Buổi tập Yoga 3', CURRENT_TIMESTAMP),
-(3, 3, 3, CURRENT_DATE + INTERVAL '7 day', '14:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
+(3, 3, 3, 3, CURRENT_DATE + INTERVAL '1 day', '14:00', 60, 2, 'Đã lên lịch', 'Buổi tập Yoga 1', CURRENT_TIMESTAMP),
+(3, 3, 3, 3, CURRENT_DATE + INTERVAL '3 day', '14:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP), -- Phòng stretch
+(3, 3, 3, 3, CURRENT_DATE + INTERVAL '5 day', '14:00', 60, 2, 'Đã lên lịch', 'Buổi tập Yoga 3', CURRENT_TIMESTAMP),
+(3, 3, 3, 3, CURRENT_DATE + INTERVAL '7 day', '14:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
 
 -- Member 4 - Kickfit với trainer 1
-(4, 1, 4, CURRENT_DATE + INTERVAL '2 day', '09:00', 60, 3, 'Đã lên lịch', 'Buổi tập Kickfit 1', CURRENT_TIMESTAMP),
-(4, 1, 4, CURRENT_DATE + INTERVAL '4 day', '09:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
-(4, 1, 4, CURRENT_DATE + INTERVAL '6 day', '09:00', 60, 3, 'Đã lên lịch', 'Buổi tập Kickfit 3', CURRENT_TIMESTAMP),
-(4, 1, 4, CURRENT_DATE + INTERVAL '8 day', '09:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP); -- Phòng stretch
+(4, 4, 1, 4, CURRENT_DATE + INTERVAL '2 day', '09:00', 60, 3, 'Đã lên lịch', 'Buổi tập Kickfit 1', CURRENT_TIMESTAMP),
+(4, 4, 1, 4, CURRENT_DATE + INTERVAL '4 day', '09:00', 60, 5, 'Đã lên lịch', 'Buổi tập Cardio', CURRENT_TIMESTAMP), -- Phòng cardio
+(4, 4, 1, 4, CURRENT_DATE + INTERVAL '6 day', '09:00', 60, 3, 'Đã lên lịch', 'Buổi tập Kickfit 3', CURRENT_TIMESTAMP),
+(4, 4, 1, 4, CURRENT_DATE + INTERVAL '8 day', '09:00', 60, 4, 'Đã lên lịch', 'Buổi tập Stretch', CURRENT_TIMESTAMP); -- Phòng stretch
 
 
 

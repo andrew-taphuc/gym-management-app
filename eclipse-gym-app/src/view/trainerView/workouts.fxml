@@ -40,6 +40,8 @@
                 VBox.vgrow="ALWAYS"
                 style="-fx-font-size: 18px;">
                 <columns>
+                    <TableColumn fx:id="colRegId" text="Reg.ID" prefWidth="100"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colMemberCode" text="Mã hội viên" prefWidth="150"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colMemberName" text="Tên hội viên" prefWidth="250"
@@ -78,13 +80,17 @@
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colMember" text="Học viên" prefWidth="200"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="150"
+                    <TableColumn fx:id="colScheduleMemberCode" text="Mã HV" prefWidth="130"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colScheduleRegId" text="Reg.ID" prefWidth="100"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="180"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="250"
+                    <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="300"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="230"
+                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="175"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                 </columns>
             </TableView>

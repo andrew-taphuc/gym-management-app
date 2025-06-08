@@ -39,6 +39,7 @@ public class TrainingController {
             while (rs.next()) {
                 TrainingSchedule ts = new TrainingSchedule();
                 ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
                 ts.setMemberId(rs.getInt("memberid"));
                 ts.setTrainerId(rs.getInt("trainerid"));
                 ts.setMembershipId(rs.getInt("membershipid"));
@@ -104,6 +105,7 @@ public class TrainingController {
         List<TrainingSchedule> list = new ArrayList<>();
         String sql = "SELECT ts.*, " +
                 "u_member.fullname as member_name, " +
+                "m.membercode as member_code, " +
                 "r.roomname as room_name " +
                 "FROM TrainingSchedule ts " +
                 "JOIN Members m ON ts.memberid = m.memberid " +
@@ -118,6 +120,7 @@ public class TrainingController {
             while (rs.next()) {
                 TrainingSchedule ts = new TrainingSchedule();
                 ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
                 ts.setMemberId(rs.getInt("memberid"));
                 ts.setTrainerId(rs.getInt("trainerid"));
                 ts.setMembershipId(rs.getInt("membershipid"));
@@ -128,8 +131,9 @@ public class TrainingController {
                 ts.setNotes(rs.getString("notes"));
                 ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
 
-                // Thêm thông tin tên học viên và room
+                // Thêm thông tin tên học viên, mã hội viên và room
                 ts.setMemberName(rs.getString("member_name"));
+                ts.setMemberCode(rs.getString("member_code"));
                 ts.setRoomName(rs.getString("room_name"));
 
                 list.add(ts);
@@ -451,29 +455,30 @@ public class TrainingController {
     }
 
     public boolean addTrainingSchedule(TrainingSchedule schedule) throws SQLException {
-        String sql = "INSERT INTO TrainingSchedule (memberid, trainerid, membershipid, scheduledate, starttime, duration, roomid, status, notes) "
+        String sql = "INSERT INTO TrainingSchedule (registrationid, memberid, trainerid, membershipid, scheduledate, starttime, duration, roomid, status, notes) "
                 +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?::training_status_enum, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::training_status_enum, ?)";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setInt(1, schedule.getMemberId());
-            pstmt.setInt(2, schedule.getTrainerId());
-            pstmt.setInt(3, schedule.getMembershipId());
-            pstmt.setDate(4, java.sql.Date.valueOf(schedule.getDate()));
+            pstmt.setInt(1, schedule.getRegistrationId());
+            pstmt.setInt(2, schedule.getMemberId());
+            pstmt.setInt(3, schedule.getTrainerId());
+            pstmt.setInt(4, schedule.getMembershipId());
+            pstmt.setDate(5, java.sql.Date.valueOf(schedule.getDate()));
 
-            // Xử lý format thời gian: thêm ":00" nếu chỉ có "HH:mm"
+            // Xử lý format thời gian
             String timeString = schedule.getTime();
             if (timeString.length() == 5 && timeString.matches("\\d{2}:\\d{2}")) {
-                timeString += ":00"; // Thêm giây
+                timeString += ":00";
             }
-            pstmt.setTime(5, java.sql.Time.valueOf(timeString));
+            pstmt.setTime(6, java.sql.Time.valueOf(timeString));
 
-            pstmt.setInt(6, schedule.getDuration() > 0 ? schedule.getDuration() : 60);
-            pstmt.setInt(7, schedule.getRoomId());
-            pstmt.setString(8, schedule.getStatus());
-            pstmt.setString(9, schedule.getNotes());
+            pstmt.setInt(7, schedule.getDuration() > 0 ? schedule.getDuration() : 60);
+            pstmt.setInt(8, schedule.getRoomId());
+            pstmt.setString(9, schedule.getStatus());
+            pstmt.setString(10, schedule.getNotes());
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -537,5 +542,115 @@ public class TrainingController {
         }
 
         return exercises;
+    }
+
+    // Thêm method mới để lấy TrainingRegistrations của học viên
+    public List<TrainingRegistration> getTrainingRegistrationsByMemberId(int memberId) {
+        List<TrainingRegistration> registrations = new ArrayList<>();
+        String sql = "SELECT tr.*, " +
+                "tp.planname, tp.type " +
+                "FROM TrainingRegistrations tr " +
+                "JOIN TrainingPlans tp ON tr.planid = tp.planid " +
+                "WHERE tr.memberid = ? " +
+                "ORDER BY tr.startdate DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                TrainingRegistration registration = new TrainingRegistration();
+                registration.setRegistrationId(rs.getInt("registrationid"));
+                registration.setMemberId(rs.getInt("memberid"));
+                registration.setPlanId(rs.getInt("planid"));
+                registration.setTrainerId(rs.getInt("trainerid"));
+                if (rs.getDate("startdate") != null) {
+                    registration.setStartDate(rs.getDate("startdate").toLocalDate());
+                }
+                registration.setSessionsLeft(rs.getInt("sessionsleft"));
+                registration.setPaymentId(rs.getInt("paymentid"));
+
+                // Tạo TrainingPlan object với tên và type
+                TrainingPlan plan = new TrainingPlan();
+                plan.setPlanId(rs.getInt("planid"));
+                plan.setPlanName(rs.getString("planname"));
+                plan.setType(model.enums.enum_TrainerSpecialization.fromValue(rs.getString("type")));
+
+                registration.setPlan(plan);
+                registrations.add(registration);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return registrations;
+    }
+
+    // Thêm method mới để lấy lịch tập của hội viên
+    public List<TrainingSchedule> getSchedulesByMemberId(int memberId) {
+        List<TrainingSchedule> list = new ArrayList<>();
+        String sql = "SELECT ts.*, " +
+                "u_trainer.fullname as trainer_name, " +
+                "r.roomname as room_name " +
+                "FROM TrainingSchedule ts " +
+                "LEFT JOIN Trainers t ON ts.trainerid = t.trainerid " +
+                "LEFT JOIN Users u_trainer ON t.userid = u_trainer.userid " +
+                "LEFT JOIN Rooms r ON ts.roomid = r.roomid " +
+                "WHERE ts.memberid = ? " +
+                "ORDER BY ts.scheduledate DESC, ts.starttime DESC";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TrainingSchedule ts = new TrainingSchedule();
+                ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
+                ts.setMemberId(rs.getInt("memberid"));
+                ts.setTrainerId(rs.getInt("trainerid"));
+                ts.setMembershipId(rs.getInt("membershipid"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
+                ts.setRoomId(rs.getInt("roomid"));
+                ts.setStatus(rs.getString("status"));
+                ts.setNotes(rs.getString("notes"));
+                ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
+
+                // Thêm thông tin tên trainer và room
+                ts.setTrainerName(rs.getString("trainer_name"));
+                ts.setRoomName(rs.getString("room_name"));
+
+                list.add(ts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Thêm method mới để đếm số buổi đã lên lịch cho một registration
+    public int getScheduledSessionsCount(int registrationId) {
+        String sql = "SELECT COUNT(*) FROM TrainingSchedule WHERE registrationid = ? AND status = 'Đã lên lịch'";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, registrationId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Thêm method mới để xóa lịch tập
+    public boolean deleteTrainingSchedule(int scheduleId) throws SQLException {
+        String sql = "DELETE FROM TrainingSchedule WHERE scheduleid = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, scheduleId);
+            return ps.executeUpdate() > 0;
+        }
     }
 }
