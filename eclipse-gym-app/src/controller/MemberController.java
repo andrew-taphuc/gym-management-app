@@ -147,7 +147,11 @@ public class MemberController {
     // Lấy 5 lần check-in gần nhất
     public static List<Attendance> getRecentAttendance(int memberId, int limit) {
         List<Attendance> list = new ArrayList<>();
-        String query = "SELECT * FROM Attendance WHERE MemberID = ? ORDER BY CheckinTime DESC LIMIT ?";
+        String query = "SELECT a.*, mp.PlanName " +
+                       "FROM Attendance a " +
+                       "JOIN Memberships m ON a.MembershipID = m.MembershipID " +
+                       "JOIN MembershipPlans mp ON m.PlanID = mp.PlanID " +
+                       "WHERE a.MemberID = ? ORDER BY a.CheckinTime DESC LIMIT ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
@@ -158,8 +162,9 @@ public class MemberController {
                 a.setAttendanceId(rs.getInt("AttendanceID"));
                 a.setMemberId(rs.getInt("MemberID"));
                 a.setCheckInTime(rs.getTimestamp("CheckinTime").toLocalDateTime());
-                // a.setType(rs.getString("Type")); // "GYM" hoặc "PT"
-                // a.setPlanId(rs.getInt("PlanID"));
+                a.setMembershipId(rs.getInt("MembershipID"));
+                a.setPlanName(rs.getString("PlanName")); // Thêm trường này vào model Attendance
+                a.setTrainingScheduleId(rs.getObject("TrainingScheduleID") != null ? rs.getInt("TrainingScheduleID") : null);
                 list.add(a);
             }
         } catch (SQLException e) {

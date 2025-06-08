@@ -14,8 +14,11 @@ import model.Attendance;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
+import model.enums.enum_MembershipStatus;
+import model.enums.enum_MemberStatus;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class MemberTrackController {
@@ -31,11 +34,13 @@ public class MemberTrackController {
     @FXML private Button btnCheckinPT;
 
     @FXML private TableColumn<Membership, String> colPlanName;
-    @FXML private TableColumn<Membership, LocalDate> colStartDate;
-    @FXML private TableColumn<Membership, LocalDate> colEndDate;
+    @FXML private TableColumn<Membership, String> colStartDate;
+    @FXML private TableColumn<Membership, String> colEndDate;
     @FXML private TableColumn<Membership, String> colStatus;
 
+    @FXML private TableColumn<Attendance, String> colCheckinDate;
     @FXML private TableColumn<Attendance, String> colCheckinTime;
+    @FXML private TableColumn<Attendance, String> colMembership;
     @FXML private TableColumn<Attendance, String> colType;
 
     private User currentUser;
@@ -54,6 +59,7 @@ public class MemberTrackController {
     }
 
     private void loadMemberInfo() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         if (member != null) {
             MemberController memberController = new MemberController();
             User user = memberController.getUserById(member.getUserId());
@@ -65,8 +71,10 @@ public class MemberTrackController {
                 lblPhone.setText("");
             }
             lblMemberCode.setText(member.getMemberCode());
-            lblJoinDate.setText(member.getJoinDate() != null ? member.getJoinDate().toString() : "");
-            lblStatus.setText(member.getStatus() != null ? member.getStatus().toString() : "");
+            lblJoinDate.setText(member.getJoinDate() != null ? member.getJoinDate().format(dateFormatter) : "");
+            lblStatus.setText(member.getStatus() != null
+                ? (member.getStatus() == enum_MemberStatus.ACTIVE ? "Hoạt động" : "Chưa kích hoạt")
+                : "");
         } else {
             lblFullName.setText("");
             lblPhone.setText("");
@@ -158,6 +166,14 @@ public class MemberTrackController {
         Dialog<model.TrainingSchedule> dialog = new Dialog<>();
         dialog.setTitle("Chọn buổi PT để check-in");
         dialog.setHeaderText("Chọn một buổi tập PT đã lên lịch để check-in:");
+        dialog.getDialogPane().setPrefWidth(600);
+        dialog.getDialogPane().setPrefHeight(400);
+        dialog.getDialogPane().setStyle(
+            "-fx-background-color: #f8f9fa;" +
+            "-fx-border-radius: 16px;" +
+            "-fx-background-radius: 16px;" +
+            "-fx-font-size: 16px;"
+        );
 
         ButtonType checkinButtonType = new ButtonType("Check-in", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(checkinButtonType, ButtonType.CANCEL);
@@ -165,18 +181,39 @@ public class MemberTrackController {
         TableView<model.TrainingSchedule> tableView = new TableView<>();
         TableColumn<model.TrainingSchedule, String> colDate = new TableColumn<>("Ngày");
         colDate.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().toString()));
+        colDate.setPrefWidth(120);
+
         TableColumn<model.TrainingSchedule, String> colTime = new TableColumn<>("Giờ");
         colTime.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTime()));
+        colTime.setPrefWidth(120);
+
         TableColumn<model.TrainingSchedule, String> colRoom = new TableColumn<>("Phòng");
         colRoom.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getRoomId())));
+        colRoom.setPrefWidth(100);
+
         TableColumn<model.TrainingSchedule, String> colNotes = new TableColumn<>("Ghi chú");
         colNotes.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNotes()));
+        colNotes.setPrefWidth(230);
 
         tableView.getColumns().addAll(colDate, colTime, colRoom, colNotes);
         tableView.getItems().setAll(schedules);
         tableView.setPrefHeight(250);
 
+        // CSS cho TableView trong dialog
+        tableView.setStyle(
+            "-fx-background-radius: 12px;" +
+            "-fx-border-radius: 12px;" +
+            "-fx-font-size: 15px;"
+        );
+
         dialog.getDialogPane().setContent(tableView);
+        // CSS cho các button trong dialog
+        dialog.getDialogPane().lookupButton(checkinButtonType).setStyle(
+            "-fx-background-color: linear-gradient(to bottom, #4caf50, #388e3c);" +
+            "-fx-text-fill: white;" +
+            "-fx-background-radius: 8px;" +
+            "-fx-font-size: 16px;"
+        );
 
         // Chỉ enable nút Check-in khi có chọn dòng
         Node checkinButton = dialog.getDialogPane().lookupButton(checkinButtonType);
@@ -225,25 +262,54 @@ public class MemberTrackController {
     @FXML
     public void initialize() {
         // Memberships
-        colPlanName.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getPlanName()) // hoặc getPlanId() nếu chưa có getPlanName()
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        colPlanName.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getPlanName())
         );
-        colStartDate.setCellValueFactory(cellData -> 
-            new SimpleObjectProperty<>(cellData.getValue().getStartDate())
+        colStartDate.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getStartDate() != null
+                    ? cellData.getValue().getStartDate().format(dateFormatter)
+                    : ""
+            )
         );
-        colEndDate.setCellValueFactory(cellData -> 
-            new SimpleObjectProperty<>(cellData.getValue().getEndDate())
+        colEndDate.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getEndDate() != null
+                    ? cellData.getValue().getEndDate().format(dateFormatter)
+                    : ""
+            )
         );
-        colStatus.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getStatus().toString())
+        colStatus.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getStatus() == enum_MembershipStatus.ACTIVE ? "Hoạt động" : "Chưa kích hoạt"
+            )
         );
 
         // Attendance
-        colCheckinTime.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getCheckInTime().toString())
+        colCheckinDate.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getCheckInTime() != null
+                    ? cellData.getValue().getCheckInTime().toLocalDate().format(dateFormatter)
+                    : ""
+            )
         );
-        colType.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getType())
+        colCheckinTime.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getCheckInTime() != null
+                    ? cellData.getValue().getCheckInTime().toLocalTime().format(timeFormatter)
+                    : ""
+            )
+        );
+        colMembership.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getPlanName())
+        );
+        colType.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                cellData.getValue().getTrainingScheduleId() != null ? "dịch vụ PT" : "thông thường"
+            )
         );
     }
 }

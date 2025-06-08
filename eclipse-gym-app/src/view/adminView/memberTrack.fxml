@@ -3,50 +3,91 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="view.adminView.MemberTrackController"
-      spacing="16.0">
+      spacing="16.0"
+      stylesheets="@memberTrack.css">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
-    <HBox spacing="32">
-        <VBox spacing="8">
-            <Label text="Họ tên:"/>
-            <Label fx:id="lblFullName" style="-fx-font-weight: bold"/>
-            <Label text="Số điện thoại:"/>
-            <Label fx:id="lblPhone"/>
-            <Label text="Mã hội viên:"/>
-            <Label fx:id="lblMemberCode"/>
-            <Label text="Ngày tham gia:"/>
-            <Label fx:id="lblJoinDate"/>
-            <Label text="Trạng thái:"/>
-            <Label fx:id="lblStatus"/>
-            <Label text="Số buổi đã tập tháng này:"/>
-            <Label fx:id="lblSessionCount"/>
+    <HBox spacing="64">
+
+        <ImageView fitWidth="220" fitHeight="220"
+                style="-fx-background-radius: 60; -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);">
+                <image>
+                    <Image url="https://yt3.googleusercontent.com/c-Z7mIlntSpG6VyQ5ZqaPggqkZRhaySr-H5ZEazFN2iR1pP4eD1UGekwu0y--c4CSVhJJ1A4QT8=s900-c-k-c0x00ffffff-no-rj" />
+                </image>
+        </ImageView>
+        <VBox spacing="16">
+            <HBox spacing="8">
+                <Label text="Họ tên:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblFullName" style="-fx-font-weight: bold; -fx-font-size: 18px;"/>
+            </HBox>
+            <HBox spacing="8">
+                <Label text="Số điện thoại:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblPhone" style="-fx-font-size: 18px;"/>
+            </HBox>
+            <HBox spacing="8">
+                <Label text="Mã hội viên:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblMemberCode" style="-fx-font-size: 18px;"/>
+            </HBox>
+            <HBox spacing="8">
+                <Label text="Ngày tham gia:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblJoinDate" style="-fx-font-size: 18px;"/>
+            </HBox>
+            <HBox spacing="8">
+                <Label text="Trạng thái:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblStatus" style="-fx-font-size: 18px;"/>
+            </HBox>
+            <HBox spacing="8">
+                <Label text="Số ngày đã tập tháng này:" style="-fx-font-size: 18px;"/>
+                <Label fx:id="lblSessionCount" style="-fx-font-size: 18px;"/>
+            </HBox>
+            
         </VBox>
-        <VBox spacing="12" alignment="TOP_CENTER">
-            <Button fx:id="btnCheckinGym" text="Check-in phòng tập" onAction="#handleCheckinGym" styleClass="primary-button"/>
-            <Button fx:id="btnCheckinPT" text="Check-in dịch vụ PT" onAction="#handleCheckinPT" styleClass="secondary-button"/>
-        </VBox>
+        
+        <HBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+            <VBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 20;">
+                <Button fx:id="btnCheckinGym" text="Check-in phòng tập"
+                        onAction="#handleCheckinGym"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px;"
+                        prefWidth="200" prefHeight="55"/>
+                <Button fx:id="btnCheckinPT" text="Check-in dịch vụ PT"
+                        onAction="#handleCheckinPT"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px;"
+                        prefWidth="200" prefHeight="55" />
+            </VBox>
+        </HBox>
     </HBox>
 
-    <Label text="Danh sách gói tập"/>
-    <TableView fx:id="tblMemberships" prefHeight="120">
+    <Label text="Danh sách gói tập" style= "-fx-font-weight: bold; -fx-font-size: 20px;"/>
+    <TableView fx:id="tblMemberships" prefHeight="150" 
+                maxHeight="300" styleClass="track-table">
         <columns>
-            <TableColumn fx:id="colPlanName" text="Tên gói"/>
-            <TableColumn fx:id="colStartDate" text="Ngày bắt đầu"/>
-            <TableColumn fx:id="colEndDate" text="Ngày kết thúc"/>
-            <TableColumn fx:id="colStatus" text="Trạng thái"/>
+            <TableColumn fx:id="colPlanName" text="Tên gói" prefWidth="200"/>
+            <TableColumn fx:id="colStartDate" text="Ngày bắt đầu" prefWidth="200"/>
+            <TableColumn fx:id="colEndDate" text="Ngày kết thúc" prefWidth="200"/>
+            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="200"/>
         </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
     </TableView>
 
-    <Label text="Lịch sử check-in (5 lần gần nhất)"/>
-    <TableView fx:id="tblAttendance" prefHeight="180">
+    <Label text="Lịch sử check-in" style= "-fx-font-weight: bold; -fx-font-size: 20px;"/>
+    <TableView fx:id="tblAttendance" prefHeight="380" maxHeight="380" styleClass="track-table" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colCheckinTime" text="Thời gian check-in"/>
-            <TableColumn fx:id="colType" text="Loại check-in"/>
+            <TableColumn fx:id="colCheckinDate" text="Ngày" prefWidth="180"/>
+            <TableColumn fx:id="colCheckinTime" text="Thời gian" prefWidth="180"/>
+            <TableColumn fx:id="colMembership" text="Gói tập" prefWidth="200"/>
+            <TableColumn fx:id="colType" text="Loại check-in" prefWidth="180"/>
         </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
     </TableView>
 </VBox>
