@@ -149,6 +149,16 @@ CREATE TABLE Memberships (
   RenewalDate TIMESTAMP
 );
 
+CREATE TABLE TrainingRegistrations (
+  RegistrationID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
+  PlanID INT NOT NULL REFERENCES TrainingPlans(PlanID) ON DELETE CASCADE,
+  TrainerID INT NULL REFERENCES Trainers(TrainerID) ON DELETE CASCADE,
+  StartDate DATE NOT NULL,
+  SessionsLeft INT DEFAULT 0 CHECK (SessionsLeft >= 0),
+  PaymentID INT REFERENCES Payments(PaymentID)
+);
+
 -- Module quản lý phòng tập, thiết bị
 -- 2. Rooms table
 CREATE TABLE Rooms (
