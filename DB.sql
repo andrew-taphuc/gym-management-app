@@ -109,6 +109,21 @@ CREATE TABLE TrainingPlans (
   Description VARCHAR(500)
 );
 
+-- Bảng khuyến mãi
+CREATE TABLE Promotions (
+  PromotionID SERIAL PRIMARY KEY,
+  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
+  PromotionName VARCHAR(100) NOT NULL,
+  Description VARCHAR(500),
+  DiscountType discount_type NOT NULL,
+  DiscountValue DECIMAL(10,2) NOT NULL,
+  StartDate TIMESTAMP NOT NULL,
+  EndDate TIMESTAMP NOT NULL,
+  Status promotion_status DEFAULT 'Còn hạn',
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Bảng thanh toán
 CREATE TABLE Payments (
   PaymentID SERIAL PRIMARY KEY,
@@ -116,6 +131,7 @@ CREATE TABLE Payments (
   PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PaymentMethod VARCHAR(50) NOT NULL,
   Status payment_status_enum DEFAULT 'Thành công',
+  PromotionID INT REFERENCES Promotions(PromotionID) ON DELETE CASCADE,
   Notes VARCHAR(500)
 );
 
@@ -248,20 +264,6 @@ CREATE TABLE MemberProgress (
   Thigh DECIMAL(5,2),
   TrainerID INT,
   Notes VARCHAR(500)
-);
-
-CREATE TABLE Promotions (
-  PromotionID SERIAL PRIMARY KEY,
-  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
-  PromotionName VARCHAR(100) NOT NULL,
-  Description VARCHAR(500),
-  DiscountType discount_type NOT NULL,
-  DiscountValue DECIMAL(10,2) NOT NULL,
-  StartDate TIMESTAMP NOT NULL,
-  EndDate TIMESTAMP NOT NULL,
-  Status promotion_status DEFAULT 'Còn hạn',
-  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');

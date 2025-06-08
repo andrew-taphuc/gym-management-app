@@ -8,6 +8,8 @@ import model.User;
 import view.BaseView;
 import controller.MembershipPlanController;
 import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -47,11 +49,12 @@ public class MembershipPlanView extends BaseView {
     private void loadMembershipPlans() {
         planContainer.getChildren().clear();
         List<MembershipPlan> plans = membershipPlanController.getAllPlans();
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         for (MembershipPlan plan : plans) {
+            String priceStr = currencyFormat.format(plan.getPrice());
             VBox card = new VBox(
                 new Label("Gói: " + plan.getDuration() + " ngày"),
-                // new Label("Thời hạn: " + plan.getDuration() + " ngày"),
-                new Label("Giá: " + plan.getPrice() + " VNĐ")
+                new Label("Giá: " + priceStr)
                 // new Label("Mô tả: " + plan.getDescription())
             );
             card.setSpacing(8);
@@ -66,7 +69,8 @@ public class MembershipPlanView extends BaseView {
                 "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                 "-fx-max-width: 400px;" +
                 "-fx-min-width: 350px;" +
-                "-fx-alignment: center;"
+                "-fx-alignment: center;" +
+                "-fx-font-size: 18px;" 
             );
             VBox.setMargin(card, new Insets(12, 0, 12, 0));
 
@@ -84,7 +88,8 @@ public class MembershipPlanView extends BaseView {
                         "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                         "-fx-max-width: 400px;" +
                         "-fx-min-width: 350px;" +
-                        "-fx-alignment: center;"
+                        "-fx-alignment: center;" +
+                        "-fx-font-size: 18px;" 
                     );
                 }
                 // Chọn card mới
@@ -98,11 +103,13 @@ public class MembershipPlanView extends BaseView {
                     "-fx-effect: dropshadow(gaussian, #888, 6, 0.2, 0, 2);" +
                     "-fx-max-width: 400px;" +
                     "-fx-min-width: 350px;" +
-                    "-fx-alignment: center;"
+                    "-fx-alignment: center;" +
+                    "-fx-font-size: 18px;" 
                 );
                 selectedCard = card;
                 selectedPlanId = plan.getPlanId();
                 errorLabel.setText("");
+                System.out.println("Gói tập với ID: " + selectedPlanId + " đã được chọn");
             });
 
             planContainer.getChildren().add(card);
@@ -120,7 +127,6 @@ public class MembershipPlanView extends BaseView {
             errorLabel.setText("Không tìm thấy gói tập đã chọn");
             return;
         }
-
         // Chuyển đến trang thanh toán
         PaymentView paymentView = new PaymentView(stage);
         paymentView.setMembershipPlan(selectedPlan);

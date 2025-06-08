@@ -10,25 +10,34 @@
     spacing="20"
     style="-fx-background-color: white; -fx-padding: 40;">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
+    <StackPane>
         <Label text="Vui lòng chọn gói tập phù hợp với bạn"
             style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: black;" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Button text="Quay lại" onAction="#handleBack"
-            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 18px;"
-            prefWidth="100" prefHeight="35" />
-    </HBox>
+        
+        <AnchorPane>
+            <Button text="Quay lại" onAction="#handleBack"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+                    prefWidth="100" prefHeight="35"
+                    AnchorPane.topAnchor="10" AnchorPane.rightAnchor="0"
+                    />
+        </AnchorPane>
+    </StackPane>
 
     <Separator />
 
-    <!-- <ListView fx:id="planListView" VBox.vgrow="ALWAYS" /> -->
-        <VBox fx:id="planContainer" spacing="10" alignment="CENTER" style="-fx-background-color: transparent;"/>
+    <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+        
+        <VBox fx:id="planContainer" spacing="10" alignment="CENTER"
+            style="-fx-background-color: transparent;" />
 
+        <HBox alignment="CENTER">
+            <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+        </HBox>
 
-    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
-    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
-    <Button text="Tiếp tục" onAction="#handleContinue"
-        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 20px;"
-        prefWidth="200" prefHeight="40" />
-    </HBox>
+        <HBox alignment="CENTER">
+            <Button text="Tiếp tục" onAction="#handleContinue"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 20px;"
+                prefWidth="200" prefHeight="40" />
+        </HBox>
+    </VBox>
 </VBox>
