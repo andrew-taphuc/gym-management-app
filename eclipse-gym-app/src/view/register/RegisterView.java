@@ -89,6 +89,11 @@ public class RegisterView extends BaseView {
             return;
         }
 
+        if( userController.isEmailExists(emailField.getText())) {
+            errorLabel.setText("Email đã được sử dụng!");
+            return;
+        }
+
         // Create user object
         User newUser = new User();
         newUser.setUsername(usernameField.getText());

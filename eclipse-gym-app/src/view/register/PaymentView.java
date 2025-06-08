@@ -16,7 +16,9 @@ import view.BaseView;
 import view.userView.HomeView;
 import model.enums.enum_MembershipStatus;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +31,10 @@ public class PaymentView extends BaseView {
     private TextField cvvField;
     @FXML
     private Label errorLabel;
+    @FXML
+    private Label planInfoLabel;
+    @FXML
+    private Label amountLabel;
 
     private MembershipPlan selectedPlan;
     private User newUser;
@@ -38,6 +44,7 @@ public class PaymentView extends BaseView {
     private MemberController memberController;
     private List<String> validCardNumbers;
     private List<String> validCVVs;
+    private List<Double> balances; // Thêm biến lưu số dư
 
     public PaymentView(Stage stage) {
         super(stage);
@@ -52,22 +59,29 @@ public class PaymentView extends BaseView {
     private void loadValidCards() {
         validCardNumbers = new ArrayList<>();
         validCVVs = new ArrayList<>();
+        balances = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("CREDIT_CARD.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 2) {
+                if (parts.length >= 3) {
                     validCardNumbers.add(parts[0].trim());
                     validCVVs.add(parts[1].trim());
+                    balances.add(Double.parseDouble(parts[2].trim()));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    } 
 
     public void setMembershipPlan(MembershipPlan plan) {
         this.selectedPlan = plan;
+        if (planInfoLabel != null && amountLabel != null && plan != null) {
+            planInfoLabel.setText("Bạn đã chọn gói  "  + plan.getDuration() + " ngày");
+            java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+            amountLabel.setText("Số tiền cần đóng: " + currencyFormat.format(plan.getPrice()));
+        }
     }
 
     public void setNewUser(User user) {
@@ -80,12 +94,24 @@ public class PaymentView extends BaseView {
         String cvv = cvvField.getText().trim();
 
         // Kiểm tra thông tin thẻ
-        if (!validateCard(cardNumber, cvv)) {
+        int cardIndex = getCardIndex(cardNumber, cvv);
+        if (cardIndex == -1) {
             errorLabel.setText("Thông tin thẻ không hợp lệ");
             return;
         }
 
+        double balance = balances.get(cardIndex);
+        double price = selectedPlan.getPrice();
+        if (balance < price) {
+            errorLabel.setText("Số dư không đủ để thanh toán");
+            return;
+        }
+
         try {
+            // Trừ số dư và cập nhật file
+            balances.set(cardIndex, balance - price);
+            updateCardBalanceFile();
+
             // 1. Tạo user
             int userId = userController.createUser(newUser);
             if (userId == -1) {
@@ -154,13 +180,26 @@ public class PaymentView extends BaseView {
         }
     }
 
-    private boolean validateCard(String cardNumber, String cvv) {
+
+    private int getCardIndex(String cardNumber, String cvv) {
         for (int i = 0; i < validCardNumbers.size(); i++) {
             if (validCardNumbers.get(i).equals(cardNumber) && validCVVs.get(i).equals(cvv)) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
+    }
+
+    private void updateCardBalanceFile() {
+        // Cập nhật lại file CREDIT_CARD.txt với danh sách thẻ và số dư mới
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("CREDIT_CARD.txt"))) {
+            for (int i = 0; i < validCardNumbers.size(); i++) {
+                writer.write(validCardNumbers.get(i) + "," + validCVVs.get(i) + "," + balances.get(i));
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -168,5 +207,15 @@ public class PaymentView extends BaseView {
         MembershipPlanView planView = new MembershipPlanView(stage);
         planView.setNewUser(newUser);
         planView.loadView("/view/register/membership_plan.fxml");
+    }
+
+    // Đảm bảo cập nhật lại khi view đã load xong
+    @FXML
+    public void initialize() {
+        if (selectedPlan != null) {
+            planInfoLabel.setText("Bạn đã chọn gói "  + selectedPlan.getDuration() + " ngày");
+            java.text.NumberFormat currencyFormat = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
+            amountLabel.setText("Số tiền cần đóng: " + currencyFormat.format(selectedPlan.getPrice()));
+        }
     }
 }

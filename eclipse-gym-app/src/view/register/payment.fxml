@@ -3,40 +3,59 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    spacing="20"
-    style="-fx-background-color: white; -fx-padding: 40;">
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="20"
+      style="-fx-background-color: white; -fx-padding: 40;">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
+    <!-- Header -->
+    <StackPane>
         <Label text="Thanh toán"
-            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Button text="Quay lại" onAction="#handleBack"
-            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
-            prefWidth="100" prefHeight="35" />
-    </HBox>
+               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: black;" />
+        <AnchorPane>
+            <Button text="Quay lại" onAction="#handleBack"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+                    prefWidth="100" prefHeight="35"
+                    AnchorPane.topAnchor="10" AnchorPane.rightAnchor="0" />
+        </AnchorPane>
+    </StackPane>
 
     <Separator />
 
-    <GridPane vgap="15" hgap="15" alignment="CENTER_LEFT">
-        <Label text="Số thẻ:" GridPane.columnIndex="0" GridPane.rowIndex="0"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <TextField fx:id="cardNumberField" GridPane.columnIndex="1" GridPane.rowIndex="0"
-            prefWidth="300" />
+    <!-- Nội dung chính căn giữa -->
+    <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
 
-        <Label text="CVV:" GridPane.columnIndex="0" GridPane.rowIndex="1"
-            style="-fx-font-size: 14px; -fx-text-fill: black;" />
-        <TextField fx:id="cvvField" GridPane.columnIndex="1" GridPane.rowIndex="1"
-            prefWidth="300" />
-    </GridPane>
+        <!-- Thông tin gói tập đã chọn -->
+        <Label fx:id="planInfoLabel"
+               style="-fx-font-size: 18px; -fx-text-fill: #1976D2; -fx-font-weight: bold;" />
+        <Label fx:id="amountLabel"
+               style="-fx-font-size: 18px; -fx-text-fill: #388E3C; -fx-font-weight: bold;" />
 
-    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+        <!-- Hướng dẫn -->
+        <Label text="Vui lòng nhập thông tin thẻ"
+               style="-fx-font-size: 24px; -fx-text-fill: black;" />
 
-    <Button text="Thanh toán" onAction="#handlePayment"
-        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
-        prefWidth="200" prefHeight="40" />
+        <!-- Form thông tin thẻ -->
+        <GridPane vgap="15" hgap="15" alignment="CENTER">
+            <Label text="Số thẻ:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <TextField fx:id="cardNumberField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                       prefWidth="300" />
 
-</VBox> 
+            <Label text="CVV:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                   style="-fx-font-size: 14px; -fx-text-fill: black;" />
+            <TextField fx:id="cvvField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       prefWidth="300" />
+        </GridPane>
+
+        <!-- Label lỗi -->
+        <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+
+        <!-- Nút thanh toán -->
+        <Button text="Thanh toán" onAction="#handlePayment"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 18px;"
+                prefWidth="200" prefHeight="40" />
+    </VBox>
+
+</VBox>
