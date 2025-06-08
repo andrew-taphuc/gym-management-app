@@ -6,6 +6,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
 import model.User;
 import utils.DBConnection;
 
@@ -32,6 +33,8 @@ public class DashboardController {
     private Label planCountLabel;
     @FXML
     private BarChart<String, Number> ptBarChart;
+    @FXML
+    private javafx.scene.chart.PieChart agePieChart;
 
     // Thêm các biến cho thống kê chung
     @FXML
@@ -108,6 +111,8 @@ public class DashboardController {
         setupBarChartYAxis();
         // Vẽ biểu đồ cột PT vs không PT 6 tháng gần nhất
         drawPTBarChart();
+        // Vẽ biểu đồ pie phân bố độ tuổi
+        drawAgePieChart();
     }
 
     private int getCount(Connection conn, String sql) {
@@ -257,5 +262,37 @@ public class DashboardController {
     private String formatCurrency(int amount) {
         NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         return vnFormat.format(amount);
+    }
+
+    private void drawAgePieChart() {
+        Connection conn = DBConnection.getConnection();
+        int under18 = 0, from18to45 = 0, above45 = 0;
+
+        String sql = "SELECT DateOfBirth FROM Users WHERE Role = 'Hội viên'";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            LocalDate today = LocalDate.now();
+            while (rs.next()) {
+                LocalDate dob = rs.getDate(1).toLocalDate();
+                int age = today.getYear() - dob.getYear();
+                if (dob.plusYears(age).isAfter(today)) age--;
+                if (age < 18) under18++;
+                else if (age <= 45) from18to45++;
+                else above45++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        agePieChart.getData().clear();
+        PieChart.Data d1 = new PieChart.Data("Dưới 18", under18);
+        PieChart.Data d2 = new PieChart.Data("18-45", from18to45);
+        PieChart.Data d3 = new PieChart.Data("Trên 45", above45);
+        agePieChart.getData().addAll(d1, d2, d3);
+
+        // Đổi màu
+        d1.getNode().setStyle("-fx-pie-color: #2196f3;"); 
+        d2.getNode().setStyle("-fx-pie-color:rgb(231, 130, 130);"); 
+        d3.getNode().setStyle("-fx-pie-color: #4caf50;"); 
     }
 }
