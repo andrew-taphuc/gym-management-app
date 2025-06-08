@@ -192,6 +192,7 @@ public class DashboardController {
 
             ptSeries.getData().add(new XYChart.Data<>(monthLabel, ptCount));
             nonPtSeries.getData().add(new XYChart.Data<>(monthLabel, nonPtCount));
+            System.out.println(monthLabel + ": PT=" + ptCount + ", NonPT=" + nonPtCount);
         }
 
         ptBarChart.getData().clear();
@@ -219,27 +220,34 @@ public class DashboardController {
         String sql;
         
         if (isPT) {
-            // Đếm gói có PT 
-            sql = "SELECT COUNT(*) FROM TrainingRegistrations tr " +
-                "WHERE EXTRACT(YEAR FROM tr.StartDate) = ? AND EXTRACT(MONTH FROM tr.StartDate) = ?";
-        } else {
-            // Đếm gói thường (không có trong TrainingRegistrations)
-            sql = "SELECT COUNT(*) FROM Memberships m " +
-                "WHERE EXTRACT(YEAR FROM m.StartDate) = ? " +
-                "AND EXTRACT(MONTH FROM m.StartDate) = ? " +
-                "AND m.MemberID NOT IN (SELECT tr.MemberID FROM TrainingRegistrations tr)";
-        }
-        
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, year);
-            stmt.setInt(2, month);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+                sql = "SELECT COUNT(*) FROM TrainingRegistrations tr " +
+                    "WHERE EXTRACT(YEAR FROM tr.StartDate) = ? AND EXTRACT(MONTH FROM tr.StartDate) = ?";
+            } else {
+                // Sửa lại để tính chính xác gói thường trong tháng đó
+                sql = "SELECT COUNT(*) FROM Memberships m " +
+                    "WHERE EXTRACT(YEAR FROM m.StartDate) = ? " +
+                    "AND EXTRACT(MONTH FROM m.StartDate) = ? " +
+                    "AND m.MemberID NOT IN (" +
+                        "SELECT tr.MemberID FROM TrainingRegistrations tr " +
+                        "WHERE EXTRACT(YEAR FROM tr.StartDate) = ? " +
+                        "AND EXTRACT(MONTH FROM tr.StartDate) = ?" +
+                    ")";
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, year);
+                stmt.setInt(2, month);
+                if (!isPT) {
+                    stmt.setInt(3, year);  // Thêm tham số cho subquery
+                    stmt.setInt(4, month);
+                }
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         return 0;
     }
 
