@@ -8,6 +8,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Separator;
 import model.User;
 import model.TrainingSchedule;
 import model.TrainingRegistration;
@@ -21,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.util.Callback;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -36,6 +38,9 @@ import model.Room;
 import model.Exercise;
 import controller.RoomController;
 import controller.ExerciseController;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class WorkoutsController {
     @FXML
@@ -51,6 +56,10 @@ public class WorkoutsController {
     @FXML
     private TableColumn<TrainingSchedule, String> colMember;
     @FXML
+    private TableColumn<TrainingSchedule, String> colScheduleMemberCode;
+    @FXML
+    private TableColumn<TrainingSchedule, String> colScheduleRegId;
+    @FXML
     private TableColumn<TrainingSchedule, String> colRoom;
     @FXML
     private TableColumn<TrainingSchedule, String> colStatus;
@@ -62,6 +71,8 @@ public class WorkoutsController {
     // Bảng hội viên đang quản lý
     @FXML
     private TableView<TrainingRegistration> managedMembersTable;
+    @FXML
+    private TableColumn<TrainingRegistration, String> colRegId;
     @FXML
     private TableColumn<TrainingRegistration, String> colMemberCode;
     @FXML
@@ -132,6 +143,14 @@ public class WorkoutsController {
             String memberName = cellData.getValue().getMemberName();
             return new javafx.beans.property.SimpleStringProperty(memberName != null ? memberName : "Chưa có học viên");
         });
+        colScheduleMemberCode.setCellValueFactory(cellData -> {
+            String memberCode = cellData.getValue().getMemberCode();
+            return new javafx.beans.property.SimpleStringProperty(memberCode != null ? memberCode : "");
+        });
+        colScheduleRegId.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(
+                    String.valueOf(cellData.getValue().getRegistrationId()));
+        });
         colRoom.setCellValueFactory(cellData -> {
             String roomName = cellData.getValue().getRoomName();
             return new javafx.beans.property.SimpleStringProperty(roomName != null ? roomName : "Chưa có phòng");
@@ -144,6 +163,11 @@ public class WorkoutsController {
     }
 
     private void setupManagedMembersTable() {
+        colRegId.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(
+                    String.valueOf(cellData.getValue().getRegistrationId()));
+        });
+
         colMemberCode.setCellValueFactory(cellData -> {
             String memberCode = cellData.getValue().getMember() != null
                     ? cellData.getValue().getMember().getMemberCode()
@@ -255,22 +279,20 @@ public class WorkoutsController {
     }
 
     private void addButtonToScheduleTable() {
-        Callback<TableColumn<TrainingSchedule, Void>, TableCell<TrainingSchedule, Void>> cellFactory = new Callback<>() {
+        Callback<TableColumn<TrainingSchedule, Void>, TableCell<TrainingSchedule, Void>> factory = new Callback<TableColumn<TrainingSchedule, Void>, TableCell<TrainingSchedule, Void>>() {
             @Override
             public TableCell<TrainingSchedule, Void> call(final TableColumn<TrainingSchedule, Void> param) {
-                return new TableCell<>() {
+                return new TableCell<TrainingSchedule, Void>() {
                     private final Button viewBtn = new Button("Xem bài tập");
+                    private final Button deleteBtn = new Button("Xóa");
+                    private final HBox hbox = new HBox(5, viewBtn, deleteBtn);
 
                     {
-                        viewBtn.setPrefWidth(120);
-
-                        viewBtn.setOnAction(event -> {
-                            TrainingSchedule schedule = getTableView().getItems().get(getIndex());
-                            showExercisesPopup(schedule);
-                        });
-
                         viewBtn.setStyle(
-                                "-fx-background-color: #4FC3F7; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 12px;");
+                                "-fx-font-size: 14px; -fx-background-color:rgb(71, 178, 195); -fx-text-fill: white; -fx-cursor: hand;");
+                        deleteBtn.setStyle(
+                                "-fx-font-size: 14px; -fx-background-color: #ff4444; -fx-text-fill: white; -fx-cursor: hand;");
+                        hbox.setAlignment(Pos.CENTER);
                     }
 
                     @Override
@@ -279,13 +301,36 @@ public class WorkoutsController {
                         if (empty) {
                             setGraphic(null);
                         } else {
-                            setGraphic(viewBtn);
+                            TrainingSchedule schedule = getTableView().getItems().get(getIndex());
+                            viewBtn.setOnAction(e -> showExercisesPopup(schedule));
+                            deleteBtn.setOnAction(e -> {
+                                Alert alert = new Alert(AlertType.CONFIRMATION);
+                                alert.setTitle("Xác nhận xóa");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Bạn có chắc chắn muốn xóa lịch tập này?");
+
+                                alert.showAndWait().ifPresent(response -> {
+                                    if (response == ButtonType.OK) {
+                                        try {
+                                            if (trainingController.deleteTrainingSchedule(schedule.getId())) {
+                                                refreshScheduleTable();
+                                            } else {
+                                                showAlert(AlertType.ERROR, "Lỗi", "Không thể xóa lịch tập");
+                                            }
+                                        } catch (SQLException ex) {
+                                            showAlert(AlertType.ERROR, "Lỗi",
+                                                    "Lỗi khi xóa lịch tập: " + ex.getMessage());
+                                        }
+                                    }
+                                });
+                            });
+                            setGraphic(hbox);
                         }
                     }
                 };
             }
         };
-        colAction.setCellFactory(cellFactory);
+        colAction.setCellFactory(factory);
     }
 
     private void addButtonToMembersTable() {
@@ -391,10 +436,58 @@ public class WorkoutsController {
                 ? registration.getStartDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                 : "N/A"));
         Label sessionsLeft = new Label("Buổi còn lại: " + registration.getSessionsLeft());
+        Label registrationId = new Label("Registration ID: " + registration.getRegistrationId());
 
-        vbox.getChildren().addAll(memberInfo, memberName, memberCode, planName, startDate, sessionsLeft);
+        // Thêm bảng hiển thị các lịch tập của hội viên
+        Label scheduleInfo = new Label("Lịch tập của hội viên:");
+        scheduleInfo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
 
-        Scene scene = new Scene(vbox, 400, 250);
+        TableView<TrainingSchedule> scheduleTable = new TableView<>();
+
+        // Cột ngày
+        TableColumn<TrainingSchedule, String> colDate = new TableColumn<>("Ngày");
+        colDate.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getDate() != null)
+                return new javafx.beans.property.SimpleStringProperty(
+                        cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
+
+        // Cột giờ
+        TableColumn<TrainingSchedule, String> colTime = new TableColumn<>("Giờ");
+        colTime.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTime());
+        });
+
+        // Cột phòng
+        TableColumn<TrainingSchedule, String> colRoom = new TableColumn<>("Phòng");
+        colRoom.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getRoomName());
+        });
+
+        // Cột trạng thái
+        TableColumn<TrainingSchedule, String> colStatus = new TableColumn<>("Trạng thái");
+        colStatus.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus());
+        });
+
+        // Cột Registration ID
+        TableColumn<TrainingSchedule, String> colRegId = new TableColumn<>("Registration ID");
+        colRegId.setCellValueFactory(cellData -> {
+            return new javafx.beans.property.SimpleStringProperty(
+                    String.valueOf(cellData.getValue().getRegistrationId()));
+        });
+
+        scheduleTable.getColumns().addAll(colDate, colTime, colRoom, colStatus, colRegId);
+
+        // Lấy danh sách lịch tập của hội viên
+        List<TrainingSchedule> schedules = trainingController.getSchedulesByMemberId(registration.getMemberId());
+        scheduleTable.setItems(FXCollections.observableArrayList(schedules));
+
+        vbox.getChildren().addAll(memberInfo, memberName, memberCode, planName, startDate, sessionsLeft, registrationId,
+                new Separator(), scheduleInfo, scheduleTable);
+
+        Scene scene = new Scene(vbox, 600, 500);
         popupStage.setScene(scene);
         popupStage.show();
     }
@@ -538,7 +631,7 @@ public class WorkoutsController {
         TableColumn<ExerciseWithDetails, String> colComment = new TableColumn<>("Ghi chú");
         colComment.setCellValueFactory(
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getComment()));
-        colComment.setPrefWidth(150);
+        colComment.setPrefWidth(280);
 
         // Cột mô tả
         TableColumn<ExerciseWithDetails, String> colDesc = new TableColumn<>("Mô tả");
@@ -828,7 +921,7 @@ public class WorkoutsController {
                     if (empty || item == null) {
                         setText(null);
                     } else {
-                        setText(item.getUser().getFullName() + " (" + item.getMemberCode() + ")");
+                        setText(item.getMemberCode() + " - " + item.getUser().getFullName());
                     }
                 }
             });
@@ -839,8 +932,52 @@ public class WorkoutsController {
                     if (empty || item == null) {
                         setText(null);
                     } else {
-                        setText(item.getUser().getFullName() + " (" + item.getMemberCode() + ")");
+                        setText(item.getMemberCode() + " - " + item.getUser().getFullName());
                     }
+                }
+            });
+
+            // ComboBox chọn Registration
+            ComboBox<TrainingRegistration> registrationComboBox = new ComboBox<>();
+            registrationComboBox.setPromptText("Chọn đăng ký");
+            registrationComboBox.setCellFactory(param -> new ListCell<TrainingRegistration>() {
+                @Override
+                protected void updateItem(TrainingRegistration item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText("ID: " + item.getRegistrationId() + " - " +
+                                (item.getPlan() != null ? item.getPlan().getPlanName() : "N/A") +
+                                " (Còn " + item.getSessionsLeft() + " buổi)");
+                    }
+                }
+            });
+            registrationComboBox.setButtonCell(new ListCell<TrainingRegistration>() {
+                @Override
+                protected void updateItem(TrainingRegistration item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText("ID: " + item.getRegistrationId() + " - " +
+                                (item.getPlan() != null ? item.getPlan().getPlanName() : "N/A") +
+                                " (Còn " + item.getSessionsLeft() + " buổi)");
+                    }
+                }
+            });
+
+            // Khi chọn hội viên, cập nhật danh sách registration
+            memberComboBox.setOnAction(e -> {
+                Member selectedMember = memberComboBox.getValue();
+                if (selectedMember != null) {
+                    List<TrainingRegistration> registrations = trainingController
+                            .getTrainingRegistrationsByMemberId(selectedMember.getMemberId());
+                    // Lọc chỉ lấy các registration có trainerId trùng với currentTrainerId
+                    registrations = registrations.stream()
+                            .filter(r -> r.getTrainerId() == currentTrainerId)
+                            .collect(java.util.stream.Collectors.toList());
+                    registrationComboBox.setItems(FXCollections.observableArrayList(registrations));
                 }
             });
 
@@ -874,9 +1011,18 @@ public class WorkoutsController {
             DatePicker datePicker = new DatePicker();
             datePicker.setPromptText("Chọn ngày");
 
-            // TextField nhập giờ
-            TextField timeField = new TextField();
-            timeField.setPromptText("Giờ (HH:mm)");
+            // ComboBox chọn giờ
+            ComboBox<String> timeComboBox = new ComboBox<>();
+            timeComboBox.setPromptText("Chọn giờ");
+            // Tạo danh sách thời gian từ 7h đến 20h, cách 30 phút
+            ObservableList<String> timeList = FXCollections.observableArrayList();
+            for (int hour = 7; hour <= 20; hour++) {
+                timeList.add(String.format("%02d:00", hour));
+                if (hour < 20) { // Không thêm 20:30 vì kết thúc lúc 20:00
+                    timeList.add(String.format("%02d:30", hour));
+                }
+            }
+            timeComboBox.setItems(timeList);
 
             // TextArea nhập ghi chú
             TextArea notesArea = new TextArea();
@@ -887,45 +1033,52 @@ public class WorkoutsController {
             Button addButton = new Button("Thêm lịch tập");
             addButton.setOnAction(e -> {
                 Member selectedMember = memberComboBox.getValue();
+                TrainingRegistration selectedRegistration = registrationComboBox.getValue();
                 Room selectedRoom = roomComboBox.getValue();
                 java.time.LocalDate selectedDate = datePicker.getValue();
-                String time = timeField.getText();
+                String time = timeComboBox.getValue();
                 String notes = notesArea.getText();
 
-                if (selectedMember == null || selectedRoom == null || selectedDate == null || time.isEmpty()) {
+                if (selectedMember == null || selectedRegistration == null || selectedRoom == null
+                        || selectedDate == null || time == null || time.trim().isEmpty()) {
                     showAlert(AlertType.ERROR, "Lỗi", "Vui lòng điền đầy đủ thông tin");
                     return;
                 }
 
+                // Kiểm tra số buổi còn lại
+                int sessionsLeft = selectedRegistration.getSessionsLeft();
+                int scheduledSessions = trainingController
+                        .getScheduledSessionsCount(selectedRegistration.getRegistrationId());
+
+                if (scheduledSessions >= sessionsLeft) {
+                    showAlert(AlertType.ERROR, "Lỗi", "Bạn đã đặt lịch quá số buổi còn lại");
+                    return;
+                }
+
+                // Tạo đối tượng TrainingSchedule mới
+                TrainingSchedule newSchedule = new TrainingSchedule();
+                newSchedule.setRegistrationId(selectedRegistration.getRegistrationId());
+                newSchedule.setMemberId(selectedMember.getMemberId());
+                newSchedule.setTrainerId(currentTrainerId);
+                newSchedule.setMembershipId(selectedRegistration.getPlanId());
+                newSchedule.setDate(selectedDate);
+                newSchedule.setTime(time);
+                newSchedule.setRoomId(selectedRoom.getRoomId());
+                newSchedule.setStatus("Đã lên lịch");
+                newSchedule.setNotes(notes);
+
                 try {
-                    // Kiểm tra định dạng giờ
-                    if (!time.matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")) {
-                        showAlert(AlertType.ERROR, "Lỗi", "Định dạng giờ không hợp lệ (HH:mm)");
-                        return;
-                    }
-
-                    TrainingController trainingController = new TrainingController();
-                    TrainingSchedule schedule = new TrainingSchedule();
-                    schedule.setTrainerId(currentTrainerId);
-                    schedule.setMemberId(selectedMember.getMemberId());
-                    schedule.setMembershipId(1); // Tạm thời set membershipId = 1, cần cải thiện sau
-                    schedule.setRoomId(selectedRoom.getRoomId());
-                    schedule.setDate(selectedDate);
-                    schedule.setTime(time);
-                    schedule.setDuration(60); // Mặc định 60 phút
-                    schedule.setNotes(notes);
-                    schedule.setStatus(model.enums.enum_TrainingStatus.SCHEDULED.getValue());
-
-                    if (trainingController.addTrainingSchedule(schedule)) {
+                    if (trainingController.addTrainingSchedule(newSchedule)) {
                         showAlert(AlertType.INFORMATION, "Thành công", "Đã thêm lịch tập mới");
                         dialog.close();
                         refreshScheduleTable();
+                        // Mở ngay trang thêm bài tập với schedule vừa tạo
+                        showExercisesPopup(newSchedule);
                     } else {
                         showAlert(AlertType.ERROR, "Lỗi", "Không thể thêm lịch tập");
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    showAlert(AlertType.ERROR, "Lỗi", "Có lỗi xảy ra khi thêm lịch tập");
+                } catch (SQLException ex) {
+                    showAlert(AlertType.ERROR, "Lỗi", "Lỗi khi thêm lịch tập: " + ex.getMessage());
                 }
             });
 
@@ -937,12 +1090,14 @@ public class WorkoutsController {
             root.getChildren().addAll(
                     new Label("Chọn hội viên:"),
                     memberComboBox,
+                    new Label("Chọn đăng ký:"),
+                    registrationComboBox,
                     new Label("Chọn phòng:"),
                     roomComboBox,
                     new Label("Chọn ngày:"),
                     datePicker,
                     new Label("Giờ:"),
-                    timeField,
+                    timeComboBox,
                     new Label("Ghi chú:"),
                     notesArea,
                     addButton);

@@ -7,6 +7,7 @@ import model.enums.enum_TrainingStatus;
 
 public class TrainingSchedule {
     private int id;
+    private int registrationId;
     private int memberId;
     private int trainerId;
     private int membershipId;
@@ -23,6 +24,7 @@ public class TrainingSchedule {
     private String trainerName;
     private String memberName;
     private String roomName;
+    private String memberCode;
 
     public TrainingSchedule() {
     }
@@ -33,6 +35,14 @@ public class TrainingSchedule {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getRegistrationId() {
+        return registrationId;
+    }
+
+    public void setRegistrationId(int registrationId) {
+        this.registrationId = registrationId;
     }
 
     public int getMemberId() {
@@ -156,5 +166,13 @@ public class TrainingSchedule {
                ", Giờ: " + time +
                ", Phòng: " + roomId +
                ", Ghi chú: " + notes;
+    }
+    // Getter và Setter cho memberCode
+    public String getMemberCode() {
+        return memberCode;
+    }
+
+    public void setMemberCode(String memberCode) {
+        this.memberCode = memberCode;
     }
 }

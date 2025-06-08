@@ -109,6 +109,21 @@ CREATE TABLE TrainingPlans (
   Description VARCHAR(500)
 );
 
+-- Bảng khuyến mãi
+CREATE TABLE Promotions (
+  PromotionID SERIAL PRIMARY KEY,
+  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
+  PromotionName VARCHAR(100) NOT NULL,
+  Description VARCHAR(500),
+  DiscountType discount_type NOT NULL,
+  DiscountValue DECIMAL(10,2) NOT NULL,
+  StartDate TIMESTAMP NOT NULL,
+  EndDate TIMESTAMP NOT NULL,
+  Status promotion_status DEFAULT 'Còn hạn',
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Bảng thanh toán
 CREATE TABLE Payments (
   PaymentID SERIAL PRIMARY KEY,
@@ -116,6 +131,7 @@ CREATE TABLE Payments (
   PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PaymentMethod VARCHAR(50) NOT NULL,
   Status payment_status_enum DEFAULT 'Thành công',
+  PromotionID INT REFERENCES Promotions(PromotionID) ON DELETE CASCADE,
   Notes VARCHAR(500)
 );
 
@@ -188,18 +204,10 @@ CREATE TABLE RoomEquipment (
     CONSTRAINT uq_equipment_code_per_center UNIQUE (EquipmentCode)
 );
 
--- Bảng Check-in/Check-out
-CREATE TABLE Attendance (
-  AttendanceID SERIAL PRIMARY KEY,
-  MemberID INT NOT NULL,
-  MembershipID INT NOT NULL,
-  CheckInTime TIMESTAMP NOT NULL,
-  TrainingScheduleID INT REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE,
-);
-
 -- Bảng lịch tập
 CREATE TABLE TrainingSchedule (
   ScheduleID SERIAL PRIMARY KEY,
+  RegistrationID INT NOT NULL REFERENCES TrainingRegistrations(RegistrationID) ON DELETE CASCADE,
   MemberID INT NOT NULL,
   TrainerID INT,
   MembershipID INT NOT NULL,
@@ -210,6 +218,15 @@ CREATE TABLE TrainingSchedule (
   Status training_status_enum DEFAULT 'Đã lên lịch',
   Notes VARCHAR(500),
   CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bảng Check-in/Check-out
+CREATE TABLE Attendance (
+  AttendanceID SERIAL PRIMARY KEY,
+  MemberID INT NOT NULL,
+  MembershipID INT NOT NULL,
+  CheckInTime TIMESTAMP NOT NULL,
+  TrainingScheduleID INT REFERENCES TrainingSchedule(ScheduleID) ON DELETE CASCADE
 );
 
 -- Bảng bài tập
@@ -247,20 +264,6 @@ CREATE TABLE MemberProgress (
   Thigh DECIMAL(5,2),
   TrainerID INT,
   Notes VARCHAR(500)
-);
-
-CREATE TABLE Promotions (
-  PromotionID SERIAL PRIMARY KEY,
-  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
-  PromotionName VARCHAR(100) NOT NULL,
-  Description VARCHAR(500),
-  DiscountType discount_type NOT NULL,
-  DiscountValue DECIMAL(10,2) NOT NULL,
-  StartDate TIMESTAMP NOT NULL,
-  EndDate TIMESTAMP NOT NULL,
-  Status promotion_status DEFAULT 'Còn hạn',
-  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    alignment="CENTER" spacing="20.0" style="-fx-padding: 40;">
+    <Label text="DM Tùng Béo"
+        style="-fx-font-size: 32px; -fx-font-family: 'Courier New'; -fx-font-weight: bold;" />
+</VBox> 
