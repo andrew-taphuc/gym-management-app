@@ -15,10 +15,7 @@ import java.time.format.DateTimeFormatter;
 import controller.TrainingController;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
-import model.Exercise;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
@@ -62,14 +59,14 @@ public class WorkoutsController {
 
     private void setupTable() {
         colDate.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getScheduleDate() != null)
+            if (cellData.getValue().getDate() != null)
                 return new javafx.beans.property.SimpleStringProperty(
-                        cellData.getValue().getScheduleDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                        cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             return new javafx.beans.property.SimpleStringProperty("");
         });
         colTime.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getStartTime() != null)
-                return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStartTime().toString());
+            if (cellData.getValue().getTime() != null)
+                return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTime());
             return new javafx.beans.property.SimpleStringProperty("");
         });
         colTrainer.setCellValueFactory(cellData -> {
@@ -81,8 +78,8 @@ public class WorkoutsController {
             return new javafx.beans.property.SimpleStringProperty(roomName != null ? roomName : "Chưa có phòng");
         });
         colStatus.setCellValueFactory(cellData -> {
-            enum_TrainingStatus status = cellData.getValue().getStatus();
-            return new javafx.beans.property.SimpleStringProperty(status != null ? status.getValue() : "");
+            String status = cellData.getValue().getStatus();
+            return new javafx.beans.property.SimpleStringProperty(status != null ? status : "");
         });
         colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
     }
@@ -103,7 +100,7 @@ public class WorkoutsController {
                         btn.setPrefWidth(200);
                         btn.setOnAction(event -> {
                             TrainingSchedule schedule = getTableView().getItems().get(getIndex());
-                            showExercisesPopup(schedule.getScheduleId());
+                            showExercisesPopup(schedule.getId());
                         });
                         btn.setStyle(
                                 "-fx-background-color: #4FC3F7; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");

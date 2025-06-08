@@ -1,4 +1,4 @@
-package view.adminView;
+package view.ownerView;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +12,10 @@ import model.enums.enum_Role;
 import view.BaseView;
 import view.LoginView;
 import view.ProfileView;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
-public class HomeView_admin extends BaseView {
+public class HomeView_Owner extends BaseView {
     @FXML
     private Label welcomeLabel;
 
@@ -29,7 +31,7 @@ public class HomeView_admin extends BaseView {
     @FXML
     private StackPane contentArea;
 
-    public HomeView_admin(Stage stage) {
+    public HomeView_Owner(Stage stage) {
         super(stage);
     }
 
@@ -67,15 +69,15 @@ public class HomeView_admin extends BaseView {
     }
 
     @FXML
-    private void handleCheckinClick() {
-        view.adminView.CheckinController controller = new view.adminView.CheckinController();
+    private void handleDashboardClick() {
+        view.ownerView.DashboardController controller = new view.ownerView.DashboardController();
         controller.setCurrentUser(currentUser);
-        loadViewWithUser("checkin.fxml", controller);
+        loadViewWithUser("dashboard.fxml", controller);
     }
 
     @FXML
     private void handlePlansClick() {
-        view.adminView.PlansRenewalsController controller = new view.adminView.PlansRenewalsController();
+        view.ownerView.PlansRenewalsController controller = new view.ownerView.PlansRenewalsController();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("plans_renewals.fxml", controller);
     }
@@ -84,14 +86,14 @@ public class HomeView_admin extends BaseView {
     private void handlePromosClick() {
         view.adminView.PromosView controller = new view.adminView.PromosView();
         controller.setCurrentUser(currentUser);
-        loadViewWithUser("promos.fxml", controller);
+        loadViewWithUser("/view/adminView/promos.fxml", controller);
     }
 
     @FXML
     private void handleFeedbackClick() {
         view.adminView.FeedbackView controller = new view.adminView.FeedbackView();
         controller.setCurrentUser(currentUser);
-        loadViewWithUser("feedback.fxml", controller);
+        loadViewWithUser("/view/adminView/feedback.fxml", controller);
     }
 
     @FXML
@@ -124,6 +126,13 @@ public class HomeView_admin extends BaseView {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 }

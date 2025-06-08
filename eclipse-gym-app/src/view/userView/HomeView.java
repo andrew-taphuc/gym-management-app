@@ -93,7 +93,7 @@ public class HomeView extends BaseView {
 
     @FXML
     private void handleFeedbackClick() {
-        view.userView.FeedbackController controller = new view.userView.FeedbackController();
+        view.userView.FeedbackView controller = new view.userView.FeedbackView();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("feedback.fxml", controller);
     }
