@@ -10,30 +10,34 @@
     spacing="20"
     style="-fx-background-color: white; -fx-padding: 40;">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
-        <Label text="Chọn gói tập"
-            style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Button text="Quay lại" onAction="#handleBack"
-            style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
-            prefWidth="100" prefHeight="35" />
-    </HBox>
+    <StackPane>
+        <Label text="Vui lòng chọn gói tập phù hợp với bạn"
+            style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: black;" />
+        
+        <AnchorPane>
+            <Button text="Quay lại" onAction="#handleBack"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;"
+                    prefWidth="100" prefHeight="35"
+                    AnchorPane.topAnchor="10" AnchorPane.rightAnchor="0"
+                    />
+        </AnchorPane>
+    </StackPane>
 
     <Separator />
 
-    <TableView fx:id="planTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="nameColumn" text="Tên gói" prefWidth="200" />
-            <TableColumn fx:id="durationColumn" text="Thời hạn" prefWidth="100" />
-            <TableColumn fx:id="priceColumn" text="Giá" prefWidth="150" />
-            <TableColumn fx:id="descriptionColumn" text="Mô tả" prefWidth="300" />
-        </columns>
-    </TableView>
+    <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
+        
+        <VBox fx:id="planContainer" spacing="10" alignment="CENTER"
+            style="-fx-background-color: transparent;" />
 
-    <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+        <HBox alignment="CENTER">
+            <Label fx:id="errorLabel" style="-fx-text-fill: red;" />
+        </HBox>
 
-    <Button text="Tiếp tục" onAction="#handleContinue"
-        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"
-        prefWidth="200" prefHeight="40" />
-
-</VBox> 
+        <HBox alignment="CENTER">
+            <Button text="Tiếp tục" onAction="#handleContinue"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 20px;"
+                prefWidth="200" prefHeight="40" />
+        </HBox>
+    </VBox>
+</VBox>
