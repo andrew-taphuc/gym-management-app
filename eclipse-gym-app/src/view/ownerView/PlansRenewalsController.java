@@ -325,6 +325,13 @@ public class PlansRenewalsController {
                         showAlert("Lỗi", "Mã gói không được để trống", Alert.AlertType.ERROR);
                         return null;
                     }
+
+                    // Kiểm tra mã gói đã tồn tại
+                    if (membershipPlanController.checkPlanCodeExists(planCodeField.getText().trim())) {
+                        showAlert("Lỗi", "Mã gói đã tồn tại. Vui lòng nhập mã gói khác.", Alert.AlertType.ERROR);
+                        return null;
+                    }
+
                     if (planNameField.getText().trim().isEmpty()) {
                         showAlert("Lỗi", "Tên gói không được để trống", Alert.AlertType.ERROR);
                         return null;
@@ -392,6 +399,8 @@ public class PlansRenewalsController {
         // Các trường nhập liệu với giá trị hiện tại
         TextField planCodeField = new TextField(selectedPlan.getPlanCode());
         planCodeField.setPromptText("Mã gói tập (VD: MP001)");
+        planCodeField.setEditable(false);
+        planCodeField.setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #666666;");
 
         TextField planNameField = new TextField(selectedPlan.getPlanName());
         planNameField.setPromptText("Tên gói tập");
@@ -431,10 +440,6 @@ public class PlansRenewalsController {
             if (dialogButton == saveButtonType) {
                 try {
                     // Validation
-                    if (planCodeField.getText().trim().isEmpty()) {
-                        showAlert("Lỗi", "Mã gói không được để trống", Alert.AlertType.ERROR);
-                        return null;
-                    }
                     if (planNameField.getText().trim().isEmpty()) {
                         showAlert("Lỗi", "Tên gói không được để trống", Alert.AlertType.ERROR);
                         return null;
@@ -449,7 +454,7 @@ public class PlansRenewalsController {
                     // Tạo MembershipPlan object với thông tin đã cập nhật
                     MembershipPlan updatedPlan = new MembershipPlan();
                     updatedPlan.setPlanId(selectedPlan.getPlanId()); // Giữ nguyên ID
-                    updatedPlan.setPlanCode(planCodeField.getText().trim());
+                    updatedPlan.setPlanCode(selectedPlan.getPlanCode()); // Giữ nguyên mã gói cũ
                     updatedPlan.setPlanName(planNameField.getText().trim());
                     updatedPlan.setDuration(durationSpinner.getValue());
                     updatedPlan.setPrice(price);
@@ -576,6 +581,13 @@ public class PlansRenewalsController {
                         showAlert("Lỗi", "Mã gói không được để trống", Alert.AlertType.ERROR);
                         return null;
                     }
+
+                    // Kiểm tra mã gói đã tồn tại
+                    if (trainingPlanController.checkPlanCodeExists(planCodeField.getText().trim())) {
+                        showAlert("Lỗi", "Mã gói đã tồn tại. Vui lòng nhập mã gói khác.", Alert.AlertType.ERROR);
+                        return null;
+                    }
+
                     if (planNameField.getText().trim().isEmpty()) {
                         showAlert("Lỗi", "Tên gói không được để trống", Alert.AlertType.ERROR);
                         return null;
@@ -648,6 +660,8 @@ public class PlansRenewalsController {
         // Các trường nhập liệu với giá trị hiện tại
         TextField planCodeField = new TextField(selectedPlan.getPlanCode());
         planCodeField.setPromptText("Mã gói tập (VD: TP001)");
+        planCodeField.setEditable(false);
+        planCodeField.setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #666666;");
 
         TextField planNameField = new TextField(selectedPlan.getPlanName());
         planNameField.setPromptText("Tên gói tập");
@@ -694,10 +708,6 @@ public class PlansRenewalsController {
             if (dialogButton == saveButtonType) {
                 try {
                     // Validation
-                    if (planCodeField.getText().trim().isEmpty()) {
-                        showAlert("Lỗi", "Mã gói không được để trống", Alert.AlertType.ERROR);
-                        return null;
-                    }
                     if (planNameField.getText().trim().isEmpty()) {
                         showAlert("Lỗi", "Tên gói không được để trống", Alert.AlertType.ERROR);
                         return null;
@@ -716,7 +726,7 @@ public class PlansRenewalsController {
                     // Tạo TrainingPlan object với thông tin đã cập nhật
                     TrainingPlan updatedPlan = new TrainingPlan();
                     updatedPlan.setPlanId(selectedPlan.getPlanId()); // Giữ nguyên ID
-                    updatedPlan.setPlanCode(planCodeField.getText().trim());
+                    updatedPlan.setPlanCode(selectedPlan.getPlanCode()); // Giữ nguyên mã gói cũ
                     updatedPlan.setPlanName(planNameField.getText().trim());
                     updatedPlan.setType(typeComboBox.getValue());
                     updatedPlan.setSessionAmount(sessionsSpinner.getValue());

@@ -266,4 +266,24 @@ public class TrainingPlanController {
             return false;
         }
     }
+
+    /**
+     * Kiểm tra mã gói đã tồn tại hay chưa
+     * 
+     * @param planCode Mã gói cần kiểm tra
+     * @return true nếu mã gói đã tồn tại, false nếu chưa tồn tại
+     */
+    public boolean checkPlanCodeExists(String planCode) {
+        String query = "SELECT COUNT(*) FROM TrainingPlans WHERE PlanCode = ? AND Status = 'Hoạt động' ";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, planCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
