@@ -144,7 +144,9 @@ CREATE TABLE Memberships (
   StartDate DATE NOT NULL,
   EndDate DATE NOT NULL,
   Status membership_status_enum DEFAULT 'Chưa kích hoạt',
-  PaymentID INT REFERENCES Payments(PaymentID)
+  PaymentID INT REFERENCES Payments(PaymentID),
+  RenewalTo INT REFERENCES Memberships(MembershipID),
+  RenewalDate TIMESTAMP
 );
 
 -- BẢNG ĐĂNG KÝ GÓI HUẤN LUYỆN (Thêm PaymentID)
@@ -156,16 +158,6 @@ CREATE TABLE TrainingRegistrations (
   StartDate DATE NOT NULL,
   SessionsLeft INT DEFAULT 0 CHECK (SessionsLeft >= 0),
   PaymentID INT REFERENCES Payments(PaymentID)
-);
-
--- BẢNG GIA HẠN GÓI GYM (đã có PaymentID, chỉ cần chắc chắn có FK)
-CREATE TABLE MembershipRenewals (
-  RenewalID SERIAL PRIMARY KEY,
-  MembershipID INT NOT NULL REFERENCES Memberships(MembershipID) ON DELETE CASCADE,
-  NewEndDate DATE NOT NULL,
-  RenewalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PaymentID INT REFERENCES Payments(PaymentID),
-  Notes VARCHAR(500)
 );
 
 -- Module quản lý phòng tập, thiết bị

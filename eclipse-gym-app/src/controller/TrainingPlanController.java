@@ -1,6 +1,7 @@
 package controller;
 
-import model.MembershipPlan;
+import model.TrainingPlan;
+import model.enums.enum_TrainerSpecialization;
 import utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,25 +10,26 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
-public class MembershipPlanController {
+public class TrainingPlanController {
     private Connection connection;
 
-    public MembershipPlanController() {
+    public TrainingPlanController() {
         this.connection = DBConnection.getConnection();
     }
 
-    public List<MembershipPlan> getAllPlans() {
-        List<MembershipPlan> plans = new ArrayList<>();
-        String query = "SELECT * FROM MembershipPlans ORDER BY PlanID";
+    public List<TrainingPlan> getAllPlans() {
+        List<TrainingPlan> plans = new ArrayList<>();
+        String query = "SELECT * FROM TrainingPlans ORDER BY PlanID";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                MembershipPlan plan = new MembershipPlan();
+                TrainingPlan plan = new TrainingPlan();
                 plan.setPlanId(rs.getInt("PlanID"));
                 plan.setPlanCode(rs.getString("PlanCode"));
                 plan.setPlanName(rs.getString("PlanName"));
-                plan.setDuration(rs.getInt("Duration"));
+                plan.setType(enum_TrainerSpecialization.fromValue(rs.getString("Type")));
+                plan.setSessionAmount(rs.getInt("SessionAmount"));
                 plan.setPrice(rs.getDouble("Price"));
                 plan.setDescription(rs.getString("Description"));
                 plans.add(plan);
@@ -37,18 +39,19 @@ public class MembershipPlanController {
         }
         return plans;
     }
- 
-    public MembershipPlan getPlanByID(int planId) {
-        String query = "SELECT * FROM MembershipPlans WHERE PlanID = ?";
+
+    public TrainingPlan getPlanByID(int planId) {
+        String query = "SELECT * FROM TrainingPlans WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, planId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                MembershipPlan plan = new MembershipPlan();
+                TrainingPlan plan = new TrainingPlan();
                 plan.setPlanId(rs.getInt("PlanID"));
                 plan.setPlanCode(rs.getString("PlanCode"));
                 plan.setPlanName(rs.getString("PlanName"));
-                plan.setDuration(rs.getInt("Duration"));
+                plan.setType(enum_TrainerSpecialization.fromValue(rs.getString("Type")));
+                plan.setSessionAmount(rs.getInt("SessionAmount"));
                 plan.setPrice(rs.getDouble("Price"));
                 plan.setDescription(rs.getString("Description"));
                 return plan;
@@ -59,14 +62,15 @@ public class MembershipPlanController {
         return null;
     }
 
-    public boolean createPlan(MembershipPlan plan) {
-        String query = "INSERT INTO MembershipPlans (PlanCode, PlanName, Duration, Price, Description) VALUES (?, ?, ?, ?, ?)";
+    public boolean createTrainingPlan(TrainingPlan plan) {
+        String query = "INSERT INTO TrainingPlans (PlanCode, PlanName, Type, SessionAmount, Price, Description) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, plan.getPlanCode());
             stmt.setString(2, plan.getPlanName());
-            stmt.setInt(3, plan.getDuration());
-            stmt.setDouble(4, plan.getPrice());
-            stmt.setString(5, plan.getDescription());
+            stmt.setString(3, plan.getType().getValue());
+            stmt.setInt(4, plan.getSessionAmount());
+            stmt.setDouble(5, plan.getPrice());
+            stmt.setString(6, plan.getDescription());
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -76,15 +80,16 @@ public class MembershipPlanController {
         }
     }
 
-    public boolean updatePlan(MembershipPlan plan) {
-        String query = "UPDATE MembershipPlans SET PlanCode = ?, PlanName = ?, Duration = ?, Price = ?, Description = ? WHERE PlanID = ?";
+    public boolean updateTrainingPlan(TrainingPlan plan) {
+        String query = "UPDATE TrainingPlans SET PlanCode = ?, PlanName = ?, Type = ?, SessionAmount = ?, Price = ?, Description = ? WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, plan.getPlanCode());
             stmt.setString(2, plan.getPlanName());
-            stmt.setInt(3, plan.getDuration());
-            stmt.setDouble(4, plan.getPrice());
-            stmt.setString(5, plan.getDescription());
-            stmt.setInt(6, plan.getPlanId());
+            stmt.setString(3, plan.getType().getValue());
+            stmt.setInt(4, plan.getSessionAmount());
+            stmt.setDouble(5, plan.getPrice());
+            stmt.setString(6, plan.getDescription());
+            stmt.setInt(7, plan.getPlanId());
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -94,8 +99,8 @@ public class MembershipPlanController {
         }
     }
 
-    public boolean deletePlan(int planId) {
-        String query = "DELETE FROM MembershipPlans WHERE PlanID = ?";
+    public boolean deleteTrainingPlan(int planId) {
+        String query = "DELETE FROM TrainingPlans WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, planId);
             
