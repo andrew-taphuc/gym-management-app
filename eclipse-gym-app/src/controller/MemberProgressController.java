@@ -155,39 +155,42 @@ public class MemberProgressController {
     public int getStreakDays(int memberId) {
         String sql = """
             WITH RECURSIVE dates AS (
-                SELECT DISTINCT DATE(CheckInTime) as check_date
+                SELECT CURRENT_DATE::date as check_date
+                UNION ALL
+                SELECT (check_date - INTERVAL '1 day')::date
+                FROM dates
+                WHERE check_date > (CURRENT_DATE - INTERVAL '30 days')::date
+            ),
+            check_ins AS (
+                SELECT DISTINCT DATE(CheckInTime)::date as check_date
                 FROM Attendance
                 WHERE MemberID = ?
-                ORDER BY check_date DESC
-            ),
-            streak AS (
-                SELECT check_date,
-                       ROW_NUMBER() OVER (ORDER BY check_date DESC) as rn,
-                       check_date - ROW_NUMBER() OVER (ORDER BY check_date DESC) as grp
-                FROM dates
+                AND CheckInTime >= (CURRENT_DATE - INTERVAL '30 days')::date
             )
-            SELECT COUNT(*) as streak_days
-            FROM streak
-            WHERE grp = (
-                SELECT grp 
-                FROM streak 
-                WHERE check_date = CURRENT_DATE
-                OR check_date = (
-                    SELECT MAX(check_date) 
-                    FROM streak 
-                    WHERE check_date < CURRENT_DATE
+            SELECT COUNT(*)
+            FROM dates d
+            WHERE EXISTS (
+                SELECT 1 
+                FROM check_ins c 
+                WHERE c.check_date = d.check_date
+            )
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM dates d2 
+                WHERE d2.check_date > d.check_date 
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM check_ins c2 
+                    WHERE c2.check_date = d2.check_date
                 )
-            )
-        """;
-
+            );
+            """;
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, memberId);
-            ResultSet rs = pstmt.executeQuery();
-
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, memberId);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt("streak_days");
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi tính chuỗi ngày tập: " + e.getMessage());

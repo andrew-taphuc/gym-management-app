@@ -55,16 +55,41 @@ public class HomeContent {
     private final MemberProgressController progressController = new MemberProgressController();
     private List<MemberProgress> history;
 
+    public HomeContent() {
+        System.out.println("HomeContent constructor called");
+    }
+
     public void setCurrentUser(User user) {
+        System.out.println("setCurrentUser called with user: " + (user != null ? user.getUserId() : "null"));
         this.currentUser = user;
+    }
+
+    @FXML
+    public void initialize() {
+        System.out.println("HomeContent initialize called");
+        // Khởi tạo các loại chỉ số cho filter
+        statTypeCombo.getItems().addAll("Cân nặng", "BMI", "Body Fat", "Vòng ngực", "Vòng eo", "Vòng mông", "Bắp tay", "Đùi");
+        statTypeCombo.getSelectionModel().selectFirst();
+        statTypeCombo.setOnAction(e -> updateLineChart());
+
+        // Khởi tạo TableView
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("scheduleDate"));
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        trainerColumn.setCellValueFactory(new PropertyValueFactory<>("trainerName"));
+        roomColumn.setCellValueFactory(new PropertyValueFactory<>("roomName"));
+        exercisesColumn.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+
+        // Load data after FXML is initialized
         if (currentUser != null) {
             loadUserData();
         }
     }
 
     private void loadUserData() {
+        System.out.println("loadUserData called");
         // Lấy memberId từ userId
         Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        System.out.println("MemberId: " + memberId);
         if (memberId != null) {
             // Load thông tin gói tập
             MembershipInfo membership = progressController.getCurrentMembershipInfo(memberId);
@@ -77,6 +102,7 @@ public class HomeContent {
 
             // Load lịch sử số đo
             history = progressController.getProgressHistoryByMemberId(memberId);
+            System.out.println("History size: " + (history != null ? history.size() : 0));
             if (history != null && !history.isEmpty()) {
                 updateBodyStats();
                 updateLineChart();
@@ -117,21 +143,6 @@ public class HomeContent {
         totalSessions.setText(total + " buổi");
     }
 
-    @FXML
-    public void initialize() {
-        // Khởi tạo các loại chỉ số cho filter
-        statTypeCombo.getItems().addAll("Cân nặng", "BMI", "Body Fat", "Vòng ngực", "Vòng eo", "Vòng mông", "Bắp tay", "Đùi");
-        statTypeCombo.getSelectionModel().selectFirst();
-        statTypeCombo.setOnAction(e -> updateLineChart());
-
-        // Khởi tạo TableView
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("scheduleDate"));
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        trainerColumn.setCellValueFactory(new PropertyValueFactory<>("trainerName"));
-        roomColumn.setCellValueFactory(new PropertyValueFactory<>("roomName"));
-        exercisesColumn.setCellValueFactory(new PropertyValueFactory<>("exercises"));
-    }
-
     private void updateScheduleTable(List<TrainingSchedule> schedules) {
         scheduleTable.getItems().clear();
         if (schedules != null) {
@@ -143,6 +154,13 @@ public class HomeContent {
         if (history == null || history.isEmpty()) return;
         
         MemberProgress latest = history.get(0);
+        
+        // Debug logs
+        System.out.println("Latest progress data:");
+        System.out.println("Weight: " + latest.getWeight());
+        System.out.println("Height: " + latest.getHeight());
+        System.out.println("BMI: " + latest.getBmi());
+        System.out.println("Body Fat: " + latest.getBodyFatPercentage());
         
         // Cập nhật BMI
         double bmi = latest.getBmi();

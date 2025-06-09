@@ -50,9 +50,13 @@ public class HomeView extends BaseView {
     @FXML
     private void handleHomeClick() {
         try {
-            Parent homeContent = FXMLLoader.load(getClass().getResource("home_content.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("home_content.fxml"));
+            HomeContent homeContent = new HomeContent();
+            homeContent.setCurrentUser(currentUser);
+            loader.setController(homeContent);
+            Parent view = loader.load();
             contentArea.getChildren().clear();
-            contentArea.getChildren().add(homeContent);
+            contentArea.getChildren().add(view);
         } catch (Exception e) {
             e.printStackTrace();
         }
