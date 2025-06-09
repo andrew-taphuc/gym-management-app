@@ -42,7 +42,7 @@ public class HomeView_Owner extends BaseView {
             roleLabel.setText("Role: " + currentUser.getRole());
         }
         // Load home content by default
-        handleHomeClick();
+        handleDashboardClick();
     }
 
     @FXML
