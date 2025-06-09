@@ -18,6 +18,19 @@ public class UserController {
         this.connection = DBConnection.getConnection();
     }
 
+    public Integer getMemberIDByUserID(int userID) {
+        String query = "SELECT MemberID FROM Members WHERE UserID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("MemberID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public User getUserByID(int userID) {
         String query = "SELECT * FROM Users WHERE UserID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
