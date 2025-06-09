@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Region?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<AnchorPane xmlns="http://javafx.com/javafx"
     xmlns:fx="http://javafx.com/fxml"
-    prefHeight="600.0" prefWidth="800.0"
-    styleClass="content-area">
+    fx:controller="view.ownerView.PlansRenewalsController"
+    prefHeight="700.0" prefWidth="1200.0">
 
-    <Label fx:id="pageTitle" styleClass="page-title" />
+    <AnchorPane AnchorPane.topAnchor="0"
+        AnchorPane.leftAnchor="0"
+        AnchorPane.rightAnchor="0"
+        AnchorPane.bottomAnchor="0"
+        prefHeight="700.0" prefWidth="1200.0">
 
-</VBox> 
+        <VBox AnchorPane.topAnchor="0"
+            AnchorPane.leftAnchor="0"
+            AnchorPane.rightAnchor="0"
+            AnchorPane.bottomAnchor="0"
+            styleClass="content-area"
+            stylesheets="@plans_renewals.css"
+            alignment="TOP_LEFT"
+            spacing="10">
+
+            <Label fx:id="pageTitle" styleClass="page-title" />
+
+            <!-- Bảng Membership Plans -->
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Danh sách gói tập Membership" styleClass="section-title"
+                    style="-fx-text-alignment: left; -fx-font-size: 24px; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="refreshButton" text="Làm mới"
+                    style="-fx-font-size: 18px; -fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleRefreshClick" />
+                <Button fx:id="addMembershipButton" text="Thêm gói tập"
+                    style="-fx-font-size: 18px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleAddMembershipClick" />
+                <Button fx:id="editMembershipButton" text="Sửa gói tập"
+                    style="-fx-font-size: 18px; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleEditMembershipClick" />
+                <Button fx:id="deleteMembershipButton" text="Xóa gói tập"
+                    style="-fx-font-size: 18px; -fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleDeleteMembershipClick" />
+            </HBox>
+
+            <TableView fx:id="membershipPlansTable"
+                prefHeight="300"
+                maxHeight="400"
+                styleClass="workout-table">
+                <columns>
+                    <TableColumn fx:id="membershipPlanIdColumn" text="ID" prefWidth="30"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipPlanCodeColumn" text="Mã gói" prefWidth="100"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipPlanNameColumn" text="Tên gói tập" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipDurationColumn" text="Thời hạn (ngày)"
+                        prefWidth="120"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipPriceColumn" text="Giá" prefWidth="80"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipDescriptionColumn" text="Mô tả" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="membershipActionColumn" text="Thao tác" prefWidth="100"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+
+            <!-- Bảng Training Plans -->
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <Label text="Danh sách gói tập với huấn luyện viên" styleClass="section-title"
+                    style="-fx-text-alignment: left; -fx-font-size: 24px; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="addTrainingButton" text="Thêm gói HLV"
+                    style="-fx-font-size: 18px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleAddTrainingClick" />
+                <Button fx:id="editTrainingButton" text="Sửa gói HLV"
+                    style="-fx-font-size: 18px; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleEditTrainingClick" />
+                <Button fx:id="deleteTrainingButton" text="Xóa gói HLV"
+                    style="-fx-font-size: 18px; -fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                    onAction="#handleDeleteTrainingClick" />
+            </HBox>
+
+            <TableView fx:id="trainingPlansTable"
+                prefHeight="300"
+                maxHeight="400"
+                styleClass="workout-table">
+                <columns>
+                    <TableColumn fx:id="trainingPlanIdColumn" text="ID" prefWidth="30"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingPlanCodeColumn" text="Mã gói" prefWidth="110"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingPlanNameColumn" text="Tên gói tập" prefWidth="170"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingTypeColumn" text="Loại" prefWidth="80"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingSessionsColumn" text="Số buổi" prefWidth="60"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingPriceColumn" text="Giá" prefWidth="80"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingDescriptionColumn" text="Mô tả" prefWidth="200"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="trainingActionColumn" text="Thao tác" prefWidth="100"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+        </VBox>
+    </AnchorPane>
+</AnchorPane> 

@@ -167,14 +167,14 @@ INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, P
 (3, 7, 3, CURRENT_DATE, CURRENT_DATE + INTERVAL '365 days', 'Chưa kích hoạt', 3), 
 (4, 8, 5, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 4);
 -- Thêm gia hạn cho các member
-INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
-VALUES (1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 9, 1, CURRENT_DATE);
-INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
-VALUES (2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '180 days', 'Chưa kích hoạt', 10, 2, CURRENT_DATE);
-INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
-VALUES (3, 7, 3, CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE + INTERVAL '150 days', 'Chưa kích hoạt', 11, 3, CURRENT_DATE - INTERVAL '30 days');
-INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
-VALUES (4, 8, 5, '2025-05-10', '2025-08-10', 'Chưa kích hoạt', 12, 4, '2025-05-10');
+-- INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+-- VALUES (1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 9, 1, CURRENT_DATE);
+-- INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+-- VALUES (2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '180 days', 'Chưa kích hoạt', 10, 2, CURRENT_DATE);
+-- INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+-- VALUES (3, 7, 3, CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE + INTERVAL '150 days', 'Chưa kích hoạt', 11, 3, CURRENT_DATE - INTERVAL '30 days');
+-- INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
+-- VALUES (4, 8, 5, '2025-05-10', '2025-08-10', 'Chưa kích hoạt', 12, 4, '2025-05-10');
 
 -- Dữ liệu mẫu cho bảng TrainingRegistrations
 INSERT INTO TrainingRegistrations (MemberID, PlanID, TrainerID, StartDate, SessionsLeft, PaymentID) VALUES
