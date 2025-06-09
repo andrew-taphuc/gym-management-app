@@ -107,6 +107,7 @@ public class MemberController {
                 user.setUserId(rs.getInt("UserID"));
                 user.setFullName(rs.getString("FullName")); 
                 user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setEmail(rs.getString("Email"));
                 member.setUser(user);
 
                 members.add(member);

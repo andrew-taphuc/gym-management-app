@@ -1,6 +1,9 @@
 package view.register;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import model.MembershipPlan;
@@ -15,6 +18,7 @@ import controller.MemberController;
 import controller.PromosController;
 import model.enums.enum_PaymentStatus;
 import view.BaseView;
+import view.adminView.PlansRenewalsController;
 import view.userView.HomeView;
 import model.enums.enum_MembershipStatus;
 import java.io.BufferedReader;
@@ -168,19 +172,31 @@ public class PaymentView extends BaseView {
             }
             System.out.println("✅ Tạo gói tập thành công!");
 
-            // Hiển thị dialog thành công
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.INFORMATION);
-            alert.setTitle("Đăng ký thành công");
-            alert.setHeaderText(null);
-            alert.setContentText("Đăng kí thành công, vui lòng đăng nhập để sử dụng dịch vụ.");
-            alert.getDialogPane().getStylesheets().clear();
-            alert.getDialogPane().getStylesheets().add(getClass().getResource("/view/dialog.css").toExternalForm());
-            alert.showAndWait();
-
             // Chuyển đến trang đăng nhập
-            view.LoginView loginView = new view.LoginView(stage);
-            loginView.loadView("/view/login.fxml");
+            if(UserController.getCurrentUser() == null) {
+                // Hiển thị dialog thành công
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Đăng ký thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đăng kí thành công, vui lòng đăng nhập để sử dụng dịch vụ.");
+                alert.getDialogPane().getStylesheets().clear();
+                alert.getDialogPane().getStylesheets().add(getClass().getResource("/view/dialog.css").toExternalForm());
+                alert.showAndWait();
+                view.LoginView loginView = new view.LoginView(stage);
+                loginView.loadView("/view/login.fxml");
+
+            } else {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Đăng ký thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đăng kí tài khoản cho người dùng mới thành công.");
+                alert.getDialogPane().getStylesheets().clear();
+                alert.getDialogPane().getStylesheets().add(getClass().getResource("/view/dialog.css").toExternalForm());
+                alert.showAndWait();
+                stage.close();
+            }
 
         } catch (Exception e) {
             errorLabel.setText("Lỗi thanh toán: " + e.getMessage());

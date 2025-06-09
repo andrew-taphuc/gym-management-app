@@ -39,6 +39,9 @@ public class PlansRenewalsController {
     private TableColumn<Member, String> phoneColumn;
 
     @FXML
+    private TableColumn<Member, String> emailColumn;
+
+    @FXML
     private TableColumn<Member, String> statusColumn;
     
     @FXML
@@ -47,9 +50,35 @@ public class PlansRenewalsController {
     private User currentUser;
     private MemberController memberController = new MemberController();
     private ObservableList<Member> allMembers = FXCollections.observableArrayList();
+    private Stage stage;
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
+    }
+
+    public PlansRenewalsController() {
+        // Constructor mặc định
+    }
+
+    public PlansRenewalsController(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void refreshMemberTable() {
+        allMembers.setAll(memberController.getAllMembers());
+        loadMemberTable(allMembers);
+    }
+
+    public void loadView(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            loader.setController(this);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -81,6 +110,12 @@ public class PlansRenewalsController {
         phoneColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue().getUser() != null)
                 return new SimpleStringProperty(cellData.getValue().getUser().getPhoneNumber());
+            else
+                return new SimpleStringProperty("");
+        });
+        emailColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getUser() != null)
+                return new SimpleStringProperty(cellData.getValue().getUser().getEmail());
             else
                 return new SimpleStringProperty("");
         });
@@ -117,7 +152,9 @@ public class PlansRenewalsController {
             registerView.loadView("/view/register/register.fxml");
 
             stage.setTitle("Đăng ký tài khoản mới");
-            stage.show();
+            stage.showAndWait();
+
+            refreshMemberTable();
         } catch (Exception e) {
             e.printStackTrace();
         }

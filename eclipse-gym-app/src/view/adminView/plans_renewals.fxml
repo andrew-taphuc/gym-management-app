@@ -40,6 +40,7 @@
                     <TableColumn fx:id="memberCodeColumn" text="Mã thành viên" prefWidth="200" />
                     <TableColumn fx:id="nameColumn" text="Tên" prefWidth="300" />
                     <TableColumn fx:id="phoneColumn" text="Số điện thoại" prefWidth="200" />
+                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="300" />
                     <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="200" />
                 </columns>
             </TableView>
