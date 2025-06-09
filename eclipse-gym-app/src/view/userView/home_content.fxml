@@ -1,14 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    alignment="TOP_LEFT" spacing="20.0" style="-fx-padding: 40;">
-    <Label text="Chào mừng bạn đến với TPH FITNESS!"
-        style="-fx-font-size: 28px; -fx-font-family: 'Be Vietnam Pro'; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-color: #4FC3F7; -fx-padding: 20; -fx-background-radius: 12; -fx-alignment: top-left; -fx-label-padding: 0;"
-        alignment="TOP_LEFT" maxWidth="1.0E7" />
-</VBox> 
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.userView.HomeContent"
+      spacing="24" style="-fx-background-color: #f6fafd; -fx-padding: 24;">
+    
+    <!-- Header Section -->
+    <HBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+        <VBox spacing="8">
+            <Label fx:id="welcomeLabel" text="Chào mừng trở lại!" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Label fx:id="membershipStatus" text="Gói tập còn hạn: 30 ngày" style="-fx-font-size: 16px; -fx-text-fill: #666;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Đặt lịch tập" style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"/>
+    </HBox>
+
+    <!-- Quick Stats Cards -->
+    <HBox spacing="16">
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+            <Label text="Buổi tập còn lại" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+            <Label fx:id="remainingSessions" text="12" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+            <Label text="Buổi tập tháng này" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+            <Label fx:id="monthlySessions" text="8" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+            <Label text="Ngày liên tục" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+            <Label fx:id="streakDays" text="5" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Body Stats Section -->
+    <HBox spacing="24">
+        <!-- Line Chart Card -->
+        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Theo dõi tiến độ" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <ComboBox fx:id="statTypeCombo" prefWidth="120" style="-fx-font-size: 14px;"/>
+            </HBox>
+            <LineChart fx:id="lineChart" prefHeight="300" style="-fx-background-radius: 10;">
+                <xAxis>
+                    <CategoryAxis fx:id="dateAxis" label="Ngày"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="valueAxis" label="Giá trị"/>
+                </yAxis>
+            </LineChart>
+        </VBox>
+
+        <!-- Current Stats Card -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" prefWidth="300">
+            <Label text="Chỉ số hiện tại" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            
+            <!-- BMI Card -->
+            <VBox style="-fx-background-color: #e3f2fd; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="BMI" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label fx:id="bmiValue" text="22.5" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    <Label fx:id="bmiStatus" text="Normal" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Body Fat Card -->
+            <VBox style="-fx-background-color: #f3e5f5; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Body Fat" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label fx:id="bodyFatValue" text="18%" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    <Label fx:id="bodyFatStatus" text="Tốt" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
+                </HBox>
+            </VBox>
+
+            <!-- Progress Card -->
+            <VBox style="-fx-background-color: #e8f5e9; -fx-background-radius: 8; -fx-padding: 12;">
+                <Label text="Tiến độ" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <Label fx:id="progressCard" text="Đã giảm 2.5kg so với lần đầu" 
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #388e3c;"/>
+            </VBox>
+
+            <!-- Radar Chart -->
+            <Label text="Body Shape" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Pane fx:id="radarChartPane" prefHeight="200" prefWidth="200"
+                  style="-fx-background-color: #f3e5f5; -fx-background-radius: 12;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Upcoming Schedule -->
+    <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+        <Label text="Lịch tập sắp tới" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <TableView fx:id="scheduleTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="dateColumn" text="Ngày" prefWidth="100"/>
+                <TableColumn fx:id="timeColumn" text="Thời gian" prefWidth="100"/>
+                <TableColumn fx:id="trainerColumn" text="Huấn luyện viên" prefWidth="150"/>
+                <TableColumn fx:id="roomColumn" text="Phòng tập" prefWidth="100"/>
+                <TableColumn fx:id="exercisesColumn" text="Bài tập" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Achievements Section -->
+    <VBox spacing="16" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+        <Label text="Thành tích" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        <HBox spacing="16">
+            <VBox alignment="CENTER" spacing="8" style="-fx-background-color: #fff3e0; -fx-background-radius: 8; -fx-padding: 16;" HBox.hgrow="ALWAYS">
+                <Label text="🎯" style="-fx-font-size: 32px;"/>
+                <Label text="Mục tiêu cân nặng" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <Label fx:id="weightGoal" text="Đã đạt!" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="8" style="-fx-background-color: #e8f5e9; -fx-background-radius: 8; -fx-padding: 16;" HBox.hgrow="ALWAYS">
+                <Label text="🔥" style="-fx-font-size: 32px;"/>
+                <Label text="Chuỗi ngày tập" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <Label fx:id="streakAchievement" text="5 ngày" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="8" style="-fx-background-color: #e3f2fd; -fx-background-radius: 8; -fx-padding: 16;" HBox.hgrow="ALWAYS">
+                <Label text="💪" style="-fx-font-size: 32px;"/>
+                <Label text="Tổng buổi tập" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
+                <Label fx:id="totalSessions" text="30 buổi" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+</VBox>
