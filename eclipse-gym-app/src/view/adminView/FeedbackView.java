@@ -79,29 +79,73 @@ public class FeedbackView {
                     }
 
                     TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("Phản hồi phản hồi");
-                    dialog.setHeaderText("Nhập phản hồi của bạn:");
-                    dialog.setContentText("Nội dung:");
+                    dialog.setTitle("Trả lời phản hồi");
+                    dialog.setHeaderText("Nhập trả lời của bạn:");
+
+                    TextArea inputArea = new TextArea();
+                    inputArea.setPromptText("Nhập nội dung trả lời phản hồi...");
+                    inputArea.setPrefRowCount(4);
+                    inputArea.setPrefColumnCount(20);
+                    inputArea.setWrapText(true);
+                    inputArea.setStyle("-fx-font-size: 14px;");
+                    inputArea.setMaxWidth(Double.MAX_VALUE); // Cho phép rộng tối đa
+
+                    HBox contentBox = new HBox(inputArea);
+                    contentBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                    HBox.setHgrow(inputArea, javafx.scene.layout.Priority.ALWAYS); // Cho phép inputArea giãn hết HBox
+                    dialog.getDialogPane().setContent(contentBox);
+
+                    // Ẩn label mặc định
+                    dialog.setContentText(null);
+                    dialog.setGraphic(null);
+                    // CSS cho dialog
+                    dialog.getDialogPane().setStyle(
+                        "-fx-background-color: #f5f5f5;" + // màu nền
+                        "-fx-border-color: #2196f3;" + // màu viền
+                        "-fx-border-width: 2;" + // độ dày viền
+                        "-fx-border-radius: 8;" + // bo góc viền
+                        "-fx-padding: 10;" // khoảng cách bên trong
+                    );
+                    dialog.getDialogPane().setPrefSize(400, 300);
+
+                    // CSS cho các nút trong dialog
+                    dialog.getDialogPane().lookupButton(ButtonType.OK).setStyle(
+                        "-fx-background-color: #4caf50;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-background-radius: 6;" +
+                        "-fx-padding: 6 16 6 16;" +
+                        "-fx-cursor: hand;"
+                    );
+
+                    dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setStyle(
+                        "-fx-background-color: #f44336;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-background-radius: 6;" +
+                        "-fx-padding: 6 16 6 16;" +
+                        "-fx-cursor: hand;"
+                    );
 
                     dialog.initModality(Modality.APPLICATION_MODAL);
                     dialog.initOwner(replyButton.getScene().getWindow());
 
                     dialog.showAndWait().ifPresent(response -> {
-                        if (response.trim().isEmpty()) {
+                        String text = inputArea.getText();
+                        if (text.trim().isEmpty()) {
                             showAlert("Lỗi", "Nội dung phản hồi không được để trống.");
                             return;
                         }
 
-                        // Giả định FeedbackController có phương thức replyFeedback(int id, String content)
                         boolean success = feedbackController.replyFeedback(
-                            feedback.getId(), 
-                            response, 
-                            currentUser.getUserId() // responderID
+                            feedback.getId(),
+                            text,
+                            currentUser.getUserId()
                         );
 
                         if (success) {
-                            showAlert("Thành công", "Phản hồi đã được gửi.");
-                            loadFeedbacks(); // refresh dữ liệu
+                            showSuccess("Thành công", "Phản hồi đã được gửi.");
+                            loadFeedbacks();
                             feedbackTable.setItems(feedbackList);
                         } else {
                             showAlert("Lỗi", "Không thể gửi phản hồi.");
@@ -153,6 +197,34 @@ public class FeedbackView {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.setGraphic(null);
+        alert.getDialogPane().setPrefSize(400, 220);
+        alert.getDialogPane().setStyle(
+            "-fx-background-color: #fff5f5;" +      // nền đỏ nhạt
+            "-fx-border-color: #f44336;" +         // viền đỏ
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 8;" +
+            "-fx-font-size: 15px;" +
+            "-fx-padding: 16;"
+        );
+        alert.showAndWait();
+    }
+
+    private void showSuccess(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.setGraphic(null);
+        alert.getDialogPane().setPrefSize(400, 220);
+        alert.getDialogPane().setStyle(
+            "-fx-background-color: #f5fff5;" +      // nền xanh nhạt
+            "-fx-border-color: #4caf50;" +         // viền xanh
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 8;" +
+            "-fx-font-size: 15px;" +
+            "-fx-padding: 16;"
+        );
         alert.showAndWait();
     }
 }
