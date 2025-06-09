@@ -61,4 +61,54 @@ public class TrainingPlanController {
         }
         return null;
     }
+
+    public boolean createTrainingPlan(TrainingPlan plan) {
+        String query = "INSERT INTO TrainingPlans (PlanCode, PlanName, Type, SessionAmount, Price, Description) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, plan.getPlanCode());
+            stmt.setString(2, plan.getPlanName());
+            stmt.setString(3, plan.getType().getValue());
+            stmt.setInt(4, plan.getSessionAmount());
+            stmt.setDouble(5, plan.getPrice());
+            stmt.setString(6, plan.getDescription());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateTrainingPlan(TrainingPlan plan) {
+        String query = "UPDATE TrainingPlans SET PlanCode = ?, PlanName = ?, Type = ?, SessionAmount = ?, Price = ?, Description = ? WHERE PlanID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, plan.getPlanCode());
+            stmt.setString(2, plan.getPlanName());
+            stmt.setString(3, plan.getType().getValue());
+            stmt.setInt(4, plan.getSessionAmount());
+            stmt.setDouble(5, plan.getPrice());
+            stmt.setString(6, plan.getDescription());
+            stmt.setInt(7, plan.getPlanId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteTrainingPlan(int planId) {
+        String query = "DELETE FROM TrainingPlans WHERE PlanID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, planId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

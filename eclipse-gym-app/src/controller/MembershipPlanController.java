@@ -58,4 +58,52 @@ public class MembershipPlanController {
         }
         return null;
     }
+
+    public boolean createPlan(MembershipPlan plan) {
+        String query = "INSERT INTO MembershipPlans (PlanCode, PlanName, Duration, Price, Description) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, plan.getPlanCode());
+            stmt.setString(2, plan.getPlanName());
+            stmt.setInt(3, plan.getDuration());
+            stmt.setDouble(4, plan.getPrice());
+            stmt.setString(5, plan.getDescription());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updatePlan(MembershipPlan plan) {
+        String query = "UPDATE MembershipPlans SET PlanCode = ?, PlanName = ?, Duration = ?, Price = ?, Description = ? WHERE PlanID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, plan.getPlanCode());
+            stmt.setString(2, plan.getPlanName());
+            stmt.setInt(3, plan.getDuration());
+            stmt.setDouble(4, plan.getPrice());
+            stmt.setString(5, plan.getDescription());
+            stmt.setInt(6, plan.getPlanId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deletePlan(int planId) {
+        String query = "DELETE FROM MembershipPlans WHERE PlanID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, planId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
