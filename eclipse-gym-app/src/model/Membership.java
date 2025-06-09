@@ -141,4 +141,39 @@ public class Membership {
     public void setRenewalDate(LocalDateTime renewalDate) {
         this.renewalDate = renewalDate;
     }
+    
+    public boolean isPersonalTraining() {
+        if (plan != null) {
+            return plan.getPlanName() != null && plan.getPlanName().toLowerCase().contains("pt");
+        }
+        return false;
+    }
+
+    public boolean isActive() {
+        return status == enum_MembershipStatus.ACTIVE && (endDate == null || endDate.isAfter(LocalDate.now()));
+    }
+
+    public String getPlanName() {
+        // Nếu đã có đối tượng plan, lấy trực tiếp
+        if (plan != null && plan.getPlanName() != null) {
+            return plan.getPlanName();
+        }
+        // Nếu chưa có, truy vấn từ DB theo planId
+        String planName = "";
+        try {
+            java.sql.Connection conn = utils.DBConnection.getConnection();
+            String sql = "SELECT PlanName FROM MembershipPlans WHERE PlanID = ?";
+            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, this.planId);
+                try (java.sql.ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        planName = rs.getString("PlanName");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return planName;
+    }
 }
