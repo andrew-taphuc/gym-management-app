@@ -161,34 +161,34 @@ public class FeedbackController {
         }
     }
 
-    // public boolean replyFeedback(int feedbackID, String responseComment, int responderID) {
-    //     String status = "Đã giải quyết";
-    //     return updateFeedbackStatus(feedbackID, status, responseComment, responderID);
-    // }
-
     public boolean replyFeedback(int feedbackID, String responseComment, int responderID) {
-    String sql = """
-        UPDATE Feedback 
-        SET ResponseComment = ?, 
-            ResponseDate = CURRENT_TIMESTAMP, 
-            ResponderID = ?
-        WHERE FeedbackID = ?
-    """;
-
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-        pstmt.setString(1, responseComment);
-        pstmt.setInt(2, responderID);
-        pstmt.setInt(3, feedbackID);
-
-        int rowsAffected = pstmt.executeUpdate();
-        return rowsAffected > 0;
-
-    } catch (SQLException e) {
-        System.err.println("Lỗi khi cập nhật phản hồi: " + e.getMessage());
-        e.printStackTrace();
-        return false;
+        String status = "Đã giải quyết";
+        return updateFeedbackStatus(feedbackID, status, responseComment, responderID);
     }
-}
+
+    // public boolean replyFeedback(int feedbackID, String responseComment, int responderID) {
+    //     String sql = """
+    //         UPDATE Feedback 
+    //         SET ResponseComment = ?, 
+    //             ResponseDate = CURRENT_TIMESTAMP, 
+    //             ResponderID = ?
+    //         WHERE FeedbackID = ?
+    //     """;
+
+    //     try (Connection conn = DBConnection.getConnection();
+    //         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+    //         pstmt.setString(1, responseComment);
+    //         pstmt.setInt(2, responderID);
+    //         pstmt.setInt(3, feedbackID);
+
+    //         int rowsAffected = pstmt.executeUpdate();
+    //         return rowsAffected > 0;
+
+    //     } catch (SQLException e) {
+    //         System.err.println("Lỗi khi cập nhật phản hồi: " + e.getMessage());
+    //         e.printStackTrace();
+    //         return false;
+    //     }
+    // }
 }
