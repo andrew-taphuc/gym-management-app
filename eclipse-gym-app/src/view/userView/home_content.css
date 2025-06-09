@@ -1,0 +1,31 @@
+.schedule-table {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, #181c20, 4, 0.2, 0, 2);
+    -fx-padding: 10 0 10 0;
+    -fx-table-cell-border-color: #e0e0e0;
+    -fx-alignment: top-center;
+}
+.schedule-table .column-header-background {
+    -fx-background-color: #4FC3F7;
+    -fx-background-radius: 10px 10px 0 0;
+}
+
+.schedule-table .column-header, .schedule-table .filler {
+    -fx-size: 40px;
+    -fx-font-size: 18px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-font-weight: bold;
+    -fx-text-fill: #232930;
+}
+
+.schedule-table .table-row-cell {
+    -fx-font-size: 18px;
+    -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;
+    -fx-text-fill: #232930;
+    -fx-background-color: #f5f5f6;
+}
+.schedule-table .table-row-cell:selected {
+    -fx-background-color: #b2ebf2;
+}

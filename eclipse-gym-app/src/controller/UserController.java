@@ -18,6 +18,27 @@ public class UserController {
         this.connection = DBConnection.getConnection();
     }
 
+    public Integer getMemberIdByUserId(int userId) {
+        String sql = "SELECT MemberID FROM Members WHERE UserID = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("MemberID");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn MemberID từ UserID: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public User getUserByID(int userID) {
         String query = "SELECT * FROM Users WHERE UserID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {

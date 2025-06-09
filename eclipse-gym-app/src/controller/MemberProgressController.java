@@ -54,28 +54,6 @@ public class MemberProgressController {
         return progressList;
     }
 
-    // Lấy ID của member từ UserID
-    public Integer getMemberIdByUserId(int userId) {
-        String sql = "SELECT MemberID FROM Members WHERE UserID = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, userId);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("MemberID");
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi truy vấn MemberID từ UserID: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
     // Lấy thông tin gói tập hiện tại
     public MembershipInfo getCurrentMembershipInfo(int memberId) {
         String sql = """
@@ -220,7 +198,7 @@ public class MemberProgressController {
                      ts.ScheduleDate, ts.StartTime, ts.Duration, ts.RoomID, ts.Status, ts.Notes,
                      r.RoomName, u.FullName
             ORDER BY ts.ScheduleDate, ts.StartTime
-            LIMIT 5
+            LIMIT 1
         """;
 
         try (Connection conn = DBConnection.getConnection();

@@ -1,5 +1,6 @@
 package view.userView;
 
+import controller.UserController;
 import controller.MemberProgressController;
 import controller.MemberProgressController.MembershipInfo;
 import controller.MemberProgressController.TrainingSchedule;
@@ -53,6 +54,7 @@ public class HomeContent {
 
     private User currentUser;
     private final MemberProgressController progressController = new MemberProgressController();
+    private final UserController userController = new UserController();
     private List<MemberProgress> history;
 
     public HomeContent() {
@@ -68,7 +70,11 @@ public class HomeContent {
     public void initialize() {
         System.out.println("HomeContent initialize called");
         // Khởi tạo các loại chỉ số cho filter
-        statTypeCombo.getItems().addAll("Cân nặng", "BMI", "Body Fat", "Vòng ngực", "Vòng eo", "Vòng mông", "Bắp tay", "Đùi");
+        statTypeCombo.getItems().setAll(
+            "Cân nặng, BMI, Body Fat",
+            "Vòng eo, Vòng mông, Đùi",
+            "Vòng ngực, Bắp tay"
+        );
         statTypeCombo.getSelectionModel().selectFirst();
         statTypeCombo.setOnAction(e -> updateLineChart());
 
@@ -88,7 +94,7 @@ public class HomeContent {
     private void loadUserData() {
         System.out.println("loadUserData called");
         // Lấy memberId từ userId
-        Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        Integer memberId = userController.getMemberIdByUserId(currentUser.getUserId());
         System.out.println("MemberId: " + memberId);
         if (memberId != null) {
             // Load thông tin gói tập
@@ -199,27 +205,52 @@ public class HomeContent {
     private void updateLineChart() {
         if (history == null || history.isEmpty()) return;
         String type = statTypeCombo.getValue();
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        lineChart.getData().clear();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
 
-        for (int i = history.size() - 1; i >= 0; i--) {
-            MemberProgress p = history.get(i);
-            String date = p.getMeasurementDate().format(fmt);
-            double value = switch (type) {
-                case "Cân nặng" -> p.getWeight();
-                case "BMI" -> p.getBmi();
-                case "Body Fat" -> p.getBodyFatPercentage();
-                case "Vòng ngực" -> p.getChest();
-                case "Vòng eo" -> p.getWaist();
-                case "Vòng mông" -> p.getHip();
-                case "Bắp tay" -> p.getBiceps();
-                case "Đùi" -> p.getThigh();
-                default -> 0;
-            };
-            series.getData().add(new XYChart.Data<>(date, value));
+        String[] fields;
+        String[] labels;
+
+        switch (type) {
+            case "Cân nặng, BMI, Body Fat" -> {
+                fields = new String[]{"Cân nặng", "BMI", "Body Fat"};
+                labels = new String[]{"Cân nặng", "BMI", "Body Fat"};
+            }
+            case "Vòng eo, Vòng mông, Đùi" -> {
+                fields = new String[]{"Vòng eo", "Vòng mông", "Đùi"};
+                labels = new String[]{"Vòng eo", "Vòng mông", "Đùi"};
+            }
+            case "Vòng ngực, Bắp tay" -> {
+                fields = new String[]{"Vòng ngực", "Bắp tay"};
+                labels = new String[]{"Vòng ngực", "Bắp tay"};
+            }
+            default -> {
+                fields = new String[]{"Cân nặng"};
+                labels = new String[]{"Cân nặng"};
+            }
         }
-        lineChart.getData().clear();
-        lineChart.getData().add(series);
+
+        for (int f = 0; f < fields.length; f++) {
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName(labels[f]);
+            for (int i = history.size() - 1; i >= 0; i--) {
+                MemberProgress p = history.get(i);
+                String date = p.getMeasurementDate().format(fmt);
+                double value = switch (fields[f]) {
+                    case "Cân nặng" -> p.getWeight();
+                    case "BMI" -> p.getBmi();
+                    case "Body Fat" -> p.getBodyFatPercentage();
+                    case "Vòng ngực" -> p.getChest();
+                    case "Vòng eo" -> p.getWaist();
+                    case "Vòng mông" -> p.getHip();
+                    case "Bắp tay" -> p.getBiceps();
+                    case "Đùi" -> p.getThigh();
+                    default -> 0;
+                };
+                series.getData().add(new XYChart.Data<>(date, value));
+            }
+            lineChart.getData().add(series);
+        }
     }
 
     private void drawRadarChart() {
@@ -252,17 +283,26 @@ public class HomeContent {
 
         for (int i = 0; i < n; i++) {
             double angle = Math.toRadians(90 + i * 360.0 / n);
-            double x = centerX + radius * Math.cos(angle);
-            double y = centerY - radius * Math.sin(angle);
-
-            javafx.scene.shape.Line axis = new javafx.scene.shape.Line(centerX, centerY, x, y);
-            axis.setStroke(javafx.scene.paint.Color.LIGHTGRAY);
-            radarChartPane.getChildren().add(axis);
+            double labelRadius = radius + 20;
+            double x = centerX + labelRadius * Math.cos(angle);
+            double y = centerY - labelRadius * Math.sin(angle);
 
             Label label = new Label(labels[i]);
-            label.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
-            label.setLayoutX(x - 18);
-            label.setLayoutY(y - 18);
+            label.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.8);");
+
+            if (angle > Math.toRadians(60) && angle < Math.toRadians(120)) {
+                label.setLayoutX(x - label.getWidth() / 2);
+                label.setLayoutY(y - 18);
+            } else if (angle > Math.toRadians(240) && angle < Math.toRadians(300)) {
+                label.setLayoutX(x - label.getWidth() / 2);
+                label.setLayoutY(y + 2);
+            } else if (angle >= Math.toRadians(120) && angle <= Math.toRadians(240)) {
+                label.setLayoutX(x - label.getWidth() - 8);
+                label.setLayoutY(y - 8);
+            } else {
+                label.setLayoutX(x + 8);
+                label.setLayoutY(y - 8);
+            }
             radarChartPane.getChildren().add(label);
         }
 
