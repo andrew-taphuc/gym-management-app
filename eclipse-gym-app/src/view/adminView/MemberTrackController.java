@@ -193,7 +193,7 @@ public class MemberTrackController {
 
         TableColumn<model.TrainingSchedule, String> colNotes = new TableColumn<>("Ghi chú");
         colNotes.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNotes()));
-        colNotes.setPrefWidth(230);
+        colNotes.setPrefWidth(235);
 
         tableView.getColumns().addAll(colDate, colTime, colRoom, colNotes);
         tableView.getItems().setAll(schedules);
@@ -212,7 +212,15 @@ public class MemberTrackController {
             "-fx-background-color: linear-gradient(to bottom, #4caf50, #388e3c);" +
             "-fx-text-fill: white;" +
             "-fx-background-radius: 8px;" +
-            "-fx-font-size: 16px;"
+            "-fx-font-size: 16px;" +
+            "-fx-cursor: hand;"
+        );
+        dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setStyle(
+            "-fx-background-color:rgb(255, 199, 16);" +
+            "-fx-text-fill: black;" +
+            "-fx-background-radius: 8px;" +
+            "-fx-font-size: 16px;" +
+            "-fx-cursor: hand;"
         );
 
         // Chỉ enable nút Check-in khi có chọn dòng
@@ -308,7 +316,7 @@ public class MemberTrackController {
         );
         colType.setCellValueFactory(cellData ->
             new SimpleStringProperty(
-                cellData.getValue().getTrainingScheduleId() != null ? "dịch vụ PT" : "thông thường"
+                cellData.getValue().getTrainingScheduleId() != null ? "Dịch vụ PT" : "Thông thường"
             )
         );
     }

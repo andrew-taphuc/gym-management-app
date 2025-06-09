@@ -54,11 +54,11 @@
             <VBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 20;">
                 <Button fx:id="btnCheckinGym" text="Check-in phòng tập"
                         onAction="#handleCheckinGym"
-                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px;"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px; -fx-cursor: hand;"
                         prefWidth="200" prefHeight="55"/>
                 <Button fx:id="btnCheckinPT" text="Check-in dịch vụ PT"
                         onAction="#handleCheckinPT"
-                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px;"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 15px; -fx-cursor: hand;"
                         prefWidth="200" prefHeight="55" />
             </VBox>
         </HBox>
