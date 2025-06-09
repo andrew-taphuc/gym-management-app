@@ -1,6 +1,7 @@
 package controller;
 
 import model.Member;
+import model.User;
 import model.enums.enum_MemberStatus;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -8,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MemberController {
     private Connection connection;
@@ -83,5 +86,34 @@ public class MemberController {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public List<Member> getAllMembers() {
+        List<Member> members = new ArrayList<>();
+        String sql = "SELECT * FROM Members m JOIN Users u ON m.UserID = u.UserID";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Member member = new Member();
+                member.setMemberId(rs.getInt("MemberID"));
+                member.setUserId(rs.getInt("UserID"));
+                member.setMemberCode(rs.getString("MemberCode"));
+                member.setJoinDate(rs.getDate("JoinDate").toLocalDate());
+                member.setStatus(enum_MemberStatus.fromValue(rs.getString("Status")));
+
+                // Tạo đối tượng User và set fullName
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setFullName(rs.getString("FullName")); 
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                member.setUser(user);
+
+                members.add(member);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return members;
     }
 }
