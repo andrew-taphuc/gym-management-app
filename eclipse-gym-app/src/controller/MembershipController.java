@@ -159,7 +159,7 @@ public class MembershipController {
     }
 
     public boolean createMembershipRenewal(Membership membership) {
-        String sql = "INSERT INTO Memberships (UserID, MemberID, PlanID, StartDate, EndDate, PaymentID, RenewalTo, RenewalDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Memberships (UserID, MemberID, PlanID, StartDate, EndDate, PaymentID, RenewalTo, RenewalDate, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::membership_status_enum)";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, membership.getUserId());
@@ -170,6 +170,7 @@ public class MembershipController {
             pstmt.setInt(6, membership.getPaymentId());
             pstmt.setInt(7, membership.getRenewalTo());
             pstmt.setTimestamp(8, java.sql.Timestamp.valueOf(membership.getRenewalDate()));
+            pstmt.setString(9, model.enums.enum_MembershipStatus.ACTIVE.getValue());
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

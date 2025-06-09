@@ -32,6 +32,11 @@ public class HomeView extends BaseView {
     @FXML
     private StackPane contentArea;
 
+    public HomeView() {
+        super(new Stage()); // or pass an existing Stage if available
+        // Initialize as needed
+    }
+
     public HomeView(Stage stage) {
         super(stage);
     }

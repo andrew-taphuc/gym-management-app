@@ -3,6 +3,9 @@ package view.register;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import model.User;
 import model.enums.enum_Gender;
 import model.enums.enum_Role;
@@ -10,6 +13,7 @@ import model.enums.enum_UserStatus;
 import view.BaseView;
 import view.LoginView;
 import controller.UserController;
+import view.adminView.PlansRenewalsController;
 
 public class RegisterView extends BaseView {
     @FXML
@@ -115,7 +119,12 @@ public class RegisterView extends BaseView {
 
     @FXML
     private void handleBack() {
-        LoginView loginView = new LoginView(stage);
-        loginView.loadView("/view/login.fxml");
+        if (UserController.getCurrentUser() == null) {
+            LoginView loginView = new LoginView(stage);
+            loginView.loadView("/view/login.fxml");
+        } else {
+            Stage currentStage = (Stage) usernameField.getScene().getWindow();
+            currentStage.close();
+        }
     }
 }

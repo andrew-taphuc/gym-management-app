@@ -59,6 +59,16 @@ public class UserController {
         return null;
     }
 
+    private static User currentUser; // Thêm thuộc tính static
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
     public User login(String username, String password) {
         String query = "SELECT * FROM Users WHERE Username = ? AND Password = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -80,6 +90,7 @@ public class UserController {
                 user.setUpdatedAt(rs.getTimestamp("UpdateAt").toLocalDateTime());
                 user.setStatus(enum_UserStatus.fromValue(rs.getString("Status")));
                 user.setRole(enum_Role.fromValue(rs.getString("Role")));
+                setCurrentUser(user); // Gán user đăng nhập thành công
                 return user;
             }
         } catch (SQLException e) {
