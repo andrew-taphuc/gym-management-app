@@ -3,6 +3,7 @@ package view.adminView;
 import model.Member;
 
 import controller.MemberController;
+import view.userView.*;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TableView;
@@ -43,6 +44,9 @@ public class PlansRenewalsController {
 
     @FXML
     private TableColumn<Member, String> statusColumn;
+
+    @FXML
+    private TableColumn<Member, Void> actionColumn;
     
     @FXML
     private TextField searchField;
@@ -126,6 +130,32 @@ public class PlansRenewalsController {
                 return new SimpleStringProperty("");
         });
 
+        // Cột thao tác
+        actionColumn.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            private final Button infoButton = new Button("Gia hạn + mua PT");
+            private final javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(infoButton);
+
+            {
+                infoButton.setOnAction(event -> {
+                    Member member = getTableView().getItems().get(getIndex());
+                    System.out.println("Bạn đang thao tác với hội viên: " + member.getUserId());
+                    
+                });
+                infoButton.setStyle("-fx-font-size: 14px;");
+                hbox.setAlignment(javafx.geometry.Pos.CENTER); // Căn giữa nút trong cell
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(hbox);
+                }
+            }
+        });
+
         // Đưa dữ liệu vào bảng
         memberTable.setItems(members);
     }
@@ -159,4 +189,5 @@ public class PlansRenewalsController {
             e.printStackTrace();
         }
     }
+
 }
