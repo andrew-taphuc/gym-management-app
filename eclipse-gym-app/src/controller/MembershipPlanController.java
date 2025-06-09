@@ -18,7 +18,7 @@ public class MembershipPlanController {
 
     public List<MembershipPlan> getAllPlans() {
         List<MembershipPlan> plans = new ArrayList<>();
-        String query = "SELECT * FROM MembershipPlans ORDER BY PlanID";
+        String query = "SELECT * FROM MembershipPlans WHERE status = 'Hoạt động' ORDER BY PlanID";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();

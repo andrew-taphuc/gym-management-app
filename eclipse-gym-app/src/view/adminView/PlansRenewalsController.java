@@ -47,7 +47,7 @@ public class PlansRenewalsController {
 
     @FXML
     private TableColumn<Member, Void> actionColumn;
-    
+
     @FXML
     private TextField searchField;
 
@@ -87,7 +87,8 @@ public class PlansRenewalsController {
 
     @FXML
     public void initialize() {
-        System.out.println("Trang: Plans & Renewals | User: " + (currentUser != null ? currentUser.getUsername() : "null"));
+        System.out.println(
+                "Trang: Plans & Renewals | User: " + (currentUser != null ? currentUser.getUsername() : "null"));
         allMembers.setAll(memberController.getAllMembers());
         loadMemberTable(allMembers);
 
@@ -102,9 +103,7 @@ public class PlansRenewalsController {
 
     private void loadMemberTable(ObservableList<Member> members) {
         // Thiết lập cách lấy dữ liệu cho từng cột
-        memberCodeColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getMemberCode())
-        );
+        memberCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMemberCode()));
         nameColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue().getUser() != null)
                 return new SimpleStringProperty(cellData.getValue().getUser().getFullName());
@@ -139,7 +138,35 @@ public class PlansRenewalsController {
                 infoButton.setOnAction(event -> {
                     Member member = getTableView().getItems().get(getIndex());
                     System.out.println("Bạn đang thao tác với hội viên: " + member.getUserId());
-                    
+
+                    // Load HomeView với Plans & Renewals của member được chọn
+                    try {
+                        // Tạo HomeView với member's user
+                        Stage userStage = new Stage();
+                        view.userView.HomeView homeView = new view.userView.HomeView(userStage);
+                        homeView.setCurrentUser(member.getUser());
+
+                        // Load HomeView FXML
+                        FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/userView/home.fxml"));
+                        homeLoader.setController(homeView);
+                        Parent homeRoot = homeLoader.load();
+
+                        // Tạo và load Plans & Renewals controller
+                        view.userView.PlansRenewalsController plansController = new view.userView.PlansRenewalsController();
+                        plansController.setCurrentUser(member.getUser());
+
+                        // Load Plans & Renewals vào HomeView
+                        homeView.loadViewWithUser("plans_renewals.fxml", plansController);
+
+                        // Hiển thị HomeView
+                        userStage.setTitle("Quản lý gói tập - " + member.getUser().getFullName());
+                        userStage.setScene(new Scene(homeRoot));
+                        userStage.show();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.err.println("Lỗi khi load HomeView cho user: " + e.getMessage());
+                    }
                 });
                 infoButton.setStyle("-fx-font-size: 14px;");
                 hbox.setAlignment(javafx.geometry.Pos.CENTER); // Căn giữa nút trong cell
@@ -166,11 +193,10 @@ public class PlansRenewalsController {
             return;
         }
         String lower = keyword.toLowerCase();
-        ObservableList<Member> filtered = allMembers.filtered(member ->
-            member.getMemberCode().toLowerCase().contains(lower) ||
-            (member.getUser() != null && member.getUser().getPhoneNumber() != null &&
-             member.getUser().getPhoneNumber().toLowerCase().contains(lower))
-        );
+        ObservableList<Member> filtered = allMembers
+                .filtered(member -> member.getMemberCode().toLowerCase().contains(lower) ||
+                        (member.getUser() != null && member.getUser().getPhoneNumber() != null &&
+                                member.getUser().getPhoneNumber().toLowerCase().contains(lower)));
         memberTable.setItems(filtered);
     }
 
