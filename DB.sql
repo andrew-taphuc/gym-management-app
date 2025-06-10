@@ -222,6 +222,7 @@ CREATE TABLE TrainingSchedule (
   RoomID INT,
   Status training_status_enum DEFAULT 'Đã lên lịch',
   Notes VARCHAR(500),
+  Rating INT CHECK (Rating >= 1 AND Rating <= 5),
   CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -250,6 +251,7 @@ CREATE TABLE TrainingScheduleExercises (
   Set INT NOT NULL,
   Rep INT NOT NULL,
   Comment VARCHAR(500), -- Nhận xét của PT cho bài tập này
+  TrainerComment VARCHAR(500), -- Nhận xét của PT cho bài tập này
   PRIMARY KEY (ScheduleID, ExerciseID)
 );
 

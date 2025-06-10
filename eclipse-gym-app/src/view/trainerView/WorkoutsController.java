@@ -41,6 +41,7 @@ import controller.ExerciseController;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
+import javafx.scene.control.ScrollPane;
 
 public class WorkoutsController {
     @FXML
@@ -640,35 +641,24 @@ public class WorkoutsController {
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
         colDesc.setPrefWidth(180);
 
-        // Cột thao tác
+        // Cột thao tác - chỉ còn nút xóa
         TableColumn<ExerciseWithDetails, Void> colExerciseAction = new TableColumn<>("Thao tác");
-        colExerciseAction.setPrefWidth(120);
+        colExerciseAction.setPrefWidth(80);
 
         Callback<TableColumn<ExerciseWithDetails, Void>, TableCell<ExerciseWithDetails, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<ExerciseWithDetails, Void> call(final TableColumn<ExerciseWithDetails, Void> param) {
                 return new TableCell<>() {
-                    private final Button editBtn = new Button("Sửa");
                     private final Button deleteBtn = new Button("Xóa");
-                    private final HBox hbox = new HBox(5, editBtn, deleteBtn);
 
                     {
-                        editBtn.setPrefWidth(50);
-                        deleteBtn.setPrefWidth(50);
-                        hbox.setAlignment(Pos.CENTER);
-
-                        editBtn.setOnAction(event -> {
-                            ExerciseWithDetails exercise = getTableView().getItems().get(getIndex());
-                            showEditExerciseDialog(schedule, exercise, popupStage);
-                        });
+                        deleteBtn.setPrefWidth(70);
 
                         deleteBtn.setOnAction(event -> {
                             ExerciseWithDetails exercise = getTableView().getItems().get(getIndex());
                             deleteExerciseFromSchedule(schedule, exercise, popupStage);
                         });
 
-                        editBtn.setStyle(
-                                "-fx-background-color: #FFB74D; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px;");
                         deleteBtn.setStyle(
                                 "-fx-background-color: #F48FB1; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px;");
                     }
@@ -679,7 +669,7 @@ public class WorkoutsController {
                         if (empty) {
                             setGraphic(null);
                         } else {
-                            setGraphic(hbox);
+                            setGraphic(deleteBtn);
                         }
                     }
                 };
@@ -690,7 +680,7 @@ public class WorkoutsController {
         exerciseTable.getColumns().addAll(colName, colCode, colCategory, colQuantity, colComment, colDesc,
                 colExerciseAction);
         exerciseTable.setItems(javafx.collections.FXCollections.observableArrayList(exerciseDetails));
-        exerciseTable.setPrefWidth(980);
+        exerciseTable.setPrefWidth(960);
         exerciseTable.setPrefHeight(400);
 
         // Nút thêm bài tập mới
@@ -702,8 +692,46 @@ public class WorkoutsController {
             showAddExercisesDialog(schedule, popupStage);
         });
 
+        // Nút sửa bài tập
+        Button editExerciseBtn = new Button("Sửa bài tập");
+        editExerciseBtn.setPrefWidth(120);
+        editExerciseBtn.setStyle(
+                "-fx-background-color: #FFB74D; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        editExerciseBtn.setOnAction(event -> {
+            ExerciseWithDetails selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
+            if (selectedExercise == null) {
+                showAlert(AlertType.WARNING, "Thông báo", "Vui lòng chọn bài tập cần sửa!");
+                return;
+            }
+            showEditExerciseDialog(schedule, selectedExercise, popupStage);
+        });
+
+        // Nút nhận xét bài tập
+        Button commentExerciseBtn = new Button("Nhận xét bài tập");
+        commentExerciseBtn.setPrefWidth(130);
+        commentExerciseBtn.setStyle(
+                "-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+
+        // Kiểm tra trạng thái lịch tập để enable/disable nút nhận xét
+        boolean isCompleted = "Hoàn thành".equals(schedule.getStatus());
+        commentExerciseBtn.setDisable(!isCompleted);
+
+        if (!isCompleted) {
+            commentExerciseBtn.setStyle(
+                    "-fx-background-color: #CCCCCC; -fx-text-fill: #666666; -fx-font-weight: bold; -fx-background-radius: 8; -fx-font-size: 14px;");
+        }
+
+        commentExerciseBtn.setOnAction(event -> {
+            showExerciseCommentsDialog(schedule, exerciseDetails, popupStage);
+        });
+
+        // HBox chứa các nút
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.getChildren().addAll(addExerciseBtn, editExerciseBtn, commentExerciseBtn);
+
         VBox vbox = new VBox(15);
-        vbox.getChildren().addAll(exerciseTable, addExerciseBtn);
+        vbox.getChildren().addAll(exerciseTable, buttonBox);
         vbox.setSpacing(10);
         vbox.setStyle("-fx-padding: 20;");
         vbox.setAlignment(Pos.CENTER);
@@ -1212,5 +1240,174 @@ public class WorkoutsController {
                 }
             }
         });
+    }
+
+    private void showExerciseCommentsDialog(TrainingSchedule schedule,
+            java.util.List<ExerciseWithDetails> exerciseDetails,
+            Stage parentStage) {
+        try {
+            Stage dialog = new Stage();
+            dialog.setTitle("Nhận xét bài tập - " + schedule.getMemberName());
+
+            VBox root = new VBox(15);
+            root.setPadding(new javafx.geometry.Insets(20));
+
+            // Tiêu đề
+            Label titleLabel = new Label("Nhận xét cho từng bài tập");
+            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+            // Thông tin buổi tập
+            Label sessionInfoLabel = new Label("Buổi tập ngày: " +
+                    (schedule.getDate() != null ? schedule.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            : "N/A")
+                    +
+                    " lúc " + (schedule.getTime() != null ? schedule.getTime() : "N/A"));
+            sessionInfoLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666666;");
+
+            // ScrollPane cho danh sách bài tập
+            ScrollPane scrollPane = new ScrollPane();
+            VBox exerciseContainer = new VBox(10);
+            exerciseContainer.setPadding(new javafx.geometry.Insets(10));
+
+            // Danh sách TextArea để lưu nhận xét
+            java.util.List<TextArea> commentAreas = new ArrayList<>();
+
+            // Tạo form nhận xét cho từng bài tập
+            for (ExerciseWithDetails exercise : exerciseDetails) {
+                VBox exerciseBox = new VBox(8);
+                exerciseBox.setStyle(
+                        "-fx-border-color: #e0e0e0; -fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 15; -fx-background-color: #f9f9f9; -fx-background-radius: 8;");
+
+                // Thông tin bài tập
+                Label exerciseNameLabel = new Label(exercise.getExerciseName());
+                exerciseNameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+                Label exerciseDetailsLabel = new Label("Mã: " + exercise.getExerciseCode() + " | " +
+                        "Loại: " + exercise.getCategory() + " | " +
+                        "Số lượng: " + exercise.getQuantityFormatted());
+                exerciseDetailsLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666666;");
+
+                // Ô nhập nhận xét
+                Label commentLabel = new Label("Nhận xét của HLV:");
+                commentLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+                TextArea commentArea = new TextArea();
+                commentArea.setPromptText("Nhập nhận xét cho bài tập này...");
+                commentArea.setPrefRowCount(3);
+                commentArea.setMaxHeight(80);
+                commentArea.setStyle("-fx-font-size: 12px;");
+
+                // Lấy nhận xét hiện tại nếu có (có thể từ database)
+                String currentComment = getExerciseComment(schedule.getId(), exercise.getExerciseId());
+                if (currentComment != null && !currentComment.trim().isEmpty()) {
+                    commentArea.setText(currentComment);
+                }
+
+                commentAreas.add(commentArea);
+
+                exerciseBox.getChildren().addAll(exerciseNameLabel, exerciseDetailsLabel, commentLabel, commentArea);
+                exerciseContainer.getChildren().add(exerciseBox);
+            }
+
+            scrollPane.setContent(exerciseContainer);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPrefHeight(400);
+            scrollPane.setStyle("-fx-background-color: white;");
+
+            // Nút lưu nhận xét
+            Button saveButton = new Button("Lưu nhận xét");
+            saveButton.setPrefWidth(120);
+            saveButton.setStyle(
+                    "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+            saveButton.setOnAction(e -> {
+                try {
+                    boolean allSaved = true;
+                    for (int i = 0; i < exerciseDetails.size(); i++) {
+                        ExerciseWithDetails exercise = exerciseDetails.get(i);
+                        String comment = commentAreas.get(i).getText().trim();
+
+                        if (!saveExerciseComment(schedule.getId(), exercise.getExerciseId(), comment)) {
+                            allSaved = false;
+                        }
+                    }
+
+                    if (allSaved) {
+                        showAlert(AlertType.INFORMATION, "Thành công", "Đã lưu tất cả nhận xét bài tập!");
+                        dialog.close();
+                    } else {
+                        showAlert(AlertType.ERROR, "Lỗi", "Có lỗi xảy ra khi lưu một số nhận xét!");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    showAlert(AlertType.ERROR, "Lỗi", "Lỗi khi lưu nhận xét: " + ex.getMessage());
+                }
+            });
+
+            // Nút hủy
+            Button cancelButton = new Button("Hủy");
+            cancelButton.setPrefWidth(80);
+            cancelButton.setStyle(
+                    "-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+            cancelButton.setOnAction(e -> dialog.close());
+
+            // HBox chứa các nút
+            HBox buttonBox = new HBox(10);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().addAll(saveButton, cancelButton);
+
+            root.getChildren().addAll(titleLabel, sessionInfoLabel, scrollPane, buttonBox);
+
+            Scene scene = new Scene(root, 1000, 550);
+            dialog.setScene(scene);
+            dialog.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Lỗi", "Không thể hiển thị dialog nhận xét bài tập");
+        }
+    }
+
+    private String getExerciseComment(int scheduleId, int exerciseId) {
+        String comment = "";
+        String sql = "SELECT TrainerComment FROM TrainingScheduleExercises WHERE scheduleid = ? AND exerciseid = ?";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, scheduleId);
+            ps.setInt(2, exerciseId);
+
+            java.sql.ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                comment = rs.getString("TrainerComment");
+                if (comment == null) {
+                    comment = "";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy nhận xét bài tập: " + e.getMessage());
+        }
+
+        return comment;
+    }
+
+    private boolean saveExerciseComment(int scheduleId, int exerciseId, String comment) {
+        String sql = "UPDATE TrainingScheduleExercises SET TrainerComment = ? WHERE scheduleid = ? AND exerciseid = ?";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, comment);
+            ps.setInt(2, scheduleId);
+            ps.setInt(3, exerciseId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lưu nhận xét bài tập: " + e.getMessage());
+            return false;
+        }
     }
 }
