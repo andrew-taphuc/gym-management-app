@@ -8,26 +8,37 @@
       fx:controller="view.userView.FeedbackFormController"
       spacing="10" alignment="TOP_CENTER"
       stylesheets="@feedback.css"
-      style="-fx-padding: 20;" prefWidth="600" prefHeight="450">
+      style="-fx-padding: 20;" prefWidth="600" prefHeight="500">
 
-    <Label text="Gửi phản hồi mới"
+      <Label text="Gửi phản hồi mới"
             style="-fx-font-size: 28px;
                   -fx-font-weight: bold;
                   -fx-text-fill: #232930;
                   -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;"
-    />
+      />
 
-    <ComboBox fx:id="typeComboBox" promptText="Chọn loại phản hồi" prefWidth="350"/>
+      <ComboBox fx:id="typeComboBox" promptText="Chọn loại phản hồi" prefWidth="350" />
 
-    <TextArea fx:id="commentTextArea" promptText="Nhập nội dung phản hồi..." 
-              prefRowCount="5" wrapText="true" prefWidth="350" prefHeight="200" style="-fx-font-size: 20px;"/>
+      <!-- Equipment Code field - ẩn mặc định -->
+      <VBox fx:id="equipmentSection" spacing="5" visible="false" managed="false">
+            <Label text="Mã thiết bị:"
+                  style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #232930;" />
+            <TextField fx:id="equipmentCodeField"
+                  promptText="Nhập mã thiết bị (VD: EQ001, TM002...)"
+                  prefWidth="350" style="-fx-font-size: 16px;" />
+            <Label fx:id="equipmentStatusLabel" style="-fx-font-size: 14px; -fx-text-fill: #666;" />
+      </VBox>
 
-    <Button text="Gửi" onAction="#handleSubmit" prefWidth="100" prefHeight="50"
-    style="-fx-background-color:rgb(79, 196, 157); 
+      <TextArea fx:id="commentTextArea" promptText="Nhập nội dung phản hồi..."
+            prefRowCount="5" wrapText="true" prefWidth="350" prefHeight="200"
+            style="-fx-font-size: 20px;" />
+
+      <Button text="Gửi" onAction="#handleSubmit" prefWidth="100" prefHeight="50"
+            style="-fx-background-color:rgb(79, 196, 157); 
             -fx-text-fill:rgb(255, 255, 255); 
             -fx-font-weight: bold; 
             -fx-background-radius: 8; 
             -fx-cursor: hand;
-            -fx-font-size: 20px;"/>
+            -fx-font-size: 20px;" />
 
 </VBox>

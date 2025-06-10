@@ -1,6 +1,7 @@
 package controller;
 
-import model.MembershipPlan;
+import model.TrainingPlan;
+import model.enums.enum_TrainerSpecialization;
 import model.enums.enum_PlanStatus;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -10,25 +11,26 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
-public class MembershipPlanController {
+public class TrainingPlanController {
     private Connection connection;
 
-    public MembershipPlanController() {
+    public TrainingPlanController() {
         this.connection = DBConnection.getConnection();
     }
 
-    public List<MembershipPlan> getAllPlans() {
-        List<MembershipPlan> plans = new ArrayList<>();
-        String query = "SELECT * FROM MembershipPlans WHERE Status = 'Hoạt động' ORDER BY PlanCode";
+    public List<TrainingPlan> getAllPlans() {
+        List<TrainingPlan> plans = new ArrayList<>();
+        String query = "SELECT * FROM TrainingPlans WHERE Status = 'Hoạt động' ORDER BY PlanCode";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                MembershipPlan plan = new MembershipPlan();
+                TrainingPlan plan = new TrainingPlan();
                 plan.setPlanId(rs.getInt("PlanID"));
                 plan.setPlanCode(rs.getString("PlanCode"));
                 plan.setPlanName(rs.getString("PlanName"));
-                plan.setDuration(rs.getInt("Duration"));
+                plan.setType(enum_TrainerSpecialization.fromValue(rs.getString("Type")));
+                plan.setSessionAmount(rs.getInt("SessionAmount"));
                 plan.setPrice(rs.getDouble("Price"));
                 plan.setStatus(enum_PlanStatus.fromValue(rs.getString("Status")));
                 plan.setDescription(rs.getString("Description"));
@@ -47,17 +49,18 @@ public class MembershipPlanController {
         return plans;
     }
 
-    public MembershipPlan getPlanByID(int planId) {
-        String query = "SELECT * FROM MembershipPlans WHERE PlanID = ?";
+    public TrainingPlan getPlanByID(int planId) {
+        String query = "SELECT * FROM TrainingPlans WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, planId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                MembershipPlan plan = new MembershipPlan();
+                TrainingPlan plan = new TrainingPlan();
                 plan.setPlanId(rs.getInt("PlanID"));
                 plan.setPlanCode(rs.getString("PlanCode"));
                 plan.setPlanName(rs.getString("PlanName"));
-                plan.setDuration(rs.getInt("Duration"));
+                plan.setType(enum_TrainerSpecialization.fromValue(rs.getString("Type")));
+                plan.setSessionAmount(rs.getInt("SessionAmount"));
                 plan.setPrice(rs.getDouble("Price"));
                 plan.setStatus(enum_PlanStatus.fromValue(rs.getString("Status")));
                 plan.setDescription(rs.getString("Description"));
@@ -76,14 +79,15 @@ public class MembershipPlanController {
         return null;
     }
 
-    public boolean createPlan(MembershipPlan plan) {
-        String query = "INSERT INTO MembershipPlans (PlanCode, PlanName, Duration, Price, Description) VALUES (?, ?, ?, ?, ?)";
+    public boolean createTrainingPlan(TrainingPlan plan) {
+        String query = "INSERT INTO TrainingPlans (PlanCode, PlanName, Type, SessionAmount, Price, Description) VALUES (?, ?, ?::trainer_specialization_enum, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, plan.getPlanCode());
             stmt.setString(2, plan.getPlanName());
-            stmt.setInt(3, plan.getDuration());
-            stmt.setDouble(4, plan.getPrice());
-            stmt.setString(5, plan.getDescription());
+            stmt.setString(3, plan.getType().getValue());
+            stmt.setInt(4, plan.getSessionAmount());
+            stmt.setDouble(5, plan.getPrice());
+            stmt.setString(6, plan.getDescription());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -93,29 +97,30 @@ public class MembershipPlanController {
         }
     }
 
-    public boolean updatePlan(MembershipPlan plan) {
+    public boolean updateTrainingPlan(TrainingPlan plan) {
         try {
             connection.setAutoCommit(false);
 
             // Bước 1: Cập nhật trạng thái của gói cũ thành "Đã cập nhật"
-            String updateQuery = "UPDATE MembershipPlans SET Status = 'Đã cập nhật', UpdatedDate = CURRENT_TIMESTAMP WHERE PlanID = ?";
+            String updateQuery = "UPDATE TrainingPlans SET Status = 'Đã cập nhật', UpdatedDate = CURRENT_TIMESTAMP WHERE PlanID = ?";
             try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
                 updateStmt.setInt(1, plan.getPlanId());
                 updateStmt.executeUpdate();
             }
 
             // Bước 2: Thêm bản ghi mới với thông tin đã cập nhật
-            String insertQuery = "INSERT INTO MembershipPlans (PlanCode, PlanName, Duration, Price, Description, Status, UpdateFrom) VALUES (?, ?, ?, ?, ?, 'Hoạt động', ?)";
+            String insertQuery = "INSERT INTO TrainingPlans (PlanCode, PlanName, Type, SessionAmount, Price, Description, Status, UpdateFrom) VALUES (?, ?, ?::trainer_specialization_enum, ?, ?, ?, 'Hoạt động', ?)";
             try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
                 insertStmt.setString(1, plan.getPlanCode());
                 insertStmt.setString(2, plan.getPlanName());
-                insertStmt.setInt(3, plan.getDuration());
-                insertStmt.setDouble(4, plan.getPrice());
-                insertStmt.setString(5, plan.getDescription());
+                insertStmt.setString(3, plan.getType().getValue());
+                insertStmt.setInt(4, plan.getSessionAmount());
+                insertStmt.setDouble(5, plan.getPrice());
+                insertStmt.setString(6, plan.getDescription());
                 // Nếu UpdateFrom của gói hiện tại là null, sử dụng PlanID của chính nó
                 // Nếu không, sử dụng giá trị UpdateFrom hiện có để duy trì chuỗi lịch sử
                 int updateFromValue = (plan.getUpdateFrom() == 0) ? plan.getPlanId() : plan.getUpdateFrom();
-                insertStmt.setInt(6, updateFromValue); // ID gốc của chuỗi cập nhật
+                insertStmt.setInt(7, updateFromValue); // ID gốc của chuỗi cập nhật
 
                 int rowsAffected = insertStmt.executeUpdate();
 
@@ -145,19 +150,20 @@ public class MembershipPlanController {
     }
 
     /**
-     * Lấy danh sách các bản cập nhật trước đây của một gói membership
+     * Lấy danh sách các bản cập nhật trước đây của một gói training
      * 
-     * @param planId ID của gói membership hiện tại
-     * @return Danh sách các gói membership đã được cập nhật trước đây (bản cũ nhất
+     * @param planId ID của gói training hiện tại
+     * @return Danh sách các gói training đã được cập nhật trước đây (bản cũ nhất
      *         ở dưới cùng)
      */
-    public List<MembershipPlan> getPlanUpdateHistory(int planId) {
-        List<MembershipPlan> historyList = new ArrayList<>();
+
+    public List<TrainingPlan> getPlanUpdateHistory(int planId) {
+        List<TrainingPlan> historyList = new ArrayList<>();
 
         // Trước tiên, tìm ID gốc của chuỗi lịch sử
         int originalPlanId = planId; // Mặc định planId hiện tại là gốc
 
-        String checkCurrentPlanQuery = "SELECT * FROM MembershipPlans WHERE PlanID = ?";
+        String checkCurrentPlanQuery = "SELECT * FROM TrainingPlans WHERE PlanID = ?";
         try (PreparedStatement checkStmt = connection.prepareStatement(checkCurrentPlanQuery)) {
             checkStmt.setInt(1, planId);
             ResultSet currentRs = checkStmt.executeQuery();
@@ -177,17 +183,18 @@ public class MembershipPlanController {
         System.out.println("DEBUG: Plan hiện tại ID = " + planId + ", ID gốc = " + originalPlanId);
 
         // Lấy plan gốc
-        String originalPlanQuery = "SELECT * FROM MembershipPlans WHERE PlanID = ?";
+        String originalPlanQuery = "SELECT * FROM TrainingPlans WHERE PlanID = ?";
         try (PreparedStatement originalStmt = connection.prepareStatement(originalPlanQuery)) {
             originalStmt.setInt(1, originalPlanId);
             ResultSet originalRs = originalStmt.executeQuery();
 
             if (originalRs.next()) {
-                MembershipPlan originalPlan = new MembershipPlan();
+                TrainingPlan originalPlan = new TrainingPlan();
                 originalPlan.setPlanId(originalRs.getInt("PlanID"));
                 originalPlan.setPlanCode(originalRs.getString("PlanCode"));
                 originalPlan.setPlanName(originalRs.getString("PlanName"));
-                originalPlan.setDuration(originalRs.getInt("Duration"));
+                originalPlan.setType(enum_TrainerSpecialization.fromValue(originalRs.getString("Type")));
+                originalPlan.setSessionAmount(originalRs.getInt("SessionAmount"));
                 originalPlan.setPrice(originalRs.getDouble("Price"));
                 originalPlan.setStatus(enum_PlanStatus.fromValue(originalRs.getString("Status")));
                 originalPlan.setDescription(originalRs.getString("Description"));
@@ -209,17 +216,18 @@ public class MembershipPlanController {
         }
 
         // Lấy tất cả các bản cập nhật từ plan gốc (UpdateFrom = originalPlanId)
-        String query = "SELECT * FROM MembershipPlans WHERE UpdateFrom = ? ORDER BY CreatedDate ASC";
+        String query = "SELECT * FROM TrainingPlans WHERE UpdateFrom = ? ORDER BY CreatedDate ASC";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, originalPlanId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                MembershipPlan plan = new MembershipPlan();
+                TrainingPlan plan = new TrainingPlan();
                 plan.setPlanId(rs.getInt("PlanID"));
                 plan.setPlanCode(rs.getString("PlanCode"));
                 plan.setPlanName(rs.getString("PlanName"));
-                plan.setDuration(rs.getInt("Duration"));
+                plan.setType(enum_TrainerSpecialization.fromValue(rs.getString("Type")));
+                plan.setSessionAmount(rs.getInt("SessionAmount"));
                 plan.setPrice(rs.getDouble("Price"));
                 plan.setStatus(enum_PlanStatus.fromValue(rs.getString("Status")));
                 plan.setDescription(rs.getString("Description"));
@@ -245,8 +253,9 @@ public class MembershipPlanController {
         return historyList;
     }
 
-    public boolean deletePlan(int planId) {
-        String query = "UPDATE MembershipPlans SET Status = 'Đã xóa', UpdatedDate = CURRENT_TIMESTAMP WHERE PlanID = ?";
+    public boolean deleteTrainingPlan(int planId) {
+        // Soft delete - chỉ cập nhật status thành 'Đã xóa'
+        String query = "UPDATE TrainingPlans SET Status = 'Đã xóa', UpdatedDate = CURRENT_TIMESTAMP WHERE PlanID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, planId);
 
@@ -265,7 +274,7 @@ public class MembershipPlanController {
      * @return true nếu mã gói đã tồn tại, false nếu chưa tồn tại
      */
     public boolean checkPlanCodeExists(String planCode) {
-        String query = "SELECT COUNT(*) FROM MembershipPlans WHERE PlanCode = ? AND Status = 'Hoạt động'";
+        String query = "SELECT COUNT(*) FROM TrainingPlans WHERE PlanCode = ? AND Status = 'Hoạt động' ";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, planCode);
             ResultSet rs = stmt.executeQuery();

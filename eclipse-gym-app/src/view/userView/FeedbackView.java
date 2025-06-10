@@ -60,57 +60,10 @@ public class FeedbackView {
                 btn.setPrefWidth(200);
                 btn.setOnAction(event -> {
                     Feedback feedback = getTableView().getItems().get(getIndex());
-                    // Lấy nội dung phản hồi
-                    
-
-                    // Hiển thị trong Alert (popup)
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Chi tiết phản hồi");
-                    Label headerLabel = new Label("📩 Phản hồi từ phòng tập");
-                    headerLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e88e5;");
-
-                    alert.setHeaderText(null); // Tắt header mặc định
-                    alert.getDialogPane().setHeader(headerLabel); // Đặt header mới
-
-                    String response = feedback.responseCommentProperty().get();
-                    String content = (response != null && !response.isEmpty()) ? response : "Không có phản hồi.";
-
-                    // Dùng Text để có thể tăng font và xuống dòng
-                    Text contentText = new Text(content);
-                    contentText.setWrappingWidth(520);
-                    contentText.setStyle("-fx-font-size: 16px; -fx-fill: #333333;");
-                    alert.getDialogPane().setContent(contentText);
-                    // Tùy chỉnh giao diện popup
-                    // Tùy chỉnh DialogPane
-                    DialogPane dialogPane = alert.getDialogPane();
-                    dialogPane.setMinWidth(640);
-                    dialogPane.setMinHeight(360);
-                    dialogPane.setStyle(
-                        "-fx-background-color: linear-gradient(to bottom right, #ffffff, #e3f2fd);" +
-                        "-fx-border-color: #90caf9;" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-border-radius: 12;" +
-                        "-fx-background-radius: 12;" +
-                        "-fx-padding: 24;" +
-                        "-fx-font-family: 'Segoe UI', sans-serif;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 4);"
-                    );
-                    // Tùy chỉnh nút OK
-                    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-                    okButton.setStyle(
-                        "-fx-background-color: #42a5f5;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 8 20;" +
-                        "-fx-cursor: hand;"
-                    );
-
-                    //Hiển thị
-                    alert.showAndWait();
+                    showFeedbackDetail(feedback);
                 });
-                btn.setStyle("-fx-background-color: #4FC3F7; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
+                btn.setStyle(
+                        "-fx-background-color: #4FC3F7; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
             }
 
             @Override
@@ -124,42 +77,79 @@ public class FeedbackView {
             }
         });
 
-
         feedbackTable.setItems(feedbackList);
     }
 
+    private void showFeedbackDetail(Feedback feedback) {
+        try {
+            // Load FXML cho dialog chi tiết
+            String fxmlPath = "feedbackDetail.fxml";
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource(fxmlPath));
+
+            if (loader.getLocation() == null) {
+                showAlert("Lỗi", "Không tìm thấy file feedbackDetail.fxml");
+                return;
+            }
+
+            Stage detailStage = new Stage();
+            Scene scene = new Scene(loader.load());
+            detailStage.setScene(scene);
+            detailStage.setTitle("Chi tiết phản hồi");
+            detailStage.initModality(Modality.APPLICATION_MODAL);
+            detailStage.setResizable(false);
+
+            // Truyền dữ liệu feedback vào controller
+            FeedbackDetailController controller = loader.getController();
+            controller.setFeedback(feedback);
+
+            detailStage.showAndWait();
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi mở dialog chi tiết feedback: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Lỗi", "Không thể mở dialog chi tiết feedback. Lỗi: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Lỗi không xác định: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Lỗi", "Có lỗi không xác định xảy ra: " + e.getMessage());
+        }
+    }
+
     private void loadFeedbacks() {
-        if (currentUser == null) return;
-        
+        if (currentUser == null)
+            return;
+
         try {
             // Lấy feedback từ database
             int MemberId = feedbackController.getMemberIdByUserId(currentUser.getUserId());
             List<Feedback> feedbacks = feedbackController.getFeedbacksByMemberID(MemberId);
             feedbackList.clear();
             feedbackList.addAll(feedbacks);
-            
+
             System.out.println("Đã load " + feedbacks.size() + " feedback từ database");
-            
+
         } catch (Exception e) {
             System.err.println("Lỗi khi load feedback: " + e.getMessage());
             e.printStackTrace();
-            
+
             // Fallback: hiển thị danh sách trống
             feedbackList.clear();
         }
     }
+
     @FXML
     private void handleAddFeedback() {
         try {
             // File FXML cùng thư mục với Controller
             String fxmlPath = "feedbackForm.fxml";
-            
+
             // Debug: In ra đường dẫn để kiểm tra
             System.out.println("Trying to load FXML from same package: " + fxmlPath);
-            
+
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource(fxmlPath));
-            
+
             if (loader.getLocation() == null) {
                 showAlert("Lỗi", "Không tìm thấy file feedbackForm.fxml tại đường dẫn: " + fxmlPath);
                 return;
@@ -178,7 +168,7 @@ public class FeedbackView {
             controller.setFeedbackSubmittedCallback(v -> loadFeedbacks()); // Reload từ DB
 
             formStage.showAndWait();
-            
+
         } catch (IOException e) {
             System.err.println("Lỗi khi mở form feedback: " + e.getMessage());
             e.printStackTrace();
@@ -197,5 +187,4 @@ public class FeedbackView {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }

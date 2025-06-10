@@ -7,6 +7,7 @@ public class TrainingRegistration {
     private int memberId;
     private int planId;
     private int trainerId;
+    private String trainerName;
     private LocalDate startDate;
     private int sessionsLeft;
     private int paymentId;
@@ -60,6 +61,14 @@ public class TrainingRegistration {
 
     public void setTrainerId(int trainerId) {
         this.trainerId = trainerId;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
     }
 
     public LocalDate getStartDate() {

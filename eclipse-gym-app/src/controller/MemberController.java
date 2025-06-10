@@ -101,6 +101,7 @@ public class MemberController {
             stmt.setString(2, keyword);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+    
                 Member member = new Member();
                 member.setMemberId(rs.getInt("MemberID"));
                 member.setUserId(rs.getInt("UserID"));
@@ -125,7 +126,7 @@ public class MemberController {
         List<Membership> list = new ArrayList<>();
         String query = "SELECT * FROM Memberships WHERE MemberID = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+            PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -153,7 +154,7 @@ public class MemberController {
                        "JOIN MembershipPlans mp ON m.PlanID = mp.PlanID " +
                        "WHERE a.MemberID = ? ORDER BY a.CheckinTime DESC LIMIT ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+            PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
             stmt.setInt(2, limit);
             ResultSet rs = stmt.executeQuery();
@@ -178,7 +179,7 @@ public class MemberController {
         int count = 0;
         String query = "SELECT COUNT(*) FROM Attendance WHERE MemberID = ? AND EXTRACT(MONTH FROM CheckinTime) = ? AND EXTRACT(YEAR FROM CheckinTime) = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+            PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
             stmt.setInt(2, now.getMonthValue());
             stmt.setInt(3, now.getYear());
@@ -196,7 +197,7 @@ public class MemberController {
     public static boolean checkinGym(int memberId, int membershipId) {
         String query = "INSERT INTO Attendance (MemberID, MembershipID, CheckInTime, TrainingScheduleID) VALUES (?, ?, NOW(), NULL)";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+            PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
             stmt.setInt(2, membershipId);
             int affected = stmt.executeUpdate();
@@ -251,10 +252,40 @@ public class MemberController {
                 user.setPhoneNumber(rs.getString("PhoneNumber"));
                 // Thêm các trường khác nếu cần
                 return user;
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<Member> getAllMembers() {
+        List<Member> members = new ArrayList<>();
+        String sql = "SELECT * FROM Members m JOIN Users u ON m.UserID = u.UserID";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Member member = new Member();
+                member.setMemberId(rs.getInt("MemberID"));
+                member.setUserId(rs.getInt("UserID"));
+                member.setMemberCode(rs.getString("MemberCode"));
+                member.setJoinDate(rs.getDate("JoinDate").toLocalDate());
+                member.setStatus(enum_MemberStatus.fromValue(rs.getString("Status")));
+
+                // Tạo đối tượng User và set fullName
+                User user = new User();
+                user.setUserId(rs.getInt("UserID"));
+                user.setFullName(rs.getString("FullName")); 
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setEmail(rs.getString("Email"));
+                member.setUser(user);
+                members.add(member);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return members;
     }
 }

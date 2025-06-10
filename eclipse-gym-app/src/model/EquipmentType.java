@@ -4,6 +4,7 @@ public class EquipmentType {
     private int equipmentTypeId;
     private String equipmentName;
     private String description;
+    private String status;
 
     public EquipmentType() {
     }
@@ -37,5 +38,13 @@ public class EquipmentType {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

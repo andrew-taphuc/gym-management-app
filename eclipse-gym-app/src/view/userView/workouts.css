@@ -37,7 +37,7 @@
 }
 
 .workout-table .table-row-cell:selected {
-    -fx-background-color: #b2ebf2;
+    -fx-background-color: #009ad2;
 }
 
 .page-title {
