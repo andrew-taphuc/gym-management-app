@@ -70,6 +70,7 @@ public class HomeView_admin extends BaseView {
     private void handleCheckinClick() {
         view.adminView.CheckinController controller = new view.adminView.CheckinController();
         controller.setCurrentUser(currentUser);
+        controller.setContentArea(contentArea);
         loadViewWithUser("checkin.fxml", controller);
     }
 

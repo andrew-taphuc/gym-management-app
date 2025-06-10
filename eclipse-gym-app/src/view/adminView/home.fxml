@@ -18,7 +18,7 @@
                 style="-fx-text-fill: #bdbdbd; -fx-font-size: 14px; -fx-font-family: 'Courier New'; -fx-padding: 0 0 10 0;" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Home"
                 onAction="#handleHomeClick" />
-            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Checkin"
+            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Check-in"
                 onAction="#handleCheckinClick" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn"
                 text="Plans &amp; Renewals"

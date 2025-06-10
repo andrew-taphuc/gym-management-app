@@ -7,19 +7,38 @@ public class Attendance {
     private int memberId;
     private int membershipId;
     private LocalDateTime checkInTime;
-    private String type; // Gym, Yoga, Kickfit, ...
+    private Integer trainingScheduleId; // Có thể null
+    private String planName; 
 
     public Attendance() {
     }
 
-    public Attendance(int attendanceId, int memberId, int membershipId, LocalDateTime checkInTime, String type) {
+    public Attendance(int attendanceId, int memberId, int membershipId, LocalDateTime checkInTime, Integer trainingScheduleId, String planName) {
         this.attendanceId = attendanceId;
         this.memberId = memberId;
         this.membershipId = membershipId;
         this.checkInTime = checkInTime;
-        this.type = type;
+        this.trainingScheduleId = trainingScheduleId;
+        this.planName = planName;
     }
 
+    public Integer getTrainingScheduleId() {
+        return trainingScheduleId;
+    }
+
+    public void setTrainingScheduleId(Integer trainingScheduleId) {
+        this.trainingScheduleId = trainingScheduleId;
+    }
+
+    public String getPlanName() {
+        return planName;
+    }
+
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+
+    // Getter/setter cho các trường khác
     public int getAttendanceId() {
         return attendanceId;
     }
@@ -50,13 +69,5 @@ public class Attendance {
 
     public void setCheckInTime(LocalDateTime checkInTime) {
         this.checkInTime = checkInTime;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

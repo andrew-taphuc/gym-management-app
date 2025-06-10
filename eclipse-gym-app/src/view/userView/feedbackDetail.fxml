@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="view.userView.FeedbackDetailController"
+    spacing="15" alignment="TOP_CENTER"
+    stylesheets="@feedback.css"
+    style="-fx-padding: 25;" prefWidth="700" prefHeight="600">
+
+    <!-- Tiêu đề -->
+    <Label fx:id="titleLabel" text="Chi tiết phản hồi"
+        style="-fx-font-size: 32px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: #232930;
+                  -fx-font-family: 'Be Vietnam Pro', 'Courier New', monospace;"
+    />
+
+    <!-- Separator -->
+    <Separator prefWidth="650" style="-fx-background-color: #e0e0e0;" />
+
+    <!-- Phần 1: Thông tin feedback gốc -->
+    <VBox spacing="10"
+        style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="📝 Phản hồi của bạn:"
+            style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" />
+
+        <!-- Loại phản hồi -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Loại phản hồi:"
+                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <Label fx:id="feedbackTypeLabel"
+                style="-fx-font-size: 18px; -fx-text-fill: #1976d2; -fx-font-weight: bold;" />
+        </HBox>
+
+        <!-- Thông tin thiết bị (chỉ hiện nếu là feedback cơ sở vật chất) -->
+        <VBox fx:id="equipmentInfoSection" spacing="5" visible="false" managed="false">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Thiết bị:"
+                    style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="equipmentInfoLabel"
+                    style="-fx-font-size: 18px; -fx-text-fill: #d32f2f; -fx-font-weight: bold;" />
+            </HBox>
+        </VBox>
+
+        <!-- Nội dung phản hồi -->
+        <VBox spacing="5">
+            <Label text="Nội dung:"
+                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <TextArea fx:id="feedbackCommentArea" editable="false" wrapText="true"
+                prefRowCount="4" prefWidth="620"
+                style="-fx-font-size: 16px; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;" />
+        </VBox>
+
+        <!-- Ngày gửi và trạng thái -->
+        <HBox spacing="30" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Ngày gửi:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="feedbackDateLabel"
+                    style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Trạng thái:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="statusLabel"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Separator -->
+    <Separator prefWidth="650" style="-fx-background-color: #e0e0e0;" />
+
+    <!-- Phần 2: Phản hồi từ chủ phòng tập -->
+    <VBox fx:id="responseSection" spacing="10"
+        style="-fx-background-color: #f0f8ff; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="💬 Phản hồi từ chủ phòng tập:"
+            style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" />
+
+        <TextArea fx:id="responseCommentArea" editable="false" wrapText="true"
+            prefRowCount="4" prefWidth="620"
+            style="-fx-font-size: 16px; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;" />
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Ngày phản hồi:"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <Label fx:id="responseDateLabel"
+                style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+        </HBox>
+    </VBox>
+
+    <!-- Nút đóng -->
+    <Button text="Đóng" onAction="#handleClose" prefWidth="120" prefHeight="45"
+        style="-fx-background-color: #2196f3; 
+            -fx-text-fill: white; 
+            -fx-font-weight: bold; 
+            -fx-background-radius: 8; 
+            -fx-cursor: hand;
+            -fx-font-size: 18px;" />
+
+</VBox> 

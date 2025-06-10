@@ -27,6 +27,7 @@ public class PaymentController {
                 payment.setPaymentDate(rs.getTimestamp("PaymentDate").toLocalDateTime());
                 payment.setPaymentMethod(rs.getString("PaymentMethod"));
                 payment.setStatus(enum_PaymentStatus.fromValue(rs.getString("Status")));
+                payment.setPromotionId(rs.getObject("PromotionId") != null ? rs.getInt("PromotionId") : null);
                 payment.setNotes(rs.getString("Notes"));
                 return payment;
             }
@@ -37,15 +38,21 @@ public class PaymentController {
     }
 
     public int createPayment(Payment payment) {
-        String query = "INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, Notes) " +
-                "VALUES (?, ?, ?, ?::payment_status_enum, ?) RETURNING PaymentID";
+        String query = "INSERT INTO Payments (Amount, PaymentDate, PaymentMethod, Status, PromotionId, Notes) " +
+                "VALUES (?, ?, ?, ?::payment_status_enum, ?, ?) RETURNING PaymentID";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setDouble(1, payment.getAmount());
             stmt.setTimestamp(2, java.sql.Timestamp.valueOf(payment.getPaymentDate()));
             stmt.setString(3, payment.getPaymentMethod());
             stmt.setString(4, payment.getStatus().getValue());
-            stmt.setString(5, payment.getNotes());
+            // Dùng setObject để nhận cả null cho PromotionId
+            if (payment.getPromotionId() != null) {
+                stmt.setInt(5, payment.getPromotionId());
+            } else {
+                stmt.setNull(5, java.sql.Types.INTEGER);
+            }
+            stmt.setString(6, payment.getNotes());
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

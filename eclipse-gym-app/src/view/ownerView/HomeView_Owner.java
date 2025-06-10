@@ -42,19 +42,19 @@ public class HomeView_Owner extends BaseView {
             roleLabel.setText("Role: " + currentUser.getRole());
         }
         // Load home content by default
-        handleHomeClick();
+        handleDashboardClick();
     }
 
-    @FXML
-    private void handleHomeClick() {
-        try {
-            Parent homeContent = FXMLLoader.load(getClass().getResource("home_content.fxml"));
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(homeContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    // @FXML
+    // private void handleHomeClick() {
+    //     try {
+    //         Parent homeContent = FXMLLoader.load(getClass().getResource("home_content.fxml"));
+    //         contentArea.getChildren().clear();
+    //         contentArea.getChildren().add(homeContent);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     public <T> void loadViewWithUser(String fxmlPath, T controller) {
         try {
@@ -73,6 +73,13 @@ public class HomeView_Owner extends BaseView {
         view.ownerView.DashboardController controller = new view.ownerView.DashboardController();
         controller.setCurrentUser(currentUser);
         loadViewWithUser("dashboard.fxml", controller);
+    }
+
+    @FXML
+    private void handleEquipmentClick() {
+        view.ownerView.EquipmentView controller = new view.ownerView.EquipmentView();
+        controller.setCurrentUser(currentUser);
+        loadViewWithUser("equipment.fxml", controller);
     }
 
     @FXML

@@ -12,10 +12,8 @@ public class RoomEquipment {
     private String description;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-    private int centerId;
     private Room room; // Reference to Room
     private enum_EquipmentType equipmentType; // Reference to EquipmentType
-    private FitnessCenter center; // Reference to FitnessCenter
 
     public RoomEquipment() {
     }
@@ -23,7 +21,7 @@ public class RoomEquipment {
     public RoomEquipment(int roomEquipmentId, int roomId, int equipmentTypeId,
             String equipmentCode, int quantity, String status,
             String description, LocalDateTime createdDate,
-            LocalDateTime updatedDate, int centerId) {
+            LocalDateTime updatedDate) {
         this.roomEquipmentId = roomEquipmentId;
         this.roomId = roomId;
         this.equipmentTypeId = equipmentTypeId;
@@ -33,7 +31,6 @@ public class RoomEquipment {
         this.description = description;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
-        this.centerId = centerId;
     }
 
     // Getters and Setters
@@ -109,14 +106,6 @@ public class RoomEquipment {
         this.updatedDate = updatedDate;
     }
 
-    public int getCenterId() {
-        return centerId;
-    }
-
-    public void setCenterId(int centerId) {
-        this.centerId = centerId;
-    }
-
     public Room getRoom() {
         return room;
     }
@@ -131,13 +120,5 @@ public class RoomEquipment {
 
     public void setEquipmentType(enum_EquipmentType equipmentType) {
         this.equipmentType = equipmentType;
-    }
-
-    public FitnessCenter getCenter() {
-        return center;
-    }
-
-    public void setCenter(FitnessCenter center) {
-        this.center = center;
     }
 }

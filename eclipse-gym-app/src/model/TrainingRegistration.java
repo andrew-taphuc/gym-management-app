@@ -7,6 +7,7 @@ public class TrainingRegistration {
     private int memberId;
     private int planId;
     private int trainerId;
+    private String trainerName;
     private LocalDate startDate;
     private int sessionsLeft;
     private int paymentId;
@@ -60,6 +61,14 @@ public class TrainingRegistration {
 
     public void setTrainerId(int trainerId) {
         this.trainerId = trainerId;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
     }
 
     public LocalDate getStartDate() {
@@ -116,5 +125,11 @@ public class TrainingRegistration {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    public boolean isActive() {
+        // Kiểm tra còn buổi và ngày bắt đầu không quá xa (tuỳ logic, ví dụ 1 năm)
+        return this.sessionsLeft > 0;
+        // Nếu có trường endDate, bạn có thể kiểm tra thêm hạn sử dụng ở đây
     }
 }

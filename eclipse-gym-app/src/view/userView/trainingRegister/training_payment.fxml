@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="view.userView.trainingRegister.TrainingPaymentController"
+    styleClass="content-area" stylesheets="@../workouts.css"
+    spacing="30" alignment="CENTER" prefWidth="700" prefHeight="800">
+    <padding>
+        <Insets top="20" bottom="20" left="50" right="50" />
+    </padding>
+
+    <!-- Tiêu đề -->
+    <Label text="THANH TOÁN GÓI HUẤN LUYỆN" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+
+    <!-- Thông tin gói tập -->
+    <VBox spacing="10"
+        style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Thông tin gói tập" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+        <Label fx:id="selectedPlanLabel" style="-fx-font-size: 20px;" />
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Giá gốc:" style="-fx-font-size: 20px;" />
+            <Text fx:id="originalAmountText" style="-fx-font-size: 20px;" />
+        </HBox>
+
+        <HBox fx:id="discountedPriceBox" spacing="10" alignment="CENTER_LEFT" visible="false">
+            <Label text="Giá sau giảm:" style="-fx-font-size: 20px;" />
+            <Text fx:id="totalAmountText" style="-fx-font-size: 20px;" />
+        </HBox>
+    </VBox>
+
+    <!-- Form thanh toán -->
+    <VBox spacing="10"
+        style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Thông tin thanh toán" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+        <Label text="Số thẻ" style="-fx-font-size: 20px;" />
+        <TextField fx:id="cardNumberField" promptText="Nhập số thẻ" style="-fx-font-size: 20px;" />
+
+        <Label text="CVV" style="-fx-font-size: 20px;" />
+        <TextField fx:id="cvvField" promptText="Nhập CVV" style="-fx-font-size: 20px;" />
+
+        <Label fx:id="errorLabel" style="-fx-font-size: 18px; -fx-text-fill: red;" />
+
+        <Label text="Mã giảm giá (nếu có)" style="-fx-font-size: 20px;" />
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <TextField fx:id="promoCodeField" promptText="Nhập mã giảm giá"
+                style="-fx-font-size: 20px;" />
+            <Button text="Áp dụng"
+                style="-fx-font-size: 20px; -fx-background-color: #4FC3F7; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+                onAction="#handleApplyPromo" />
+        </HBox>
+        <Label fx:id="promoCodeStatusLabel" style="-fx-font-size: 18px;" />
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="Quay lại"
+            style="-fx-font-size: 20px; -fx-background-color: #FF5722; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+            prefWidth="150"
+            onAction="#handleBack" />
+        <Button fx:id="confirmButton" text="Xác nhận thanh toán"
+            style="-fx-font-size: 20px; -fx-background-color: #4FC3F7; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;"
+            prefWidth="200"
+            onAction="#handleConfirmPayment" />
+    </HBox>
+
+</VBox> 

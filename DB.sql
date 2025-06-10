@@ -30,6 +30,9 @@ CREATE TYPE membership_status_enum AS ENUM ('Hoạt động', 'Hết hạn', 'Ch
 -- ENUM trạng thái thanh toán
 CREATE TYPE payment_status_enum AS ENUM ('Thành công', 'Thất bại');
 
+-- ENUM trạng thái gói tập
+CREATE TYPE plan_status_enum AS ENUM ('Hoạt động', 'Đã cập nhật', 'Đã xóa');
+
 -- ENUM trạng thái phòng tập
 CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ngừng');
 
@@ -91,22 +94,46 @@ CREATE TABLE Members (
 -- BẢNG GÓI TẬP - DÀNH CHO TRUY CẬP GYM
 CREATE TABLE MembershipPlans (
   PlanID SERIAL PRIMARY KEY,
-  PlanCode VARCHAR(20) NOT NULL UNIQUE,
+  PlanCode VARCHAR(20) NOT NULL,
   PlanName VARCHAR(100) NOT NULL,
   Duration INT NOT NULL,
   Price DECIMAL(12,2) NOT NULL CHECK (Price >= 0),
-  Description VARCHAR(500)
+  Status plan_status_enum DEFAULT 'Hoạt động',
+  Description VARCHAR(500),
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdateFrom INT REFERENCES MembershipPlans(PlanID) ON DELETE CASCADE
+  
 );
 
 -- BẢNG GÓI TẬP - DÀNH CHO HUẤN LUYỆN VIÊN (THEO SỐ BUỔI)
 CREATE TABLE TrainingPlans (
   PlanID SERIAL PRIMARY KEY,
-  PlanCode VARCHAR(20) NOT NULL UNIQUE,
+  PlanCode VARCHAR(20) NOT NULL,
   PlanName VARCHAR(100) NOT NULL,
   Type trainer_specialization_enum NOT NULL,
   SessionAmount INT NOT NULL CHECK (SessionAmount > 0),
   Price DECIMAL(12,2) NOT NULL CHECK (Price >= 0),
-  Description VARCHAR(500)
+  Status plan_status_enum DEFAULT 'Hoạt động',
+  Description VARCHAR(500),
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdateFrom INT REFERENCES TrainingPlans(PlanID) ON DELETE CASCADE
+);
+
+-- Bảng khuyến mãi
+CREATE TABLE Promotions (
+  PromotionID SERIAL PRIMARY KEY,
+  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
+  PromotionName VARCHAR(100) NOT NULL,
+  Description VARCHAR(500),
+  DiscountType discount_type NOT NULL,
+  DiscountValue DECIMAL(10,2) NOT NULL,
+  StartDate TIMESTAMP NOT NULL,
+  EndDate TIMESTAMP NOT NULL,
+  Status promotion_status DEFAULT 'Còn hạn',
+  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng thanh toán
@@ -116,6 +143,7 @@ CREATE TABLE Payments (
   PaymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PaymentMethod VARCHAR(50) NOT NULL,
   Status payment_status_enum DEFAULT 'Thành công',
+  PromotionID INT REFERENCES Promotions(PromotionID) ON DELETE CASCADE,
   Notes VARCHAR(500)
 );
 
@@ -128,7 +156,9 @@ CREATE TABLE Memberships (
   StartDate DATE NOT NULL,
   EndDate DATE NOT NULL,
   Status membership_status_enum DEFAULT 'Chưa kích hoạt',
-  PaymentID INT REFERENCES Payments(PaymentID)
+  PaymentID INT REFERENCES Payments(PaymentID),
+  RenewalTo INT REFERENCES Memberships(MembershipID),
+  RenewalDate TIMESTAMP
 );
 
 -- BẢNG ĐĂNG KÝ GÓI HUẤN LUYỆN (Thêm PaymentID)
@@ -140,16 +170,6 @@ CREATE TABLE TrainingRegistrations (
   StartDate DATE NOT NULL,
   SessionsLeft INT DEFAULT 0 CHECK (SessionsLeft >= 0),
   PaymentID INT REFERENCES Payments(PaymentID)
-);
-
--- BẢNG GIA HẠN GÓI GYM (đã có PaymentID, chỉ cần chắc chắn có FK)
-CREATE TABLE MembershipRenewals (
-  RenewalID SERIAL PRIMARY KEY,
-  MembershipID INT NOT NULL REFERENCES Memberships(MembershipID) ON DELETE CASCADE,
-  NewEndDate DATE NOT NULL,
-  RenewalDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PaymentID INT REFERENCES Payments(PaymentID),
-  Notes VARCHAR(500)
 );
 
 -- Module quản lý phòng tập, thiết bị
@@ -169,7 +189,8 @@ CREATE TABLE Rooms (
 CREATE TABLE EquipmentTypes (
     EquipmentTypeID SERIAL PRIMARY KEY,
     EquipmentName VARCHAR(100) NOT NULL,
-    Description VARCHAR(500)
+    Description VARCHAR(500),
+    Status VARCHAR(50)
 );
 
 -- 4. RoomEquipment table (each equipment instance in a room)
@@ -250,20 +271,6 @@ CREATE TABLE MemberProgress (
   Notes VARCHAR(500)
 );
 
-CREATE TABLE Promotions (
-  PromotionID SERIAL PRIMARY KEY,
-  PromotionCode VARCHAR(20) NOT NULL UNIQUE,
-  PromotionName VARCHAR(100) NOT NULL,
-  Description VARCHAR(500),
-  DiscountType discount_type NOT NULL,
-  DiscountValue DECIMAL(10,2) NOT NULL,
-  StartDate TIMESTAMP NOT NULL,
-  EndDate TIMESTAMP NOT NULL,
-  Status promotion_status DEFAULT 'Còn hạn',
-  CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  UpdatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
 CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
 
@@ -273,6 +280,7 @@ CREATE TABLE Feedback (
     FeedbackType feedback_type NOT NULL,
     Comment VARCHAR(1000),
     FeedbackDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    EquipmentID INT REFERENCES RoomEquipment(RoomEquipmentID) ON DELETE CASCADE,
     Status feedback_status DEFAULT 'Đang giải quyết',
     ResponseComment VARCHAR(1000),
     ResponseDate TIMESTAMP,

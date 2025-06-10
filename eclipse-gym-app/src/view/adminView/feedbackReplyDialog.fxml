@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="view.adminView.FeedbackReplyController"
+    spacing="15" style="-fx-padding: 20;"
+    prefWidth="700" prefHeight="550">
+
+    <!-- Header -->
+    <Label text="Trả lời phản hồi từ hội viên"
+        style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2196f3; -fx-alignment: center;" />
+
+    <!-- Separator -->
+    <Separator />
+
+    <!-- Member Feedback Section -->
+    <VBox spacing="12"
+        style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-background-radius: 8;">
+        <Label text="📝 Phản hồi từ hội viên:"
+            style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1976d2;" />
+
+        <!-- Member Info -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Hội viên:"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <Label fx:id="memberNameLabel"
+                style="-fx-font-size: 16px; -fx-text-fill: #1976d2; -fx-font-weight: bold;" />
+        </HBox>
+
+        <!-- Feedback Type -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Loại phản hồi:"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <Label fx:id="feedbackTypeLabel"
+                style="-fx-font-size: 16px; -fx-text-fill: #1976d2; -fx-font-weight: bold;" />
+        </HBox>
+
+        <!-- Equipment Info (only for facility feedback) -->
+        <VBox fx:id="equipmentInfoSection" spacing="8" visible="false" managed="false">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Thiết bị:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="equipmentInfoLabel"
+                    style="-fx-font-size: 16px; -fx-text-fill: #424242; -fx-font-weight: bold;" />
+            </HBox>
+
+            <!-- Equipment Status Update Button -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Cập nhật trạng thái:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Button fx:id="updateStatusButton" onAction="#handleUpdateEquipmentStatus"
+                    style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-font-weight: bold; 
+                               -fx-background-radius: 4; -fx-padding: 4 12; -fx-cursor: hand; -fx-font-size: 12px;" />
+            </HBox>
+        </VBox>
+
+        <!-- Feedback Content -->
+        <VBox spacing="5">
+            <Label text="Nội dung phản hồi:"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <TextArea fx:id="memberCommentArea" editable="false" wrapText="true"
+                prefRowCount="3" prefWidth="620"
+                style="-fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;" />
+        </VBox>
+
+        <!-- Feedback Date and Status -->
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Ngày gửi:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="feedbackDateLabel"
+                    style="-fx-font-size: 16px; -fx-text-fill: #666;" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Trạng thái:"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+                <Label fx:id="statusLabel"
+                    style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Separator -->
+    <Separator />
+
+    <!-- Admin Reply Section -->
+    <VBox spacing="12"
+        style="-fx-background-color: #fff3e0; -fx-padding: 15; -fx-background-radius: 8;">
+        <Label text="✍️ Trả lời của bạn:"
+            style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ff6f00;" />
+
+        <!-- Reply Content -->
+        <VBox spacing="5">
+            <Label text="Nội dung trả lời:"
+                style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #424242;" />
+            <TextArea fx:id="replyCommentArea" wrapText="true"
+                prefRowCount="4" prefWidth="620"
+                promptText="Nhập nội dung trả lời phản hồi..."
+                style="-fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;" />
+        </VBox>
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Gửi trả lời" onAction="#handleSendReply"
+            style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold; 
+                       -fx-background-radius: 6; -fx-padding: 10 20; -fx-cursor: hand; -fx-font-size: 16px;" />
+        <Button text="Hủy" onAction="#handleCancel"
+            style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; 
+                       -fx-background-radius: 6; -fx-padding: 10 20; -fx-cursor: hand; -fx-font-size: 16px;" />
+    </HBox>
+
+</VBox> 
