@@ -26,28 +26,28 @@
                 <Label fx:id="pageTitle" styleClass="page-title" />
             </HBox>
 
-           
-            <HBox alignment="CENTER_RIGHT">
-                <Button fx:id="addFeedbackButton" text="+ Thêm Feedback" onAction="#handleAddFeedback" styleClass="add-fb-button"/>
-            </HBox> 
 
-            <TableView fx:id="feedbackTable" 
-                prefHeight="600" 
-                maxHeight="600" 
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="addFeedbackButton" text="+ Thêm Feedback"
+                    onAction="#handleAddFeedback" styleClass="add-fb-button" />
+            </HBox>
+
+            <TableView fx:id="feedbackTable"
+                prefHeight="600"
+                maxHeight="600"
                 styleClass="feedback-table">
-                    <columns>
-                        <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="200"/>
-                        <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400"/>
-                        <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="180"/>
-                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="150"/>
-                        <TableColumn fx:id="responseCommentColumn" text="Phản hồi từ chủ phòng tập" prefWidth="200"/>
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                    </columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="200" />
+                    <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400" />
+                    <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="180" />
+                    <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="150" />
+                    <TableColumn fx:id="responseCommentColumn" text="Phản hồi từ chủ phòng tập"
+                        prefWidth="200" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
             </TableView>
         </VBox>
     </AnchorPane>
 </AnchorPane>
-
-

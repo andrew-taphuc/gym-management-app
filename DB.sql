@@ -279,6 +279,7 @@ CREATE TABLE Feedback (
     FeedbackType feedback_type NOT NULL,
     Comment VARCHAR(1000),
     FeedbackDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    EquipmentID INT REFERENCES RoomEquipment(RoomEquipmentID) ON DELETE CASCADE,
     Status feedback_status DEFAULT 'Đang giải quyết',
     ResponseComment VARCHAR(1000),
     ResponseDate TIMESTAMP,
