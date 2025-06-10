@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    prefHeight="600.0" prefWidth="800.0"
+    styleClass="content-area"
+    spacing="10">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label fx:id="pageTitle" styleClass="page-title" text="Quản lý thiết bị tập"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnAddEquipment" text="Thêm thiết bị" onAction="#handleAddEquipment" styleClass="btn-primary"/>
+    </HBox>
+
+    <!-- Search and Filter -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ComboBox fx:id="cboRoomFilter" promptText="Chọn phòng" prefWidth="200"/>
+        <ComboBox fx:id="cboStatusFilter" promptText="Trạng thái" prefWidth="150"/>
+        <TextField fx:id="txtSearch" promptText="Tìm kiếm..." prefWidth="200"/>
+        <Button text="Tìm kiếm" onAction="#handleSearch" styleClass="btn-secondary"/>
+        <Button text="Làm mới" onAction="#handleRefresh" styleClass="btn-secondary"/>
+    </HBox>
+
+    <!-- Equipment Table -->
+    <TableView fx:id="tblEquipment" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colEquipmentCode" text="Mã thiết bị" prefWidth="100"/>
+            <TableColumn fx:id="colEquipmentName" text="Tên thiết bị" prefWidth="150"/>
+            <TableColumn fx:id="colRoom" text="Phòng" prefWidth="100"/>
+            <TableColumn fx:id="colQuantity" text="Số lượng" prefWidth="80"/>
+            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
+            <TableColumn fx:id="colDescription" text="Mô tả" prefWidth="200"/>
+            <TableColumn fx:id="colActions" text="Thao tác" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+</VBox> 
