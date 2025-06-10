@@ -39,7 +39,7 @@ CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ng�
 -- ENUM trạng thái thiết bị
 CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
 
-CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Hủy');
+CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Đã hủy');
 
 CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
 
@@ -286,3 +286,4 @@ CREATE TABLE Feedback (
     ResponseDate TIMESTAMP,
     ResponderID INT -- Người phản hồi
 );
+

@@ -54,6 +54,7 @@ public class WorkoutsController {
         addButtonToTable();
         if (currentUser != null) {
             loadSchedulesByMember(currentUser.getUserId());
+            trainingController.updateExpiredTrainingSchedules();
         }
     }
 

@@ -644,13 +644,27 @@ public class TrainingController {
         return 0;
     }
 
-    // Thêm method mới để xóa lịch tập
-    public boolean deleteTrainingSchedule(int scheduleId) throws SQLException {
-        String sql = "DELETE FROM TrainingSchedule WHERE scheduleid = ?";
+    // Thêm method mới để hủy lịch tập
+    public boolean cancelTrainingSchedule(int scheduleId) throws SQLException {
+        String sql = "UPDATE TrainingSchedule SET status = ?::training_status_enum WHERE scheduleid = ?";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, scheduleId);
+            ps.setString(1, enum_TrainingStatus.CANCELLED.getValue());
+            ps.setInt(2, scheduleId);
             return ps.executeUpdate() > 0;
+        }
+    }
+
+    // Cập nhật trạng thái các lịch tập đã hết hạn
+    public boolean updateExpiredTrainingSchedules() {
+        String sql = "SELECT update_expired_training_schedules()";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeQuery();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

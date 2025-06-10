@@ -284,7 +284,7 @@ public class WorkoutsController {
             public TableCell<TrainingSchedule, Void> call(final TableColumn<TrainingSchedule, Void> param) {
                 return new TableCell<TrainingSchedule, Void>() {
                     private final Button viewBtn = new Button("Xem bài tập");
-                    private final Button deleteBtn = new Button("Xóa");
+                    private final Button deleteBtn = new Button("Hủy");
                     private final HBox hbox = new HBox(5, viewBtn, deleteBtn);
 
                     {
@@ -305,21 +305,21 @@ public class WorkoutsController {
                             viewBtn.setOnAction(e -> showExercisesPopup(schedule));
                             deleteBtn.setOnAction(e -> {
                                 Alert alert = new Alert(AlertType.CONFIRMATION);
-                                alert.setTitle("Xác nhận xóa");
+                                alert.setTitle("Xác nhận hủy");
                                 alert.setHeaderText(null);
-                                alert.setContentText("Bạn có chắc chắn muốn xóa lịch tập này?");
+                                alert.setContentText("Bạn có chắc chắn muốn hủy lịch tập này?");
 
                                 alert.showAndWait().ifPresent(response -> {
                                     if (response == ButtonType.OK) {
                                         try {
-                                            if (trainingController.deleteTrainingSchedule(schedule.getId())) {
+                                            if (trainingController.cancelTrainingSchedule(schedule.getId())) {
                                                 refreshScheduleTable();
                                             } else {
-                                                showAlert(AlertType.ERROR, "Lỗi", "Không thể xóa lịch tập");
+                                                showAlert(AlertType.ERROR, "Lỗi", "Không thể hủy lịch tập");
                                             }
                                         } catch (SQLException ex) {
                                             showAlert(AlertType.ERROR, "Lỗi",
-                                                    "Lỗi khi xóa lịch tập: " + ex.getMessage());
+                                                    "Lỗi khi hủy lịch tập: " + ex.getMessage());
                                         }
                                     }
                                 });
@@ -414,6 +414,7 @@ public class WorkoutsController {
     @FXML
     private void refreshMembersList() {
         loadManagedMembers(currentTrainerId);
+        trainingController.updateExpiredTrainingSchedules();
     }
 
     private void showMemberDetailsPopup(TrainingRegistration registration) {
@@ -733,6 +734,7 @@ public class WorkoutsController {
     private void refreshScheduleTable() {
         try {
             loadSchedulesByTrainer(currentTrainerId);
+            trainingController.updateExpiredTrainingSchedules();
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(AlertType.ERROR, "Lỗi", "Không thể tải lại dữ liệu");

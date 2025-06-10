@@ -121,6 +121,14 @@ public class TrainingRegistrationController {
                     updateStmt.setInt(1, registrationId);
                     updateStmt.executeUpdate();
                 }
+                
+                // Cập nhật trạng thái lịch tập thành 'Hoàn thành'
+                String updateStatusSql = "UPDATE TrainingSchedule SET Status = 'Hoàn thành' WHERE ScheduleID = ?";
+                try (PreparedStatement statusStmt = conn.prepareStatement(updateStatusSql)) {
+                    statusStmt.setInt(1, trainingScheduleId);
+                    statusStmt.executeUpdate();
+                }
+                
                 return true;
             }
         } catch (SQLException e) {
