@@ -13,7 +13,7 @@ public class EquipmentTypeController {
      */
     public List<EquipmentType> getAllEquipmentTypes() {
         List<EquipmentType> equipmentTypes = new ArrayList<>();
-        String sql = "SELECT * FROM EquipmentTypes ORDER BY EquipmentName";
+        String sql = "SELECT * FROM EquipmentTypes WHERE Status IS NULL OR Status != 'Đã xóa' ORDER BY EquipmentName";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -107,13 +107,14 @@ public class EquipmentTypeController {
      * Cập nhật loại thiết bị
      */
     public boolean updateEquipmentType(EquipmentType equipmentType) {
-        String sql = "UPDATE EquipmentTypes SET EquipmentName = ?, Description = ? WHERE EquipmentTypeID = ?";
+        String sql = "UPDATE EquipmentTypes SET EquipmentName = ?, Description = ?, Status = ? WHERE EquipmentTypeID = ?";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, equipmentType.getEquipmentName());
             ps.setString(2, equipmentType.getDescription());
-            ps.setInt(3, equipmentType.getEquipmentTypeId());
+            ps.setString(3, equipmentType.getStatus());
+            ps.setInt(4, equipmentType.getEquipmentTypeId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -267,6 +268,7 @@ public class EquipmentTypeController {
         equipmentType.setEquipmentTypeId(rs.getInt("EquipmentTypeID"));
         equipmentType.setEquipmentName(rs.getString("EquipmentName"));
         equipmentType.setDescription(rs.getString("Description"));
+        equipmentType.setStatus(rs.getString("Status"));
         return equipmentType;
     }
 }
