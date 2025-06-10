@@ -1,6 +1,7 @@
 package view.userView;
 
 import controller.UserController;
+import controller.AttendanceController;
 import controller.MemberProgressController;
 import controller.MemberProgressController.MembershipInfo;
 import controller.MemberProgressController.TrainingSchedule;
@@ -55,6 +56,7 @@ public class HomeContent {
     private User currentUser;
     private final MemberProgressController progressController = new MemberProgressController();
     private final UserController userController = new UserController();
+    private final AttendanceController attendanceController = new AttendanceController();
     private List<MemberProgress> history;
 
     public HomeContent() {
@@ -136,7 +138,7 @@ public class HomeContent {
 
     private void updateSessionStats(int memberId) {
         // Cập nhật số buổi tập trong tháng
-        int monthlyCount = progressController.getMonthlySessions(memberId);
+        int monthlyCount = attendanceController.getMonthlySessions(memberId);
         monthlySessions.setText(String.valueOf(monthlyCount));
 
         // Cập nhật chuỗi ngày tập
@@ -145,7 +147,7 @@ public class HomeContent {
         streakAchievement.setText(streak + " ngày");
 
         // Cập nhật tổng số buổi tập
-        int total = progressController.getTotalSessions(memberId);
+        int total = attendanceController.getTotalSessions(memberId);
         totalSessions.setText(total + " buổi");
     }
 

@@ -103,32 +103,6 @@ public class MemberProgressController {
         return null;
     }
 
-    // Lấy số buổi tập trong tháng hiện tại
-    public int getMonthlySessions(int memberId) {
-        String sql = """
-            SELECT COUNT(*) as session_count
-            FROM Attendance a
-            WHERE a.MemberID = ? 
-            AND EXTRACT(MONTH FROM a.CheckInTime) = EXTRACT(MONTH FROM CURRENT_DATE)
-            AND EXTRACT(YEAR FROM a.CheckInTime) = EXTRACT(YEAR FROM CURRENT_DATE)
-        """;
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, memberId);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("session_count");
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi đếm số buổi tập trong tháng: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
     // Lấy chuỗi ngày tập liên tục
     public int getStreakDays(int memberId) {
         String sql = """
@@ -232,27 +206,6 @@ public class MemberProgressController {
         return schedules;
     }
 
-    // Lấy tổng số buổi tập
-    public int getTotalSessions(int memberId) {
-        String sql = "SELECT COUNT(*) as total FROM Attendance WHERE MemberID = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, memberId);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi đếm tổng số buổi tập: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Inner classes để lưu trữ dữ liệu
     public static class MembershipInfo {
         private final int membershipId;
         private final int memberId;
