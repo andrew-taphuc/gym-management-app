@@ -20,6 +20,8 @@
                 onAction="#handleHomeClick" /> -->
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Dashboard"
                 onAction="#handleDashboardClick" />
+            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Room &amp; Equipment"
+                onAction="#handleEquipmentClick" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn"
                 text="Plan Management"
                 onAction="#handlePlansClick" />

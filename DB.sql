@@ -189,7 +189,8 @@ CREATE TABLE Rooms (
 CREATE TABLE EquipmentTypes (
     EquipmentTypeID SERIAL PRIMARY KEY,
     EquipmentName VARCHAR(100) NOT NULL,
-    Description VARCHAR(500)
+    Description VARCHAR(500),
+    Status VARCHAR(50)
 );
 
 -- 4. RoomEquipment table (each equipment instance in a room)

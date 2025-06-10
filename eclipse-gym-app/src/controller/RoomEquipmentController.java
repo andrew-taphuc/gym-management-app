@@ -110,7 +110,7 @@ public class RoomEquipmentController {
      * Thêm thiết bị phòng mới
      */
     public boolean addRoomEquipment(RoomEquipment roomEquipment) {
-        String sql = "INSERT INTO roomequipment (RoomID, EquipmentTypeID, EquipmentCode, Quantity, Status, Description, CreatedDate, UpdatedDate, CenterID) VALUES (?, ?, ?, ?, ?::equipment_status_enum, ?, ?, ?, ?)";
+        String sql = "INSERT INTO roomequipment (RoomID, EquipmentTypeID, EquipmentCode, Quantity, Status, Description, CreatedDate, UpdatedDate) VALUES (?, ?, ?, ?, ?::equipment_status_enum, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -122,7 +122,6 @@ public class RoomEquipmentController {
             ps.setString(6, roomEquipment.getDescription());
             ps.setTimestamp(7, Timestamp.valueOf(roomEquipment.getCreatedDate()));
             ps.setTimestamp(8, Timestamp.valueOf(roomEquipment.getUpdatedDate()));
-            ps.setInt(9, roomEquipment.getCenterId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -135,7 +134,7 @@ public class RoomEquipmentController {
      * Cập nhật thiết bị phòng
      */
     public boolean updateRoomEquipment(RoomEquipment roomEquipment) {
-        String sql = "UPDATE roomequipment SET RoomID = ?, EquipmentTypeID = ?, EquipmentCode = ?, Quantity = ?, Status = ?::equipment_status_enum, Description = ?, UpdatedDate = ?, CenterID = ? WHERE RoomEquipmentID = ?";
+        String sql = "UPDATE roomequipment SET RoomID = ?, EquipmentTypeID = ?, EquipmentCode = ?, Quantity = ?, Status = ?::equipment_status_enum, Description = ?, UpdatedDate = ? WHERE RoomEquipmentID = ?";
 
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -146,8 +145,7 @@ public class RoomEquipmentController {
             ps.setString(5, roomEquipment.getStatus());
             ps.setString(6, roomEquipment.getDescription());
             ps.setTimestamp(7, Timestamp.valueOf(roomEquipment.getUpdatedDate()));
-            ps.setInt(8, roomEquipment.getCenterId());
-            ps.setInt(9, roomEquipment.getRoomEquipmentId());
+            ps.setInt(8, roomEquipment.getRoomEquipmentId());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -272,7 +270,6 @@ public class RoomEquipmentController {
             roomEquipment.setUpdatedDate(updatedTimestamp.toLocalDateTime());
         }
 
-        roomEquipment.setCenterId(rs.getInt("CenterID"));
         return roomEquipment;
     }
 }
