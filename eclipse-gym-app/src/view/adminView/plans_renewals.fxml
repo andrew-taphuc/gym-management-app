@@ -1,13 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx"
-    xmlns:fx="http://javafx.com/fxml"
-    prefHeight="600.0" prefWidth="800.0"
-    styleClass="content-area">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            >     
 
-    <Label fx:id="pageTitle" styleClass="page-title" />
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>        
 
-</VBox> 
+    <!-- Top section: title and button -->
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Label fx:id="pageTitle" text="Quản lý gói tập" style="-fx-font-size: 36px; -fx-font-weight: bold;" />
+            <Pane HBox.hgrow="ALWAYS"/> <!-- pushes button to right -->
+            <Button fx:id="registerNewAccountButton" text="Đăng ký tài khoản mới" style="-fx-font-size: 20px;" />
+        </HBox>
+    </top>
+
+    <!-- Center section: search and member table -->
+    <center>
+        <VBox spacing="20">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Search Field -->
+            <TextField fx:id="searchField" promptText="Tìm kiếm người dùng" style="-fx-font-size: 18px;" maxWidth="300" />
+
+            <!-- Member Table -->
+            <TableView fx:id="memberTable" prefHeight="700" style="-fx-font-size: 16px;">
+                <columns>
+                    <TableColumn fx:id="memberCodeColumn" text="Mã thành viên" prefWidth="200" />
+                    <TableColumn fx:id="nameColumn" text="Tên" prefWidth="300" />
+                    <TableColumn fx:id="phoneColumn" text="Số điện thoại" prefWidth="300" />
+                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="300" />
+                    <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="200" />
+                    <TableColumn fx:id="actionColumn" text="Hành động" prefWidth="218" />
+                </columns>
+            </TableView>
+
+        </VBox>
+    </center>
+</BorderPane>

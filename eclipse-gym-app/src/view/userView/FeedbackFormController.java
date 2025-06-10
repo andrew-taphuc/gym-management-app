@@ -5,6 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.User;
 import controller.FeedbackController;
@@ -15,6 +18,12 @@ public class FeedbackFormController {
 
     @FXML
     private ComboBox<String> typeComboBox;
+    @FXML
+    private VBox equipmentSection;
+    @FXML
+    private TextField equipmentCodeField;
+    @FXML
+    private Label equipmentStatusLabel;
     @FXML
     private TextArea commentTextArea;
 
@@ -27,9 +36,55 @@ public class FeedbackFormController {
         // Thiết lập các options cho ComboBox
         typeComboBox.setItems(FXCollections.observableArrayList(
                 "Cơ sở vật chất",
-                "Nhân viên", 
-                "Khác"
-        ));
+                "Nhân viên",
+                "Khác"));
+
+        // Lắng nghe thay đổi loại feedback
+        typeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            handleFeedbackTypeChange(newVal);
+        });
+
+        // Lắng nghe thay đổi Equipment Code
+        equipmentCodeField.textProperty().addListener((obs, oldVal, newVal) -> {
+            handleEquipmentCodeChange(newVal);
+        });
+    }
+
+    private void handleFeedbackTypeChange(String feedbackType) {
+        if ("Cơ sở vật chất".equals(feedbackType)) {
+            // Hiển thị phần nhập Equipment Code
+            equipmentSection.setVisible(true);
+            equipmentSection.setManaged(true);
+            equipmentStatusLabel.setText("Vui lòng nhập mã thiết bị");
+        } else {
+            // Ẩn phần nhập Equipment Code
+            equipmentSection.setVisible(false);
+            equipmentSection.setManaged(false);
+            equipmentCodeField.clear();
+            equipmentStatusLabel.setText("");
+        }
+    }
+
+    private void handleEquipmentCodeChange(String equipmentCodeText) {
+        if (equipmentCodeText == null || equipmentCodeText.trim().isEmpty()) {
+            equipmentStatusLabel.setText("Vui lòng nhập mã thiết bị");
+            equipmentStatusLabel.setStyle("-fx-text-fill: #666;");
+            return;
+        }
+
+        String equipmentCode = equipmentCodeText.trim();
+
+        // Kiểm tra mã tồn tại
+        boolean exists = feedbackController.checkEquipmentCodeExists(equipmentCode);
+
+        if (exists) {
+            String equipmentInfo = feedbackController.getEquipmentInfoByCode(equipmentCode);
+            equipmentStatusLabel.setText("✓ Thiết bị: " + equipmentInfo);
+            equipmentStatusLabel.setStyle("-fx-text-fill: #4CAF50; -fx-font-weight: bold;");
+        } else {
+            equipmentStatusLabel.setText("✗ Mã thiết bị không tồn tại");
+            equipmentStatusLabel.setStyle("-fx-text-fill: #F44336; -fx-font-weight: bold;");
+        }
     }
 
     public void setUser(User user) {
@@ -60,14 +115,45 @@ public class FeedbackFormController {
             return;
         }
 
+        // Validate Equipment Code nếu là feedback về cơ sở vật chất
+        Integer equipmentId = null;
+        if ("Cơ sở vật chất".equals(type)) {
+            String equipmentCode = equipmentCodeField.getText();
+
+            if (equipmentCode == null || equipmentCode.trim().isEmpty()) {
+                showAlert("Lỗi", "Vui lòng nhập mã thiết bị cho feedback về cơ sở vật chất!");
+                return;
+            }
+
+            try {
+                // Kiểm tra mã tồn tại
+                if (!feedbackController.checkEquipmentCodeExists(equipmentCode)) {
+                    showAlert("Lỗi", "Mã thiết bị không tồn tại trong hệ thống!");
+                    return;
+                }
+
+                // Lấy EquipmentID từ EquipmentCode
+                equipmentId = feedbackController.getEquipmentIdByCode(equipmentCode.trim());
+                if (equipmentId == null) {
+                    showAlert("Lỗi", "Không thể lấy ID thiết bị từ mã!");
+                    return;
+                }
+
+            } catch (Exception e) {
+                showAlert("Lỗi", "Có lỗi xảy ra khi kiểm tra mã thiết bị: " + e.getMessage());
+                return;
+            }
+        }
+
         try {
             // Lưu feedback vào database
             int memberId = feedbackController.getMemberIdByUserId(user.getUserId());
-            boolean success = feedbackController.insertFeedback(memberId, type, comment.trim());
-            
+            boolean success = feedbackController.insertFeedback(memberId, type, comment.trim(), equipmentId);
+
             if (success) {
-                System.out.printf("Feedback đã lưu vào DB: [%s] %s\n", type, comment.trim());
-                
+                String equipmentInfo = equipmentId != null ? " (Thiết bị ID: " + equipmentId + ")" : "";
+                System.out.printf("Feedback đã lưu vào DB: [%s] %s%s\n", type, comment.trim(), equipmentInfo);
+
                 // Hiển thị thông báo thành công
                 showAlert("Thành công", "Feedback đã được gửi thành công!");
 
@@ -81,7 +167,7 @@ public class FeedbackFormController {
             } else {
                 showAlert("Lỗi", "Không thể lưu feedback. Vui lòng thử lại!");
             }
-            
+
         } catch (Exception e) {
             showAlert("Lỗi", "Có lỗi xảy ra khi gửi feedback: " + e.getMessage());
             e.printStackTrace();

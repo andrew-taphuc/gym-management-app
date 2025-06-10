@@ -37,11 +37,12 @@
                 styleClass="feedback-table">
                     <columns>
                         <TableColumn fx:id="memberName" text="Tên người gửi" prefWidth="150"/>
-                        <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="150"/>
-                        <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="400"/>
-                        <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="150"/>
-                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="250"/>
+                        <TableColumn fx:id="typeColumn" text="Loại phản hồi" prefWidth="120"/>
+                        <TableColumn fx:id="commentColumn" text="Nội dung" prefWidth="200"/>
+                        <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="120"/>
+                        <TableColumn fx:id="dateColumn" text="Ngày gửi" prefWidth="140"/>
                         <TableColumn fx:id="actionColumn" text="Trả lời" prefWidth="100"/>
+                        <TableColumn fx:id="deleteColumn" text="Xóa" prefWidth="100"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -50,5 +51,3 @@
         </VBox>
     </AnchorPane>
 </AnchorPane>
-
-
