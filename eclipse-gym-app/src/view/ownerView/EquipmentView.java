@@ -138,6 +138,8 @@ public class EquipmentView implements Initializable {
 
     private void loadRoomData() {
         List<Room> rooms = roomController.getAllRooms();
+        // Sắp xếp danh sách phòng theo mã phòng
+        rooms.sort((r1, r2) -> r1.getRoomCode().compareTo(r2.getRoomCode()));
         ObservableList<Room> roomData = FXCollections.observableArrayList(rooms);
         tblRooms.setItems(roomData);
     }
@@ -429,8 +431,8 @@ public class EquipmentView implements Initializable {
 
             // Status
             ComboBox<String> statusComboBox = new ComboBox<>();
-            statusComboBox.getItems().addAll("Hoạt động", "Bảo trì");
-            statusComboBox.setValue("Hoạt động");
+            statusComboBox.setPromptText("Chọn trạng thái");
+            statusComboBox.getItems().addAll("Hoạt động", "Bảo trì", "Tạm ngừng");
 
             grid.add(new Label("Loại thiết bị:"), 0, 0);
             grid.add(typeComboBox, 1, 0);
@@ -906,8 +908,26 @@ public class EquipmentView implements Initializable {
 
             // Room selection combo box
             ComboBox<Room> roomComboBox = new ComboBox<>();
-            roomComboBox.setPromptText("Chọn loại thiết bị");
-            roomComboBox.setItems(FXCollections.observableArrayList(roomController.getAllRooms()));
+            roomComboBox.setPromptText("Chọn phòng tập");
+            
+            // Lấy danh sách phòng và sắp xếp theo mã phòng
+            List<Room> rooms = roomController.getAllRooms();
+            rooms.sort((r1, r2) -> r1.getRoomCode().compareTo(r2.getRoomCode()));
+            roomComboBox.setItems(FXCollections.observableArrayList(rooms));
+            
+            // Cấu hình hiển thị cho ComboBox
+            roomComboBox.setConverter(new StringConverter<Room>() {
+                @Override
+                public String toString(Room room) {
+                    return room == null ? "" : room.getRoomCode() + " - " + room.getRoomName();
+                }
+
+                @Override
+                public Room fromString(String string) {
+                    return null;
+                }
+            });
+            
             roomComboBox.setCellFactory(param -> new ListCell<Room>() {
                 @Override
                 protected void updateItem(Room room, boolean empty) {
@@ -915,18 +935,7 @@ public class EquipmentView implements Initializable {
                     if (empty || room == null) {
                         setText(null);
                     } else {
-                        setText(room.getRoomName() + " (" + room.getRoomCode() + ")");
-                    }
-                }
-            });
-            roomComboBox.setButtonCell(new ListCell<Room>() {
-                @Override
-                protected void updateItem(Room room, boolean empty) {
-                    super.updateItem(room, empty);
-                    if (empty || room == null) {
-                        setText(null);
-                    } else {
-                        setText(room.getRoomName() + " (" + room.getRoomCode() + ")");
+                        setText(room.getRoomCode() + " - " + room.getRoomName());
                     }
                 }
             });
@@ -941,6 +950,7 @@ public class EquipmentView implements Initializable {
             txtDescription.setPrefRowCount(3);
 
             ComboBox<String> statusComboBox = new ComboBox<>();
+            statusComboBox.setPromptText("Chọn trạng thái");
             statusComboBox.getItems().addAll("Hoạt động", "Bảo trì", "Tạm ngừng");
 
             // Add fields to grid
@@ -1114,7 +1124,8 @@ public class EquipmentView implements Initializable {
 
             // Status
             ComboBox<String> statusComboBox = new ComboBox<>();
-            statusComboBox.getItems().addAll("Hoạt động", "Bảo trì");
+            statusComboBox.setPromptText("Chọn trạng thái");
+            statusComboBox.getItems().addAll("Hoạt động", "Bảo trì", "Tạm ngừng");
             statusComboBox.setValue(equipment.getStatus());
 
             grid.add(new Label("Loại thiết bị:"), 0, 0);
