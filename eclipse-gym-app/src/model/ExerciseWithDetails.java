@@ -63,6 +63,10 @@ public class ExerciseWithDetails {
         return scheduleExercise != null ? scheduleExercise.getComment() : "";
     }
 
+    public String getTrainerComment() {
+        return scheduleExercise != null ? scheduleExercise.getTrainerComment() : "";
+    }
+
     // Method để format số lượng theo yêu cầu: "X reps x Y"
     public String getQuantityFormatted() {
         return getRep() + " reps x " + getSet();

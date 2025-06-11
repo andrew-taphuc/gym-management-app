@@ -1,0 +1,43 @@
+/* Invoice Popup CSS */
+
+.invoice-popup {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.invoice-header {
+    -fx-alignment: CENTER;
+    -fx-spacing: 10;
+    -fx-padding: 0 0 20 0;
+}
+
+.invoice-section {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 15;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-spacing: 8;
+}
+
+.amount-section {
+    -fx-background-color: #fff3e0;
+    -fx-padding: 15;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-spacing: 12;
+}
+
+.invoice-footer {
+    -fx-alignment: CENTER;
+    -fx-spacing: 8;
+    -fx-padding: 10 0;
+}
+
+.invoice-buttons {
+    -fx-alignment: CENTER;
+    -fx-spacing: 15;
+    -fx-padding: 10 0 0 0;
+} 
