@@ -7,34 +7,58 @@
 <?import javafx.scene.chart.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      spacing="20">
-    
+    xmlns:fx="http://javafx.com/fxml"
+    spacing="20">
+
     <padding>
-        <Insets top="30" right="30" bottom="30" left="30"/>
+        <Insets top="30" right="30" bottom="30" left="30" />
     </padding>
 
     <!-- Dòng 1: 5 khối thống kê -->
     <HBox spacing="20">
-        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150" style="-fx-background-color: #f4f4f4; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Số phòng tập"/>
-            <Label fx:id="roomCountLabel" style="-fx-font-size: 24; -fx-text-fill: #2a73cc;" />
+        <!-- Số phòng tập - Màu xanh dương -->
+        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150"
+            style="-fx-background-color: #3498db; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+            <Label text="Số phòng tập"
+                style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <Label fx:id="roomCountLabel"
+                style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
         </VBox>
-        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150" style="-fx-background-color: #f4f4f4; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Số khách hàng"/>
-            <Label fx:id="customerCountLabel" style="-fx-font-size: 24; -fx-text-fill: #2a73cc;" />
+
+        <!-- Số khách hàng - Màu xanh lá -->
+        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150"
+            style="-fx-background-color: #27ae60; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+            <Label text="Số khách hàng"
+                style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <Label fx:id="customerCountLabel"
+                style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
         </VBox>
-        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150" style="-fx-background-color: #f4f4f4; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Số nhân viên"/>
-            <Label fx:id="staffCountLabel" style="-fx-font-size: 24; -fx-text-fill: #2a73cc;" />
+
+        <!-- Số nhân viên - Màu cam -->
+        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150"
+            style="-fx-background-color: #f39c12; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+            <Label text="Số nhân viên"
+                style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <Label fx:id="staffCountLabel"
+                style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
         </VBox>
-        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150" style="-fx-background-color: #f4f4f4; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Số HLV"/>
-            <Label fx:id="trainerCountLabel" style="-fx-font-size: 24; -fx-text-fill: #2a73cc;" />
+
+        <!-- Số HLV - Màu đỏ -->
+        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150"
+            style="-fx-background-color: #e74c3c; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+            <Label text="Số HLV"
+                style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <Label fx:id="trainerCountLabel"
+                style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
         </VBox>
-        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150" style="-fx-background-color: #f4f4f4; -fx-border-color: black; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Số gói tập"/>
-            <Label fx:id="planCountLabel" style="-fx-font-size: 24; -fx-text-fill: #2a73cc;" />
+
+        <!-- Số gói tập - Màu tím -->
+        <VBox alignment="CENTER" spacing="10" prefWidth="300" prefHeight="150"
+            style="-fx-background-color: #9b59b6; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+            <Label text="Số gói tập"
+                style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+            <Label fx:id="planCountLabel"
+                style="-fx-font-size: 36px; -fx-text-fill: white; -fx-font-weight: bold;" />
         </VBox>
     </HBox>
 
@@ -42,18 +66,19 @@
     <HBox spacing="20">
         <!-- Khối 1: Biểu đồ so sánh lượng mua giữa các gói -->
         <VBox spacing="10" prefWidth="770" prefHeight="400"
-              alignment="TOP_CENTER"
-              style="-fx-border-color: black; -fx-background-color: #f9f9f9; -fx-border-radius: 5; -fx-background-radius: 5;">
+            alignment="TOP_CENTER"
+            style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3); -fx-border-color: #ecf0f1; -fx-border-radius: 15; -fx-border-width: 1;">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="25" right="25" bottom="25" left="25" />
             </padding>
-            <Label text="Biểu đồ so sánh lượng mua giữa các gói" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Label text="Biểu đồ so sánh lượng mua giữa các gói"
+                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
             <BarChart fx:id="ptBarChart" prefWidth="700" prefHeight="320">
                 <xAxis>
-                    <CategoryAxis label="Tháng"/>
+                    <CategoryAxis label="Tháng" />
                 </xAxis>
                 <yAxis>
-                    <NumberAxis label="Số lượng gói"/>
+                    <NumberAxis label="Số lượng gói" />
                 </yAxis>
             </BarChart>
         </VBox>
@@ -61,56 +86,71 @@
         <!-- Khối 2: Thống kê chung về số lượng -->
         <VBox spacing="20" prefWidth="770" prefHeight="400"
             alignment="TOP_CENTER"
-            style="-fx-border-color: black; -fx-background-color: #f9f9f9; -fx-border-radius: 5; -fx-background-radius: 5;">
+            style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3); -fx-border-color: #ecf0f1; -fx-border-radius: 15; -fx-border-width: 1;">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="25" right="25" bottom="25" left="25" />
             </padding>
-            <Label text="Thống kê chung" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+            <Label text="Thống kê chung"
+                style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
 
             <!-- Thống kê theo ngày hiện tại -->
-            <VBox spacing="5" style="-fx-background-radius: 5;">
-                <Label fx:id="todayTitleLabel" text="Thống kê ngày 08/06/2025" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
-                <Label fx:id="todayRevenueLabel" text="Doanh thu: 0 VNĐ" style="-fx-font-size: 18px" />
-                <Label fx:id="todayNewMemberLabel" text="Đăng ký mới: 0" style="-fx-font-size: 18px" />
-                <Label fx:id="todayRenewMemberLabel" text="Gia hạn thêm: 0" style="-fx-font-size: 18px" />
+            <VBox spacing="8"
+                style="-fx-background-color: #f8f9fa; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #dee2e6; -fx-border-radius: 12; -fx-border-width: 1;">
+                <Label fx:id="todayTitleLabel" text="Thống kê ngày 08/06/2025"
+                    style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #495057;" />
+                <Label fx:id="todayRevenueLabel" text="Doanh thu: 0 VNĐ"
+                    style="-fx-font-size: 16px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" />
+                <Label fx:id="todayNewMemberLabel" text="Đăng ký mới: 0"
+                    style="-fx-font-size: 16px; -fx-text-fill: #3498db; -fx-font-weight: bold;" />
+                <Label fx:id="todayRenewMemberLabel" text="Gia hạn thêm: 0"
+                    style="-fx-font-size: 16px; -fx-text-fill: #e74c3c; -fx-font-weight: bold;" />
             </VBox>
-            <Separator />
+
+            <Separator style="-fx-background-color: #dee2e6;" />
+
             <!-- Thống kê trong tháng/năm hiện tại -->
-            <VBox spacing="5" style="-fx-background-radius: 5;">
+            <VBox spacing="8"
+                style="-fx-background-color: #f8f9fa; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #dee2e6; -fx-border-radius: 12; -fx-border-width: 1;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Thống kê tháng " style="-fx-font-size: 20px; -fx-font-weight: bold;" />
-                    <ComboBox fx:id="monthComboBox" prefWidth="80" style="-fx-font-size: 16px"/>
-                    <ComboBox fx:id="yearComboBox" prefWidth="100" style="-fx-font-size: 16px"/>
+                    <Label text="Thống kê tháng "
+                        style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #495057;" />
+                    <ComboBox fx:id="monthComboBox" prefWidth="80"
+                        style="-fx-font-size: 14px; -fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #ced4da; -fx-border-radius: 8;" />
+                    <ComboBox fx:id="yearComboBox" prefWidth="100"
+                        style="-fx-font-size: 14px; -fx-background-color: white; -fx-background-radius: 8; -fx-border-color: #ced4da; -fx-border-radius: 8;" />
                 </HBox>
-                <Label fx:id="monthNewMemberLabel" text="Thành viên mới: 0" style="-fx-font-size: 18px"/>
-                <Label fx:id="monthRenewMemberLabel" text="Gia hạn thêm: 0" style="-fx-font-size: 18px"/>
-                <Label fx:id="monthRevenueLabel" text="Doanh thu: 0 VNĐ" style="-fx-font-size: 18px"/>
+                <Label fx:id="monthNewMemberLabel" text="Thành viên mới: 0"
+                    style="-fx-font-size: 16px; -fx-text-fill: #3498db; -fx-font-weight: bold;" />
+                <Label fx:id="monthRenewMemberLabel" text="Gia hạn thêm: 0"
+                    style="-fx-font-size: 16px; -fx-text-fill: #e74c3c; -fx-font-weight: bold;" />
+                <Label fx:id="monthRevenueLabel" text="Doanh thu: 0 VNĐ"
+                    style="-fx-font-size: 16px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" />
             </VBox>
         </VBox>
     </HBox>
 
-    <!-- Dòng 3: Tuổi khách hàng & Đánh giá -->
+    <!-- Dòng 3: Tuổi khách hàng & Đánh giá HLV -->
     <HBox spacing="20">
         <!-- Khối biểu đồ tuổi khách hàng -->
-        <VBox prefWidth="400" prefHeight="300" style="-fx-border-color: black; -fx-padding: 10; -fx-border-radius: 5; -fx-background-radius: 5;" alignment="CENTER">
+        <VBox prefWidth="400" prefHeight="300"
+            style="-fx-border-color: black; -fx-padding: 10; -fx-border-radius: 5; -fx-background-radius: 5;"
+            alignment="CENTER">
             <Label text="Biểu đồ tuổi khách hàng"
-                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center;" 
-                   alignment="CENTER"/>
-            <PieChart fx:id="agePieChart" prefWidth="350" prefHeight="250"/>
+                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center;"
+                alignment="CENTER" />
+            <PieChart fx:id="agePieChart" prefWidth="350" prefHeight="250" />
         </VBox>
 
-        <!-- Khối đánh giá với scroll -->
-        <VBox prefWidth="1150" prefHeight="300" style="-fx-border-color: black; -fx-padding: 10; -fx-border-radius: 5; -fx-background-radius: 5;">
-            <Label text="Đánh giá cho hlv và nhân viên (có thể scroll xuống)" wrapText="true"/>
-            <ScrollPane fitToWidth="true" fitToHeight="true">
-                <content>
-                    <VBox spacing="5">
-                        <!-- Các đánh giá động có thể thêm ở đây -->
-                        <Label text="Đánh giá 1: Tuyệt vời!" wrapText="true"/>
-                        <Label text="Đánh giá 2: Hài lòng!" wrapText="true"/>
-                        <!-- ... -->
-                    </VBox>
-                </content>
+        <!-- Khối đánh giá huấn luyện viên -->
+        <VBox prefWidth="1150" prefHeight="300"
+            style="-fx-border-color: black; -fx-padding: 20; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #f9f9f9;">
+            <Label text="Đánh giá huấn luyện viên"
+                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+
+            <ScrollPane fitToHeight="false" fitToWidth="false" hbarPolicy="AS_NEEDED"
+                vbarPolicy="NEVER"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <HBox fx:id="trainersContainer" spacing="15" style="-fx-padding: 10;" />
             </ScrollPane>
         </VBox>
     </HBox>

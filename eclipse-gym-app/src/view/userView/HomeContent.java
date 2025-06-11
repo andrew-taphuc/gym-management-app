@@ -148,7 +148,19 @@ public class HomeContent {
                 java.time.temporal.ChronoUnit.DAYS.between(
                         java.time.LocalDate.now(),
                         membership.getEndDate())));
-        remainingSessions.setText(String.valueOf(membership.getSessionsLeft()));
+
+        // Lấy tổng số buổi tập còn lại từ tất cả các TrainingRegistrations
+        Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        if (memberId != null) {
+            int totalRemainingSessions = progressController.getTotalRemainingSessions(memberId);
+            if (totalRemainingSessions > 0) {
+                remainingSessions.setText(String.valueOf(totalRemainingSessions));
+            } else {
+                remainingSessions.setText("Chưa có gói huấn luyện viên");
+            }
+        } else {
+            remainingSessions.setText("Chưa có gói huấn luyện viên");
+        }
     }
 
     private void updateSessionStats(int memberId) {
@@ -187,7 +199,7 @@ public class HomeContent {
         System.out.println("Body Fat: " + latest.getBodyFatPercentage());
 
         // Cập nhật BMI
-        if (latest.getBmi() != null) {
+        if (latest.getBmi() != 0.0) {
             double bmi = latest.getBmi();
             bmiValue.setText(String.format("%.1f", bmi));
             bmiStatus.setText(getBMIStatus(bmi));
@@ -197,7 +209,7 @@ public class HomeContent {
         }
 
         // Cập nhật Body Fat
-        if (latest.getBodyFatPercentage() != null) {
+        if (latest.getBodyFatPercentage() != 0.0) {
             double bodyFat = latest.getBodyFatPercentage();
             bodyFatValue.setText(String.format("%.1f%%", bodyFat));
             bodyFatStatus.setText(getBodyFatStatus(bodyFat));
@@ -213,9 +225,9 @@ public class HomeContent {
             if (currentWeight != null && firstWeight != null) {
                 double diff = currentWeight - firstWeight;
                 if (diff < 0)
-                    progressCard.setText(String.format("Bạn đã tăng %.1f kg so với lần đầu 👏", -diff));
+                    progressCard.setText(String.format("Bạn đã giảm %.1f kg so với lần đầu 👏", -diff));
                 else
-                    progressCard.setText(String.format("Bạn đã giảm %.1f kg so với lần đầu 👏", diff));
+                    progressCard.setText(String.format("Bạn đã tăng %.1f kg so với lần đầu 👏", diff));
             } else {
                 progressCard.setText("Chưa có đủ dữ liệu để so sánh");
             }

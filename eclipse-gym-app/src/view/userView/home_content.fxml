@@ -19,17 +19,17 @@
             <HBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                 <VBox spacing="8">
                     <Label fx:id="welcomeLabel" text="Chào mừng trở lại!" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-                    <Label fx:id="membershipStatus" text="Gói tập còn hạn: 30 ngày" style="-fx-font-size: 16px; -fx-text-fill: #666;"/>
+                    <Label fx:id="membershipStatus" text="Gói tập còn hạn: N/A" style="-fx-font-size: 16px; -fx-text-fill: #666;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Đặt lịch tập" style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"/>
+                <!-- <Button text="Đặt lịch tập" style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"/> -->
             </HBox>
 
             <!-- Quick Stats Cards -->
             <HBox spacing="16">
                 <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <Label text="Buổi tập còn lại" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
-                    <Label fx:id="remainingSessions" text="12" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    <Label fx:id="remainingSessions" text="Chưa có gói huấn luyện viên" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
                 </VBox>
                 <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <Label text="Buổi tập tháng này" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
@@ -69,7 +69,7 @@
                     <VBox style="-fx-background-color: #e3f2fd; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="BMI" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label fx:id="bmiValue" text="22.5" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                            <Label fx:id="bmiValue" text="N/A" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
                             <Label fx:id="bmiStatus" text="Normal" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
                         </HBox>
                     </VBox>
@@ -78,15 +78,15 @@
                     <VBox style="-fx-background-color: #f3e5f5; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="Body Fat" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label fx:id="bodyFatValue" text="18%" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-                            <Label fx:id="bodyFatStatus" text="Tốt" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
+                            <Label fx:id="bodyFatValue" text="N/A" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                            <Label fx:id="bodyFatStatus" text="N/A" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
                         </HBox>
                     </VBox>
 
                     <!-- Progress Card -->
                     <VBox style="-fx-background-color: #e8f5e9; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="Tiến độ" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
-                        <Label fx:id="progressCard" text="Đã giảm 2.5kg so với lần đầu" 
+                        <Label fx:id="progressCard" text="N/A" 
                             style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #388e3c;"/>
                     </VBox>
 

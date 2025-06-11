@@ -31,6 +31,8 @@ public class FeedbackReplyController {
     private Label statusLabel;
     @FXML
     private TextArea replyCommentArea;
+    @FXML
+    private Button sendReplyButton;
 
     private Feedback feedback;
     private User currentUser;
@@ -76,6 +78,19 @@ public class FeedbackReplyController {
         } else {
             equipmentInfoSection.setVisible(false);
             equipmentInfoSection.setManaged(false);
+        }
+
+        // Display existing response if any
+        String existingResponse = feedback.getResponseComment();
+        if (existingResponse != null && !existingResponse.isEmpty()) {
+            replyCommentArea.setText(existingResponse);
+            replyCommentArea.setEditable(false);
+            replyCommentArea.setStyle("-fx-background-color: #f5f5f5; -fx-font-size: 14px; -fx-border-color: #ddd; -fx-border-radius: 5;");
+            
+            // Disable send reply button
+            sendReplyButton.setDisable(true);
+            sendReplyButton.setStyle("-fx-background-color: #cccccc; -fx-text-fill: #666666; -fx-font-weight: bold; " +
+                    "-fx-background-radius: 6; -fx-padding: 10 20; -fx-cursor: default; -fx-font-size: 16px;");
         }
     }
 
