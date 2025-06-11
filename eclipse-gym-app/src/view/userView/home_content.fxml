@@ -19,17 +19,17 @@
             <HBox style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                 <VBox spacing="8">
                     <Label fx:id="welcomeLabel" text="Chào mừng trở lại!" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-                    <Label fx:id="membershipStatus" text="Gói tập còn hạn: 30 ngày" style="-fx-font-size: 16px; -fx-text-fill: #666;"/>
+                    <Label fx:id="membershipStatus" text="Gói tập còn hạn: N/A" style="-fx-font-size: 16px; -fx-text-fill: #666;"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Đặt lịch tập" style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"/>
+                <!-- <Button text="Đặt lịch tập" style="-fx-background-color: #1976d2; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;"/> -->
             </HBox>
 
             <!-- Quick Stats Cards -->
             <HBox spacing="16">
                 <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <Label text="Buổi tập còn lại" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
-                    <Label fx:id="remainingSessions" text="12" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    <Label fx:id="remainingSessions" text="Chưa có gói huấn luyện viên" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
                 </VBox>
                 <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                     <Label text="Buổi tập tháng này" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>

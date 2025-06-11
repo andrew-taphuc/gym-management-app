@@ -29,7 +29,7 @@ INSERT INTO Users (Username, Password, Email, PhoneNumber, FullName, DateOfBirth
 'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Hoạt động', 'Hội viên'),
 
 ('1', '1', 'member111@gym.com', '0123456783', 'Phạm Văn Member', '1995-05-05', 
-'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Hoạt động', 'Hội viên');
+'Nam', 'Hà Nội', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'Khóa', 'Hội viên');
 
 -- Dữ liệu mẫu cho bảng Staff
 INSERT INTO Staff (UserID, StaffCode, Status) VALUES
@@ -162,10 +162,10 @@ VALUES
 
 -- Dữ liệu mẫu cho bảng Memberships
 INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID) VALUES
-(1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 1),
-(2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '180 days', 'Chưa kích hoạt', 2),
+(1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', 'Hoạt động', 1),
+(2, 6, 2, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 2),
 (3, 7, 3, CURRENT_DATE, CURRENT_DATE + INTERVAL '365 days', 'Chưa kích hoạt', 3), 
-(4, 8, 5, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 4);
+(4, 8, 4, CURRENT_DATE, CURRENT_DATE + INTERVAL '365 days', 'Chưa kích hoạt', 4);
 -- Thêm gia hạn cho các member
 -- INSERT INTO Memberships (MemberID, UserID, PlanID, StartDate, EndDate, Status, PaymentID, RenewalTo, RenewalDate)
 -- VALUES (1, 5, 1, CURRENT_DATE, CURRENT_DATE + INTERVAL '90 days', 'Chưa kích hoạt', 9, 1, CURRENT_DATE);

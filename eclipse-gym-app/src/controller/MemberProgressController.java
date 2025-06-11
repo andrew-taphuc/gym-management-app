@@ -254,7 +254,31 @@ public class MemberProgressController {
         return schedules;
     }
 
-    // Lấy tổng số buổi tập
+    // Lấy tổng số buổi tập còn lại từ tất cả các TrainingRegistrations
+    public int getTotalRemainingSessions(int memberId) {
+        String sql = """
+                    SELECT COALESCE(SUM(SessionsLeft), 0) as total_sessions_left
+                    FROM TrainingRegistrations
+                    WHERE MemberID = ? AND SessionsLeft > 0
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, memberId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("total_sessions_left");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tính tổng số buổi tập còn lại: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Lấy tổng số buổi tập đã hoàn thành
     public int getTotalSessions(int memberId) {
         String sql = "SELECT COUNT(*) as total FROM Attendance WHERE MemberID = ?";
 

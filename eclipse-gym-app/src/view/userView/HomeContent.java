@@ -148,7 +148,19 @@ public class HomeContent {
                 java.time.temporal.ChronoUnit.DAYS.between(
                         java.time.LocalDate.now(),
                         membership.getEndDate())));
-        remainingSessions.setText(String.valueOf(membership.getSessionsLeft()));
+
+        // Lấy tổng số buổi tập còn lại từ tất cả các TrainingRegistrations
+        Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        if (memberId != null) {
+            int totalRemainingSessions = progressController.getTotalRemainingSessions(memberId);
+            if (totalRemainingSessions > 0) {
+                remainingSessions.setText(String.valueOf(totalRemainingSessions));
+            } else {
+                remainingSessions.setText("Chưa có gói huấn luyện viên");
+            }
+        } else {
+            remainingSessions.setText("Chưa có gói huấn luyện viên");
+        }
     }
 
     private void updateSessionStats(int memberId) {

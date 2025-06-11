@@ -91,11 +91,17 @@ public class LoginView extends BaseView {
                         HomeView_Owner homeView_Owner = new HomeView_Owner(stage);
                         navigateToView("/view/ownerView/home.fxml", homeView_Owner);
                     } else {
-                        System.out.println("Đăng nhập thành công!");
-                        System.out.println("Vai trò: " + user.getRole().getValue());
-                        System.out.println("Họ tên: " + user.getFullName());
-                        HomeView homeView = new HomeView(stage);
-                        navigateToView("/view/userView/home.fxml", homeView);
+                        // Kiểm tra status của member
+                        if (user.getStatus().getValue().equals("Hoạt động")) {
+                            System.out.println("Đăng nhập thành công!");
+                            System.out.println("Vai trò: " + user.getRole().getValue());
+                            System.out.println("Họ tên: " + user.getFullName());
+                            HomeView homeView = new HomeView(stage);
+                            navigateToView("/view/userView/home.fxml", homeView);
+                        } else {
+                            errorLabel.setText("Tài khoản đã " + user.getStatus().getValue().toLowerCase()
+                                    + ", không thể đăng nhập");
+                        }
                     }
                 } catch (Exception e) {
                     errorLabel.setText("Lỗi chuyển trang: " + e.getMessage());
