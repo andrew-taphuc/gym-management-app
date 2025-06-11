@@ -105,7 +105,7 @@
 
     <!-- Action Buttons -->
     <HBox spacing="15" alignment="CENTER">
-        <Button text="Gửi trả lời" onAction="#handleSendReply"
+        <Button fx:id="sendReplyButton" text="Gửi trả lời" onAction="#handleSendReply"
             style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold; 
                        -fx-background-radius: 6; -fx-padding: 10 20; -fx-cursor: hand; -fx-font-size: 16px;" />
         <Button text="Hủy" onAction="#handleCancel"
