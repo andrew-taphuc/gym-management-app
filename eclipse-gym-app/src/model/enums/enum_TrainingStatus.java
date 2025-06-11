@@ -3,7 +3,7 @@ package model.enums;
 public enum enum_TrainingStatus {
     SCHEDULED("Đã lên lịch"),
     COMPLETED("Hoàn thành"),
-    CANCELLED("Hủy");
+    CANCELLED("Đã hủy");
 
     private final String value;
 

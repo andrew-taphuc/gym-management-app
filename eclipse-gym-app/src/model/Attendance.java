@@ -8,12 +8,14 @@ public class Attendance {
     private int membershipId;
     private LocalDateTime checkInTime;
     private Integer trainingScheduleId; // Có thể null
-    private String planName; 
+    private String planName;
+    private String trainerName; // Tên huấn luyện viên (nếu có)
 
     public Attendance() {
     }
 
-    public Attendance(int attendanceId, int memberId, int membershipId, LocalDateTime checkInTime, Integer trainingScheduleId, String planName) {
+    public Attendance(int attendanceId, int memberId, int membershipId, LocalDateTime checkInTime,
+            Integer trainingScheduleId, String planName) {
         this.attendanceId = attendanceId;
         this.memberId = memberId;
         this.membershipId = membershipId;
@@ -36,6 +38,14 @@ public class Attendance {
 
     public void setPlanName(String planName) {
         this.planName = planName;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
     }
 
     // Getter/setter cho các trường khác

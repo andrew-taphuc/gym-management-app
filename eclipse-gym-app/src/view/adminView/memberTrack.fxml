@@ -92,6 +92,7 @@
             <TableColumn fx:id="colCheckinTime" text="Thời gian" prefWidth="180"/>
             <TableColumn fx:id="colMembership" text="Gói tập" prefWidth="200"/>
             <TableColumn fx:id="colType" text="Loại check-in" prefWidth="180"/>
+            <TableColumn fx:id="colTrainer" text="Huấn luyện viên" prefWidth="180"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
