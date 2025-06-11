@@ -155,4 +155,26 @@ public class UserController {
         }
         return false;
     }
+
+    public boolean updateUser(User user) {
+        String query = "UPDATE Users SET Email = ?, PhoneNumber = ?, FullName = ?, " +
+                      "DateOfBirth = ?, Gender = ?::gender_enum, Address = ?, " +
+                      "UpdateAt = CURRENT_TIMESTAMP WHERE UserID = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getPhoneNumber());
+            stmt.setString(3, user.getFullName());
+            stmt.setDate(4, java.sql.Date.valueOf(user.getDateOfBirth()));
+            stmt.setString(5, user.getGender().getValue());
+            stmt.setString(6, user.getAddress());
+            stmt.setInt(7, user.getUserId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

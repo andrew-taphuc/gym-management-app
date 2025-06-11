@@ -18,6 +18,9 @@
         <Label text="Thông tin cá nhân"
             styleClass="profile-title" />
         <Region HBox.hgrow="ALWAYS" />
+        <Button text="Chỉnh sửa" onAction="#handleEdit"
+            styleClass="profile-edit-btn"
+            prefWidth="120" prefHeight="35" />
         <Button text="✕" onAction="#handleClose"
             styleClass="profile-close-btn"
             prefWidth="35" prefHeight="35" />
