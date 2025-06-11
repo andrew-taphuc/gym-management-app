@@ -20,3 +20,17 @@ BEGIN
     AND Status <> 'Chưa khả dụng';
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- Hàm cập nhật trạng thái lịch tập thành "Hủy" khi ngày tập đã qua
+CREATE OR REPLACE FUNCTION update_expired_training_schedules()
+RETURNS VOID AS $$
+BEGIN
+    UPDATE TrainingSchedule 
+    SET Status = 'Đã hủy'
+    WHERE DATE(ScheduleDate) < CURRENT_DATE 
+    AND Status = 'Đã lên lịch';
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT update_expired_training_schedules();

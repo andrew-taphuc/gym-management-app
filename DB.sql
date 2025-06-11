@@ -39,12 +39,15 @@ CREATE TYPE room_status_enum AS ENUM ('Hoạt động', 'Bảo trì', 'Tạm ng�
 -- ENUM trạng thái thiết bị
 CREATE TYPE equipment_status_enum AS ENUM ('Hoạt động', 'Bảo trì');
 
-CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Hủy');
+CREATE TYPE training_status_enum AS ENUM ('Đã lên lịch', 'Hoàn thành', 'Đã hủy');
 
 CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
 
 CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
 
+CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
+
+CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
 
 -- Bảng người dùng chung
 CREATE TABLE Users (
@@ -222,6 +225,7 @@ CREATE TABLE TrainingSchedule (
   RoomID INT,
   Status training_status_enum DEFAULT 'Đã lên lịch',
   Notes VARCHAR(500),
+  Rating INT CHECK (Rating >= 1 AND Rating <= 5),
   CreatedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -250,6 +254,7 @@ CREATE TABLE TrainingScheduleExercises (
   Set INT NOT NULL,
   Rep INT NOT NULL,
   Comment VARCHAR(500), -- Nhận xét của PT cho bài tập này
+  TrainerComment VARCHAR(500), -- Nhận xét của PT cho bài tập này
   PRIMARY KEY (ScheduleID, ExerciseID)
 );
 
@@ -268,11 +273,9 @@ CREATE TABLE MemberProgress (
   Biceps DECIMAL(5,2),
   Thigh DECIMAL(5,2),
   TrainerID INT,
+  Status VARCHAR(50),
   Notes VARCHAR(500)
 );
-
-CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
-CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
 
 CREATE TABLE Feedback (
     FeedbackID SERIAL PRIMARY KEY,
@@ -286,3 +289,19 @@ CREATE TABLE Feedback (
     ResponseDate TIMESTAMP,
     ResponderID INT -- Người phản hồi
 );
+
+-- Bảng hóa đơn
+CREATE TABLE Invoices (
+    InvoiceID SERIAL PRIMARY KEY,
+    InvoiceCode VARCHAR(20) NOT NULL UNIQUE,
+    PaymentID INT NOT NULL REFERENCES Payments(PaymentID) ON DELETE CASCADE,
+    MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
+    IssueDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ServiceType VARCHAR(50) NOT NULL,
+    TotalAmount DECIMAL(12,2) NOT NULL CHECK (TotalAmount >= 0),
+    DiscountAmount DECIMAL(12,2) DEFAULT 0 CHECK (DiscountAmount >= 0),
+    FinalAmount DECIMAL(12,2) NOT NULL CHECK (FinalAmount >= 0),
+    CreatedBy INT REFERENCES Users(UserID),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

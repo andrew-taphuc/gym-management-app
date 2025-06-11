@@ -41,7 +41,7 @@ public class HomeView_trainer extends BaseView {
             roleLabel.setText("Role: " + currentUser.getRole());
         }
         // Load home content by default
-        handleHomeClick();
+        handleWorkoutsClick();
     }
 
     @FXML
@@ -82,24 +82,10 @@ public class HomeView_trainer extends BaseView {
     }
 
     @FXML
-    private void handlePlansClick() {
-        view.trainerView.PlansRenewalsController controller = new view.trainerView.PlansRenewalsController();
-        controller.setCurrentUser(currentUser);
-        loadViewWithUser("plans_renewals.fxml", controller);
-    }
-
-    @FXML
     private void handlePromosClick() {
-        view.trainerView.PromosController controller = new view.trainerView.PromosController();
+        view.userView.PromosView controller = new view.userView.PromosView();
         controller.setCurrentUser(currentUser);
-        loadViewWithUser("promos.fxml", controller);
-    }
-
-    @FXML
-    private void handleFeedbackClick() {
-        view.trainerView.FeedbackController controller = new view.trainerView.FeedbackController();
-        controller.setCurrentUser(currentUser);
-        loadViewWithUser("feedback.fxml", controller);
+        loadViewWithUser("/view/userView/promos.fxml", controller);
     }
 
     @FXML

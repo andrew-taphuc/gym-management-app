@@ -2,6 +2,7 @@ package view.adminView;
 
 import controller.TrainingRegistrationController;
 import controller.TrainingScheduleController;
+import controller.TrainingController;
 import controller.MemberController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -51,6 +52,7 @@ public class MemberTrackController {
 
     private User currentUser;
     private Member member;
+    private TrainingController trainingController = new TrainingController();
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -62,6 +64,7 @@ public class MemberTrackController {
         loadMemberships();
         loadAttendance();
         loadSessionCount();
+        trainingController.updateExpiredTrainingSchedules();
     }
 
     private void loadMemberInfo() {

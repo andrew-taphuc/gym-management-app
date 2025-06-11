@@ -40,18 +40,14 @@ public class HomeView_admin extends BaseView {
             roleLabel.setText("Role: " + currentUser.getRole());
         }
         // Load home content by default
-        handleHomeClick();
+        handleCheckinClick();
     }
 
     @FXML
-    private void handleHomeClick() {
-        try {
-            Parent homeContent = FXMLLoader.load(getClass().getResource("home_content.fxml"));
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(homeContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void handlePaymentClick() {
+        view.adminView.PaymentView controller = new view.adminView.PaymentView();
+        controller.setCurrentUser(currentUser);
+        loadViewWithUser("payment.fxml", controller);
     }
 
     public <T> void loadViewWithUser(String fxmlPath, T controller) {

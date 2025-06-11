@@ -35,25 +35,28 @@
             </HBox>
 
             <TableView fx:id="managedMembersTable"
-                prefHeight="300"
-                maxHeight="300"
+                prefHeight="210"
+                maxHeight="210"
                 VBox.vgrow="ALWAYS"
                 style="-fx-font-size: 18px;">
                 <columns>
                     <TableColumn fx:id="colRegId" text="Reg.ID" prefWidth="100"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colMemberCode" text="Mã hội viên" prefWidth="150"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colMemberName" text="Tên hội viên" prefWidth="250"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colMemberPlan" text="Gói tập" prefWidth="200"
+                    <TableColumn fx:id="colMemberPlan" text="Gói huấn luyện viên" prefWidth="200"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colStartDate" text="Ngày bắt đầu" prefWidth="150"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMembershipStatus" text="Trạng thái Hội Viên"
+                        prefWidth="200"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colSessionsLeft" text="Buổi còn lại" prefWidth="120"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colMemberAction" text="Thao tác" prefWidth="200"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colMemberAction" text="Thao tác" prefWidth="280"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                 </columns>
             </TableView>
         </VBox>
@@ -69,29 +72,29 @@
             </HBox>
 
             <TableView fx:id="scheduleTable"
-                prefHeight="400"
-                maxHeight="400"
+                prefHeight="480"
+                maxHeight="480"
                 VBox.vgrow="ALWAYS"
                 style="-fx-font-size: 18px;">
                 <columns>
-                    <TableColumn fx:id="colDate" text="Ngày" prefWidth="150"
+                    <TableColumn fx:id="colDateTime" text="Thời gian" prefWidth="180"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colTime" text="Giờ" prefWidth="120"
+                    <TableColumn fx:id="colMember" text="Học viên" prefWidth="190"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colMember" text="Học viên" prefWidth="200"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colScheduleMemberCode" text="Mã HV" prefWidth="130"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colScheduleMemberCode" text="Mã HV" prefWidth="100"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colScheduleRegId" text="Reg.ID" prefWidth="100"
-                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                     <TableColumn fx:id="colRoom" text="Phòng tập" prefWidth="180"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="150"
+                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="120"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="300"
+                    <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="313"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
-                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="175"
+                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="220"
                         style="-fx-alignment: CENTER-LEFT; -fx-font-size: 18px;" />
+                    <TableColumn fx:id="colRating" text="Đánh giá" prefWidth="100"
+                        style="-fx-alignment: CENTER; -fx-font-size: 18px;" />
                 </columns>
             </TableView>
         </VBox>
