@@ -289,3 +289,19 @@ CREATE TABLE Feedback (
     ResponseDate TIMESTAMP,
     ResponderID INT -- Người phản hồi
 );
+
+-- Bảng hóa đơn
+CREATE TABLE Invoices (
+    InvoiceID SERIAL PRIMARY KEY,
+    InvoiceCode VARCHAR(20) NOT NULL UNIQUE,
+    PaymentID INT NOT NULL REFERENCES Payments(PaymentID) ON DELETE CASCADE,
+    MemberID INT NOT NULL REFERENCES Members(MemberID) ON DELETE CASCADE,
+    IssueDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ServiceType VARCHAR(50) NOT NULL,
+    TotalAmount DECIMAL(12,2) NOT NULL CHECK (TotalAmount >= 0),
+    DiscountAmount DECIMAL(12,2) DEFAULT 0 CHECK (DiscountAmount >= 0),
+    FinalAmount DECIMAL(12,2) NOT NULL CHECK (FinalAmount >= 0),
+    CreatedBy INT REFERENCES Users(UserID),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
