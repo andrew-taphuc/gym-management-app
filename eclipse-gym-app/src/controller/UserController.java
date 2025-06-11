@@ -177,4 +177,19 @@ public class UserController {
         }
         return false;
     }
+
+    public boolean updateUserStatus(User user) {
+        String query = "UPDATE Users SET Status = ?::user_status_enum, UpdateAt = CURRENT_TIMESTAMP WHERE UserID = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, user.getStatus().getValue());
+            stmt.setInt(2, user.getUserId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -54,8 +54,9 @@
                     <TableColumn fx:id="colFullName" text="Họ tên" prefWidth="180" />
                     <TableColumn fx:id="colPhoneNumber" text="Số điện thoại" prefWidth="140" />
                     <TableColumn fx:id="colJoinDate" text="Ngày tham gia" prefWidth="100" />
-                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="110" />
-                    <TableColumn fx:id="colAction" text="Thao tác" prefWidth="150" />
+                    <TableColumn fx:id="colStatus" prefWidth="100.0" text="Trạng thái" />
+                    <TableColumn fx:id="colUserStatus" prefWidth="120.0" text="Trạng thái tài khoản" />
+                    <TableColumn fx:id="colAction" prefWidth="320.0" text="Thao tác" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

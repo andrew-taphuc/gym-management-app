@@ -2,7 +2,6 @@ package view.adminView;
 
 import controller.MemberController;
 import controller.UserController;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -30,9 +29,6 @@ import model.Member;
 import model.enums.enum_Gender;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -57,6 +53,8 @@ public class CheckinController {
     private TableColumn<Member, String> colJoinDate;
     @FXML
     private TableColumn<Member, String> colStatus;
+    @FXML
+    private TableColumn<Member, String> colUserStatus;
     @FXML
     private TableColumn<Member, Void> colAction;
 
@@ -115,10 +113,31 @@ public class CheckinController {
             return new SimpleStringProperty("");
         });
 
+        colUserStatus.setCellValueFactory(cellData -> {
+            Member member = cellData.getValue();
+            if (member.getUser() != null && member.getUser().getStatus() != null) {
+                String statusText = "";
+                switch (member.getUser().getStatus()) {
+                    case ACTIVE:
+                        statusText = "Hoạt động";
+                        break;
+                    case LOCKED:
+                        statusText = "Đã khóa";
+                        break;
+                    case SUSPENDED:
+                        statusText = "Tạm ngừng";
+                        break;
+                }
+                return new SimpleStringProperty(statusText);
+            }
+            return new SimpleStringProperty("Chưa xác định");
+        });
+
         // Tạo cột Action với button "Chọn"
         colAction.setCellFactory(param -> new TableCell<Member, Void>() {
             private final Button selectButton = new Button("Check-in");
             private final Button editButton = new Button("Chỉnh sửa");
+            private final Button disableButton = new Button("Khóa");
             private final HBox buttonBox = new HBox(10); // 10 là khoảng cách giữa các button
 
             {
@@ -140,7 +159,16 @@ public class CheckinController {
                                 "-fx-pref-width: 100px;" +
                                 "-fx-alignment: center;");
 
-                buttonBox.getChildren().addAll(selectButton, editButton);
+                disableButton.setStyle(
+                        "-fx-background-color:linear-gradient(to bottom, #f44336, #d32f2f);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-font-size: 14px;" +
+                                "-fx-background-radius: 8px;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-pref-width: 100px;" +
+                                "-fx-alignment: center;");
+
+                buttonBox.getChildren().addAll(selectButton, editButton, disableButton);
                 buttonBox.setAlignment(javafx.geometry.Pos.CENTER);
 
                 selectButton.setOnAction(event -> {
@@ -152,6 +180,11 @@ public class CheckinController {
                     Member member = getTableView().getItems().get(getIndex());
                     showEditDialog(member);
                 });
+
+                disableButton.setOnAction(event -> {
+                    Member member = getTableView().getItems().get(getIndex());
+                    handleDisableMember(member);
+                });
             }
 
             @Override
@@ -160,6 +193,28 @@ public class CheckinController {
                 if (empty) {
                     setGraphic(null);
                 } else {
+                    Member member = getTableView().getItems().get(getIndex());
+                    if (member.getUser() != null && member.getUser().getStatus() == model.enums.enum_UserStatus.LOCKED) {
+                        disableButton.setText("Mở khóa");
+                        disableButton.setStyle(
+                                "-fx-background-color:linear-gradient(to bottom, #2196f3, #1976d2);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-font-size: 14px;" +
+                                "-fx-background-radius: 8px;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-pref-width: 100px;" +
+                                "-fx-alignment: center;");
+                    } else {
+                        disableButton.setText("Khóa");
+                        disableButton.setStyle(
+                                "-fx-background-color:linear-gradient(to bottom, #f44336, #d32f2f);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-font-size: 14px;" +
+                                "-fx-background-radius: 8px;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-pref-width: 100px;" +
+                                "-fx-alignment: center;");
+                    }
                     setGraphic(buttonBox);
                 }
             }
@@ -318,5 +373,49 @@ public class CheckinController {
                 showAlert("Không thể cập nhật thông tin!");
             }
         });
+    }
+
+    private void handleDisableMember(Member member) {
+        UserController userController = new UserController();
+        User user = userController.getUserByID(member.getUserId());
+        if (user != null) {
+            if (user.getStatus() == model.enums.enum_UserStatus.LOCKED) {
+                // Nếu tài khoản đang bị khóa, hiển thị dialog xác nhận mở khóa
+                Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmDialog.setTitle("Xác nhận mở khóa");
+                confirmDialog.setHeaderText(null);
+                confirmDialog.setContentText("Bạn có chắc chắn muốn mở khóa tài khoản của hội viên " + user.getFullName() + "?");
+
+                confirmDialog.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        user.setStatus(model.enums.enum_UserStatus.ACTIVE);
+                        if (userController.updateUserStatus(user)) {
+                            showAlert("Đã mở khóa tài khoản thành công!");
+                            loadAllMembers(); // Refresh lại bảng
+                        } else {
+                            showAlert("Không thể mở khóa tài khoản!");
+                        }
+                    }
+                });
+            } else {
+                // Nếu tài khoản đang hoạt động, hiển thị dialog xác nhận khóa
+                Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmDialog.setTitle("Xác nhận khóa tài khoản");
+                confirmDialog.setHeaderText(null);
+                confirmDialog.setContentText("Bạn có chắc chắn muốn khóa tài khoản của hội viên " + user.getFullName() + "?");
+
+                confirmDialog.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        user.setStatus(model.enums.enum_UserStatus.LOCKED);
+                        if (userController.updateUserStatus(user)) {
+                            showAlert("Đã khóa tài khoản thành công!");
+                            loadAllMembers(); // Refresh lại bảng
+                        } else {
+                            showAlert("Không thể khóa tài khoản!");
+                        }
+                    }
+                });
+            }
+        }
     }
 }

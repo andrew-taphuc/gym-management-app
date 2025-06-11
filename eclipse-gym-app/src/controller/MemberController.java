@@ -6,6 +6,9 @@ import model.Member;
 import model.Membership;
 import model.User;
 import model.enums.enum_MemberStatus;
+import model.enums.enum_Gender;
+import model.enums.enum_Role;
+import model.enums.enum_UserStatus;
 import utils.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -272,7 +275,8 @@ public class MemberController {
 
     public List<Member> getAllMembers() {
         List<Member> members = new ArrayList<>();
-        String sql = "SELECT * FROM Members m JOIN Users u ON m.UserID = u.UserID";
+        String sql = "SELECT m.*, u.*, m.Status as MemberStatus, u.Status as UserStatus " +
+                    "FROM Members m JOIN Users u ON m.UserID = u.UserID";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet rs = stmt.executeQuery()) {
@@ -282,14 +286,24 @@ public class MemberController {
                 member.setUserId(rs.getInt("UserID"));
                 member.setMemberCode(rs.getString("MemberCode"));
                 member.setJoinDate(rs.getDate("JoinDate").toLocalDate());
-                member.setStatus(enum_MemberStatus.fromValue(rs.getString("Status")));
+                member.setStatus(enum_MemberStatus.fromValue(rs.getString("MemberStatus")));
 
-                // Tạo đối tượng User và set fullName
+                // Tạo đối tượng User và set đầy đủ thông tin
                 User user = new User();
                 user.setUserId(rs.getInt("UserID"));
-                user.setFullName(rs.getString("FullName"));
-                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
                 user.setEmail(rs.getString("Email"));
+                user.setPhoneNumber(rs.getString("PhoneNumber"));
+                user.setFullName(rs.getString("FullName"));
+                user.setDateOfBirth(rs.getDate("DateOfBirth").toLocalDate());
+                user.setGender(enum_Gender.fromValue(rs.getString("Gender")));
+                user.setAddress(rs.getString("Address"));
+                user.setCreatedAt(rs.getTimestamp("CreatedAt").toLocalDateTime());
+                user.setUpdatedAt(rs.getTimestamp("UpdateAt").toLocalDateTime());
+                user.setStatus(enum_UserStatus.fromValue(rs.getString("UserStatus")));
+                user.setRole(enum_Role.fromValue(rs.getString("Role")));
+                
                 member.setUser(user);
                 members.add(member);
             }
