@@ -13,6 +13,12 @@ public class Member {
 
     public Member() {
     }
+    public Member(int memberId, String fullName, String phoneNumber) {
+        this.memberId = memberId;
+        this.user = new User();
+        this.user.setFullName(fullName);
+        this.user.setPhoneNumber(phoneNumber);
+    }
 
     public Member(int memberId, int userId, String memberCode, LocalDate joinDate, enum_MemberStatus status) {
         this.memberId = memberId;

@@ -160,6 +160,13 @@ public class TrainingSchedule {
         this.memberName = memberName;
     }
 
+    @Override
+    public String toString() {
+        return "Ngày: " + date +
+               ", Giờ: " + time +
+               ", Phòng: " + roomId +
+               ", Ghi chú: " + notes;
+    }
     // Getter và Setter cho memberCode
     public String getMemberCode() {
         return memberCode;

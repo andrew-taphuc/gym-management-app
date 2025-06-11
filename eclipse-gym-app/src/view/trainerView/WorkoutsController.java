@@ -41,6 +41,7 @@ import controller.ExerciseController;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
+import javafx.scene.control.ScrollPane;
 
 public class WorkoutsController {
     @FXML
@@ -50,9 +51,7 @@ public class WorkoutsController {
     @FXML
     private TableView<TrainingSchedule> scheduleTable;
     @FXML
-    private TableColumn<TrainingSchedule, String> colDate;
-    @FXML
-    private TableColumn<TrainingSchedule, String> colTime;
+    private TableColumn<TrainingSchedule, String> colDateTime;
     @FXML
     private TableColumn<TrainingSchedule, String> colMember;
     @FXML
@@ -67,6 +66,8 @@ public class WorkoutsController {
     private TableColumn<TrainingSchedule, String> colNotes;
     @FXML
     private TableColumn<TrainingSchedule, Void> colAction;
+    @FXML
+    private TableColumn<TrainingSchedule, String> colRating;
 
     // Bảng hội viên đang quản lý
     @FXML
@@ -81,6 +82,8 @@ public class WorkoutsController {
     private TableColumn<TrainingRegistration, String> colMemberPlan;
     @FXML
     private TableColumn<TrainingRegistration, String> colStartDate;
+    @FXML
+    private TableColumn<TrainingRegistration, String> colMembershipStatus;
     @FXML
     private TableColumn<TrainingRegistration, String> colSessionsLeft;
     @FXML
@@ -128,17 +131,21 @@ public class WorkoutsController {
     }
 
     private void setupScheduleTable() {
-        colDate.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getDate() != null)
-                return new javafx.beans.property.SimpleStringProperty(
-                        cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            return new javafx.beans.property.SimpleStringProperty("");
+        colDateTime.setCellValueFactory(cellData -> {
+            TrainingSchedule schedule = cellData.getValue();
+            String dateTime = "";
+
+            if (schedule.getDate() != null) {
+                dateTime = schedule.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+                if (schedule.getTime() != null && !schedule.getTime().trim().isEmpty()) {
+                    dateTime += " - " + schedule.getTime();
+                }
+            }
+
+            return new javafx.beans.property.SimpleStringProperty(dateTime);
         });
-        colTime.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getTime() != null)
-                return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTime());
-            return new javafx.beans.property.SimpleStringProperty("");
-        });
+
         colMember.setCellValueFactory(cellData -> {
             String memberName = cellData.getValue().getMemberName();
             return new javafx.beans.property.SimpleStringProperty(memberName != null ? memberName : "Chưa có học viên");
@@ -160,6 +167,13 @@ public class WorkoutsController {
             return new javafx.beans.property.SimpleStringProperty(status != null ? status : "");
         });
         colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
+
+        colRating.setCellValueFactory(cellData -> {
+            TrainingSchedule schedule = cellData.getValue();
+            int rating = trainingController.getTrainingScheduleRating(schedule.getId());
+            String ratingText = rating > 0 ? rating + "/5" : "-";
+            return new javafx.beans.property.SimpleStringProperty(ratingText);
+        });
     }
 
     private void setupManagedMembersTable() {
@@ -195,24 +209,101 @@ public class WorkoutsController {
             return new javafx.beans.property.SimpleStringProperty("");
         });
 
+        colMembershipStatus.setCellValueFactory(cellData -> {
+            // Lấy trạng thái membership của hội viên
+            String status = getMembershipStatus(cellData.getValue().getMemberId());
+            return new javafx.beans.property.SimpleStringProperty(status != null ? status : "Chưa xác định");
+        });
+
         colSessionsLeft.setCellValueFactory(cellData -> {
             return new javafx.beans.property.SimpleStringProperty(
                     String.valueOf(cellData.getValue().getSessionsLeft()));
         });
     }
 
+    // Method hỗ trợ để lấy trạng thái membership của hội viên
+    private String getMembershipStatus(int memberId) {
+        String status = null;
+        String sql = "SELECT m.status FROM Memberships m " +
+                "JOIN Members mem ON m.memberid = mem.memberid " +
+                "WHERE mem.memberid = ? " +
+                "ORDER BY m.enddate DESC LIMIT 1";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, memberId);
+            java.sql.ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                status = rs.getString("status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy trạng thái membership: " + e.getMessage());
+        }
+
+        return status;
+    }
+
     private void loadSchedulesByTrainer(int trainerId) {
         ObservableList<TrainingSchedule> list = FXCollections.observableArrayList();
         list.addAll(trainingController.getSchedulesByTrainerId(trainerId));
+
+        // Sắp xếp theo trạng thái và thời gian
+        list.sort((s1, s2) -> {
+            // So sánh theo trạng thái trước
+            int statusCompare = Integer.compare(getStatusPriority(s1.getStatus()), getStatusPriority(s2.getStatus()));
+            if (statusCompare != 0) {
+                return statusCompare;
+            }
+
+            // Nếu trạng thái giống nhau, sắp xếp theo thời gian
+            // Với "Đã lên lịch" - sắp xếp tăng dần (sớm nhất trước)
+            // Với "Hoàn thành" và "Đã hủy" - sắp xếp giảm dần (mới nhất trước)
+            int timeCompare = 0;
+
+            if (s1.getDate() != null && s2.getDate() != null) {
+                timeCompare = s1.getDate().compareTo(s2.getDate());
+
+                // Nếu cùng ngày, so sánh theo giờ
+                if (timeCompare == 0 && s1.getTime() != null && s2.getTime() != null) {
+                    timeCompare = s1.getTime().compareTo(s2.getTime());
+                }
+            }
+
+            // Đối với "Đã lên lịch" - thời gian tăng dần (sớm nhất trước)
+            // Đối với "Hoàn thành" và "Đã hủy" - thời gian giảm dần (mới nhất trước)
+            if ("Đã lên lịch".equals(s1.getStatus())) {
+                return timeCompare;
+            } else {
+                return -timeCompare;
+            }
+        });
+
         // Log kiểm tra dữ liệu
-        System.out.println("==== DANH SÁCH LỊCH TẬP CỦA HLV ====");
+        System.out.println("==== DANH SÁCH LỊCH TẬP CỦA HLV (ĐÃ SẮP XẾP) ====");
         for (TrainingSchedule ts : list) {
             System.out.println("ScheduleID: " + ts.getId() + ", Member: " + ts.getMemberName() + ", TrainerID: "
-                    + ts.getTrainerId() + ", Date: " + ts.getDate());
+                    + ts.getTrainerId() + ", Date: " + ts.getDate() + ", Status: " + ts.getStatus());
         }
         System.out.println("==== TỔNG SỐ: " + list.size() + " lịch ====");
         scheduleTable.setItems(list);
         scheduleTable.refresh();
+    }
+
+    // Method hỗ trợ để xác định thứ tự ưu tiên của trạng thái
+    private int getStatusPriority(String status) {
+        switch (status) {
+            case "Đã lên lịch":
+                return 1;
+            case "Hoàn thành":
+                return 2;
+            case "Đã hủy":
+                return 3;
+            default:
+                return 4;
+        }
     }
 
     private void loadManagedMembers(int trainerId) {
@@ -283,15 +374,17 @@ public class WorkoutsController {
             @Override
             public TableCell<TrainingSchedule, Void> call(final TableColumn<TrainingSchedule, Void> param) {
                 return new TableCell<TrainingSchedule, Void>() {
-                    private final Button viewBtn = new Button("Xem bài tập");
-                    private final Button deleteBtn = new Button("Xóa");
+                    private final Button viewBtn = new Button("Bài tập");
+                    private final Button deleteBtn = new Button("Hủy");
                     private final HBox hbox = new HBox(5, viewBtn, deleteBtn);
 
                     {
+                        viewBtn.setPrefWidth(100);
                         viewBtn.setStyle(
-                                "-fx-font-size: 14px; -fx-background-color:rgb(71, 178, 195); -fx-text-fill: white; -fx-cursor: hand;");
-                        deleteBtn.setStyle(
-                                "-fx-font-size: 14px; -fx-background-color: #ff4444; -fx-text-fill: white; -fx-cursor: hand;");
+                                "-fx-background-color: #81C784; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
+
+                        deleteBtn.setPrefWidth(100);
+
                         hbox.setAlignment(Pos.CENTER);
                     }
 
@@ -302,24 +395,47 @@ public class WorkoutsController {
                             setGraphic(null);
                         } else {
                             TrainingSchedule schedule = getTableView().getItems().get(getIndex());
+
+                            // Kiểm tra trạng thái để enable/disable nút hủy
+                            boolean canCancel = "Đã lên lịch".equals(schedule.getStatus());
+                            deleteBtn.setDisable(!canCancel);
+
+                            if (canCancel) {
+                                // Style cho nút hủy khi có thể ấn
+                                deleteBtn.setStyle(
+                                        "-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
+                            } else {
+                                // Style cho nút hủy khi bị disable
+                                deleteBtn.setStyle(
+                                        "-fx-background-color: #cccccc; -fx-text-fill: #666666; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: default;");
+                            }
+
                             viewBtn.setOnAction(e -> showExercisesPopup(schedule));
+
                             deleteBtn.setOnAction(e -> {
+                                // Kiểm tra lại trạng thái trước khi cho phép hủy
+                                if (!"Đã lên lịch".equals(schedule.getStatus())) {
+                                    showAlert(AlertType.WARNING, "Thông báo",
+                                            "Chỉ có thể hủy lịch tập có trạng thái 'Đã lên lịch'!");
+                                    return;
+                                }
+
                                 Alert alert = new Alert(AlertType.CONFIRMATION);
-                                alert.setTitle("Xác nhận xóa");
+                                alert.setTitle("Xác nhận hủy");
                                 alert.setHeaderText(null);
-                                alert.setContentText("Bạn có chắc chắn muốn xóa lịch tập này?");
+                                alert.setContentText("Bạn có chắc chắn muốn hủy lịch tập này?");
 
                                 alert.showAndWait().ifPresent(response -> {
                                     if (response == ButtonType.OK) {
                                         try {
-                                            if (trainingController.deleteTrainingSchedule(schedule.getId())) {
+                                            if (trainingController.cancelTrainingSchedule(schedule.getId())) {
                                                 refreshScheduleTable();
                                             } else {
-                                                showAlert(AlertType.ERROR, "Lỗi", "Không thể xóa lịch tập");
+                                                showAlert(AlertType.ERROR, "Lỗi", "Không thể hủy lịch tập");
                                             }
                                         } catch (SQLException ex) {
                                             showAlert(AlertType.ERROR, "Lỗi",
-                                                    "Lỗi khi xóa lịch tập: " + ex.getMessage());
+                                                    "Lỗi khi hủy lịch tập: " + ex.getMessage());
                                         }
                                     }
                                 });
@@ -338,12 +454,55 @@ public class WorkoutsController {
             @Override
             public TableCell<TrainingRegistration, Void> call(final TableColumn<TrainingRegistration, Void> param) {
                 return new TableCell<>() {
-                    private final Button btn = new Button("Xem chi tiết");
+                    private final Button detailBtn = new Button("Chi tiết");
+                    private final Button metricsBtn = new Button("Chỉ số");
+                    private final HBox hbox = new HBox(5, detailBtn, metricsBtn);
+                    {
+                        detailBtn.setPrefWidth(100);
+                        detailBtn.setOnAction(event -> {
+                            TrainingRegistration registration = getTableView().getItems().get(getIndex());
+                            showMemberDetailsPopup(registration);
+                        });
+                        detailBtn.setStyle(
+                                "-fx-background-color: #81C784; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
+
+                        metricsBtn.setPrefWidth(100);
+                        metricsBtn.setOnAction(event -> {
+                            TrainingRegistration registration = getTableView().getItems().get(getIndex());
+                            showBodyMetricsPopup(registration);
+                        });
+                        metricsBtn.setStyle(
+                                "-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
+
+                        hbox.setAlignment(Pos.CENTER);
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(hbox);
+                        }
+                    }
+                };
+            }
+        };
+        colMemberAction.setCellFactory(cellFactory);
+    }
+
+    private void addBodyMetricsButtonToMembersTable() {
+        Callback<TableColumn<TrainingRegistration, Void>, TableCell<TrainingRegistration, Void>> cellFactory = new Callback<>() {
+            @Override
+            public TableCell<TrainingRegistration, Void> call(final TableColumn<TrainingRegistration, Void> param) {
+                return new TableCell<>() {
+                    private final Button btn = new Button("Xem chỉ số cơ thể");
                     {
                         btn.setPrefWidth(120);
                         btn.setOnAction(event -> {
                             TrainingRegistration registration = getTableView().getItems().get(getIndex());
-                            showMemberDetailsPopup(registration);
+                            showBodyMetricsPopup(registration);
                         });
                         btn.setStyle(
                                 "-fx-background-color: #81C784; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
@@ -361,7 +520,507 @@ public class WorkoutsController {
                 };
             }
         };
-        colMemberAction.setCellFactory(cellFactory);
+        // colBodyMetrics.setCellFactory(cellFactory);
+    }
+
+    private void showBodyMetricsPopup(TrainingRegistration registration) {
+        Stage popupStage = new Stage();
+        popupStage.setTitle("Quản lý chỉ số cơ thể - " + registration.getMember().getUser().getFullName());
+
+        VBox mainVBox = new VBox(15);
+        mainVBox.setStyle("-fx-padding: 20;");
+
+        // Thông tin hội viên
+        Label memberInfo = new Label("Hội viên: " + registration.getMember().getUser().getFullName() +
+                " (Mã: " + registration.getMember().getMemberCode() + ")");
+        memberInfo.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+
+        // Bảng hiển thị lịch sử số đo
+        TableView<model.MemberProgress> progressTable = new TableView<>();
+        setupProgressTable(progressTable);
+
+        // Load dữ liệu
+        loadMemberProgress(progressTable, registration.getMemberId());
+
+        // Các nút thao tác
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        Button addBtn = new Button("Thêm số đo mới");
+        addBtn.setStyle(
+                "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        addBtn.setOnAction(e -> showAddProgressDialog(registration.getMemberId(), progressTable));
+
+        Button editBtn = new Button("Sửa số đo");
+        editBtn.setStyle(
+                "-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        editBtn.setOnAction(e -> {
+            model.MemberProgress selected = progressTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showAlert(AlertType.WARNING, "Thông báo", "Vui lòng chọn một số đo để sửa!");
+                return;
+            }
+            showEditProgressDialog(selected, progressTable);
+        });
+
+        Button deleteBtn = new Button("Xóa số đo");
+        deleteBtn.setStyle(
+                "-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        deleteBtn.setOnAction(e -> {
+            model.MemberProgress selected = progressTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showAlert(AlertType.WARNING, "Thông báo", "Vui lòng chọn một số đo để xóa!");
+                return;
+            }
+            deleteProgress(selected, progressTable);
+        });
+
+        buttonBox.getChildren().addAll(addBtn, editBtn, deleteBtn);
+
+        mainVBox.getChildren().addAll(memberInfo, progressTable, buttonBox);
+
+        Scene scene = new Scene(mainVBox, 1200, 600);
+        popupStage.setScene(scene);
+        popupStage.show();
+    }
+
+    private void setupProgressTable(TableView<model.MemberProgress> table) {
+        // Cột ngày đo
+        TableColumn<model.MemberProgress, String> colDate = new TableColumn<>("Ngày đo");
+        colDate.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getMeasurementDate() != null)
+                return new javafx.beans.property.SimpleStringProperty(
+                        cellData.getValue().getMeasurementDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            return new javafx.beans.property.SimpleStringProperty("");
+        });
+        colDate.setPrefWidth(100);
+
+        // Cột cân nặng
+        TableColumn<model.MemberProgress, String> colWeight = new TableColumn<>("Cân nặng (kg)");
+        colWeight.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getWeight() != null ? cellData.getValue().getWeight().toString() : "-"));
+        colWeight.setPrefWidth(100);
+
+        // Cột chiều cao
+        TableColumn<model.MemberProgress, String> colHeight = new TableColumn<>("Chiều cao (cm)");
+        colHeight.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getHeight() != null ? cellData.getValue().getHeight().toString() : "-"));
+        colHeight.setPrefWidth(100);
+
+        // Cột BMI
+        TableColumn<model.MemberProgress, String> colBMI = new TableColumn<>("BMI");
+        colBMI.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getBmi() != null ? cellData.getValue().getBmi().toString() : "-"));
+        colBMI.setPrefWidth(80);
+
+        // Cột % mỡ cơ thể
+        TableColumn<model.MemberProgress, String> colBodyFat = new TableColumn<>("% Mỡ cơ thể");
+        colBodyFat.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getBodyFatPercentage() != null
+                        ? cellData.getValue().getBodyFatPercentage().toString() + "%"
+                        : "-"));
+        colBodyFat.setPrefWidth(100);
+
+        // Cột ngực
+        TableColumn<model.MemberProgress, String> colChest = new TableColumn<>("Ngực (cm)");
+        colChest.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getChest() != null ? cellData.getValue().getChest().toString() : "-"));
+        colChest.setPrefWidth(80);
+
+        // Cột eo
+        TableColumn<model.MemberProgress, String> colWaist = new TableColumn<>("Eo (cm)");
+        colWaist.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getWaist() != null ? cellData.getValue().getWaist().toString() : "-"));
+        colWaist.setPrefWidth(80);
+
+        // Cột hông
+        TableColumn<model.MemberProgress, String> colHip = new TableColumn<>("Hông (cm)");
+        colHip.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getHip() != null ? cellData.getValue().getHip().toString() : "-"));
+        colHip.setPrefWidth(80);
+
+        // Cột cơ tay
+        TableColumn<model.MemberProgress, String> colBiceps = new TableColumn<>("Cơ tay (cm)");
+        colBiceps.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getBiceps() != null ? cellData.getValue().getBiceps().toString() : "-"));
+        colBiceps.setPrefWidth(80);
+
+        // Cột đùi
+        TableColumn<model.MemberProgress, String> colThigh = new TableColumn<>("Đùi (cm)");
+        colThigh.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getThigh() != null ? cellData.getValue().getThigh().toString() : "-"));
+        colThigh.setPrefWidth(80);
+
+        // Cột ghi chú
+        TableColumn<model.MemberProgress, String> colNotes = new TableColumn<>("Ghi chú");
+        colNotes.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getNotes() != null ? cellData.getValue().getNotes() : ""));
+        colNotes.setPrefWidth(200);
+
+        table.getColumns().addAll(colDate, colWeight, colHeight, colBMI, colBodyFat,
+                colChest, colWaist, colHip, colBiceps, colThigh, colNotes);
+        table.setPrefHeight(300);
+    }
+
+    private void loadMemberProgress(TableView<model.MemberProgress> table, int memberId) {
+        ObservableList<model.MemberProgress> progressList = FXCollections.observableArrayList();
+
+        String sql = "SELECT * FROM MemberProgress WHERE memberid = ? AND (status IS NULL OR status != 'Đã xóa') ORDER BY measurementdate DESC";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, memberId);
+            java.sql.ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                model.MemberProgress progress = new model.MemberProgress();
+                progress.setProgressId(rs.getInt("progressid"));
+                progress.setMemberId(rs.getInt("memberid"));
+                if (rs.getDate("measurementdate") != null) {
+                    progress.setMeasurementDate(rs.getDate("measurementdate").toLocalDate());
+                }
+                progress.setWeight(
+                        rs.getBigDecimal("weight") != null ? rs.getBigDecimal("weight").doubleValue() : null);
+                progress.setHeight(
+                        rs.getBigDecimal("height") != null ? rs.getBigDecimal("height").doubleValue() : null);
+                progress.setBmi(rs.getBigDecimal("bmi") != null ? rs.getBigDecimal("bmi").doubleValue() : null);
+                progress.setBodyFatPercentage(rs.getBigDecimal("bodyfatpercentage") != null
+                        ? rs.getBigDecimal("bodyfatpercentage").doubleValue()
+                        : null);
+                progress.setChest(rs.getBigDecimal("chest") != null ? rs.getBigDecimal("chest").doubleValue() : null);
+                progress.setWaist(rs.getBigDecimal("waist") != null ? rs.getBigDecimal("waist").doubleValue() : null);
+                progress.setHip(rs.getBigDecimal("hip") != null ? rs.getBigDecimal("hip").doubleValue() : null);
+                progress.setBiceps(
+                        rs.getBigDecimal("biceps") != null ? rs.getBigDecimal("biceps").doubleValue() : null);
+                progress.setThigh(rs.getBigDecimal("thigh") != null ? rs.getBigDecimal("thigh").doubleValue() : null);
+                progress.setTrainerId(rs.getObject("trainerid") != null ? rs.getInt("trainerid") : null);
+                progress.setStatus(rs.getString("status"));
+                progress.setNotes(rs.getString("notes"));
+
+                progressList.add(progress);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Lỗi", "Không thể tải dữ liệu chỉ số cơ thể: " + e.getMessage());
+        }
+
+        table.setItems(progressList);
+    }
+
+    private void showAddProgressDialog(int memberId, TableView<model.MemberProgress> table) {
+        Stage dialog = new Stage();
+        dialog.setTitle("Thêm số đo mới");
+
+        VBox root = createProgressForm(null, memberId);
+
+        // Nút lưu
+        Button saveBtn = new Button("Lưu");
+        saveBtn.setStyle(
+                "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        saveBtn.setOnAction(e -> {
+            if (saveProgress(root, null, memberId)) {
+                dialog.close();
+                loadMemberProgress(table, memberId);
+            }
+        });
+
+        root.getChildren().add(saveBtn);
+
+        Scene scene = new Scene(root, 400, 800);
+        dialog.setScene(scene);
+        dialog.showAndWait();
+    }
+
+    private void showEditProgressDialog(model.MemberProgress progress, TableView<model.MemberProgress> table) {
+        Stage dialog = new Stage();
+        dialog.setTitle("Sửa số đo");
+
+        VBox root = createProgressForm(progress, progress.getMemberId());
+
+        // Nút cập nhật
+        Button updateBtn = new Button("Cập nhật");
+        updateBtn.setStyle(
+                "-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        updateBtn.setOnAction(e -> {
+            if (saveProgress(root, progress, progress.getMemberId())) {
+                dialog.close();
+                loadMemberProgress(table, progress.getMemberId());
+            }
+        });
+
+        root.getChildren().add(updateBtn);
+
+        Scene scene = new Scene(root, 400, 800);
+        dialog.setScene(scene);
+        dialog.showAndWait();
+    }
+
+    private VBox createProgressForm(model.MemberProgress progress, int memberId) {
+        VBox root = new VBox(10);
+        root.setStyle("-fx-padding: 20;");
+
+        // Ngày đo
+        Label dateLabel = new Label("Ngày đo:");
+        DatePicker datePicker = new DatePicker();
+        if (progress != null && progress.getMeasurementDate() != null) {
+            datePicker.setValue(progress.getMeasurementDate());
+        } else {
+            datePicker.setValue(java.time.LocalDate.now());
+        }
+        datePicker.setUserData("measurementDate");
+
+        // Cân nặng
+        Label weightLabel = new Label("Cân nặng (kg):");
+        TextField weightField = new TextField();
+        weightField.setPromptText("Nhập cân nặng");
+        if (progress != null && progress.getWeight() != null) {
+            weightField.setText(progress.getWeight().toString());
+        }
+        weightField.setUserData("weight");
+
+        // Chiều cao
+        Label heightLabel = new Label("Chiều cao (cm):");
+        TextField heightField = new TextField();
+        heightField.setPromptText("Nhập chiều cao");
+        if (progress != null && progress.getHeight() != null) {
+            heightField.setText(progress.getHeight().toString());
+        }
+        heightField.setUserData("height");
+
+        // BMI
+        Label bmiLabel = new Label("BMI:");
+        TextField bmiField = new TextField();
+        bmiField.setPromptText("Nhập BMI");
+        if (progress != null && progress.getBmi() != null) {
+            bmiField.setText(progress.getBmi().toString());
+        }
+        bmiField.setUserData("bmi");
+
+        // % mỏ cơ thể
+        Label bodyFatLabel = new Label("% Mỡ cơ thể:");
+        TextField bodyFatField = new TextField();
+        bodyFatField.setPromptText("Nhập % mỡ cơ thể");
+        if (progress != null && progress.getBodyFatPercentage() != null) {
+            bodyFatField.setText(progress.getBodyFatPercentage().toString());
+        }
+        bodyFatField.setUserData("bodyFatPercentage");
+
+        // Ngực
+        Label chestLabel = new Label("Ngực (cm):");
+        TextField chestField = new TextField();
+        chestField.setPromptText("Nhập số đo ngực");
+        if (progress != null && progress.getChest() != null) {
+            chestField.setText(progress.getChest().toString());
+        }
+        chestField.setUserData("chest");
+
+        // Eo
+        Label waistLabel = new Label("Eo (cm):");
+        TextField waistField = new TextField();
+        waistField.setPromptText("Nhập số đo eo");
+        if (progress != null && progress.getWaist() != null) {
+            waistField.setText(progress.getWaist().toString());
+        }
+        waistField.setUserData("waist");
+
+        // Hông
+        Label hipLabel = new Label("Hông (cm):");
+        TextField hipField = new TextField();
+        hipField.setPromptText("Nhập số đo hông");
+        if (progress != null && progress.getHip() != null) {
+            hipField.setText(progress.getHip().toString());
+        }
+        hipField.setUserData("hip");
+
+        // Cơ tay
+        Label bicepsLabel = new Label("Cơ tay (cm):");
+        TextField bicepsField = new TextField();
+        bicepsField.setPromptText("Nhập số đo cơ tay");
+        if (progress != null && progress.getBiceps() != null) {
+            bicepsField.setText(progress.getBiceps().toString());
+        }
+        bicepsField.setUserData("biceps");
+
+        // Đùi
+        Label thighLabel = new Label("Đùi (cm):");
+        TextField thighField = new TextField();
+        thighField.setPromptText("Nhập số đo đùi");
+        if (progress != null && progress.getThigh() != null) {
+            thighField.setText(progress.getThigh().toString());
+        }
+        thighField.setUserData("thigh");
+
+        // Ghi chú
+        Label notesLabel = new Label("Ghi chú:");
+        TextArea notesArea = new TextArea();
+        notesArea.setPromptText("Nhập ghi chú");
+        notesArea.setPrefRowCount(3);
+        if (progress != null && progress.getNotes() != null) {
+            notesArea.setText(progress.getNotes());
+        }
+        notesArea.setUserData("notes");
+
+        root.getChildren().addAll(
+                dateLabel, datePicker,
+                weightLabel, weightField,
+                heightLabel, heightField,
+                bmiLabel, bmiField,
+                bodyFatLabel, bodyFatField,
+                chestLabel, chestField,
+                waistLabel, waistField,
+                hipLabel, hipField,
+                bicepsLabel, bicepsField,
+                thighLabel, thighField,
+                notesLabel, notesArea);
+
+        return root;
+    }
+
+    private boolean saveProgress(VBox form, model.MemberProgress existingProgress, int memberId) {
+        try {
+            // Lấy dữ liệu từ form
+            DatePicker datePicker = null;
+            java.math.BigDecimal weight = null, height = null, bmi = null, bodyFat = null;
+            java.math.BigDecimal chest = null, waist = null, hip = null, biceps = null, thigh = null;
+            String notes = null;
+
+            for (javafx.scene.Node node : form.getChildren()) {
+                if (node instanceof DatePicker && "measurementDate".equals(node.getUserData())) {
+                    datePicker = (DatePicker) node;
+                } else if (node instanceof TextField) {
+                    TextField field = (TextField) node;
+                    String value = field.getText().trim();
+                    if (!value.isEmpty()) {
+                        try {
+                            java.math.BigDecimal decimal = new java.math.BigDecimal(value);
+                            switch ((String) field.getUserData()) {
+                                case "weight":
+                                    weight = decimal;
+                                    break;
+                                case "height":
+                                    height = decimal;
+                                    break;
+                                case "bmi":
+                                    bmi = decimal;
+                                    break;
+                                case "bodyFatPercentage":
+                                    bodyFat = decimal;
+                                    break;
+                                case "chest":
+                                    chest = decimal;
+                                    break;
+                                case "waist":
+                                    waist = decimal;
+                                    break;
+                                case "hip":
+                                    hip = decimal;
+                                    break;
+                                case "biceps":
+                                    biceps = decimal;
+                                    break;
+                                case "thigh":
+                                    thigh = decimal;
+                                    break;
+                            }
+                        } catch (NumberFormatException e) {
+                            showAlert(AlertType.ERROR, "Lỗi",
+                                    "Giá trị không hợp lệ trong trường: " + field.getPromptText());
+                            return false;
+                        }
+                    }
+                } else if (node instanceof TextArea && "notes".equals(node.getUserData())) {
+                    TextArea area = (TextArea) node;
+                    notes = area.getText().trim();
+                    if (notes.isEmpty())
+                        notes = null;
+                }
+            }
+
+            if (datePicker == null || datePicker.getValue() == null) {
+                showAlert(AlertType.ERROR, "Lỗi", "Vui lòng chọn ngày đo!");
+                return false;
+            }
+
+            String sql;
+            if (existingProgress == null) {
+                // Thêm mới - bỏ qua cột status để nhận giá trị null
+                sql = "INSERT INTO MemberProgress (memberid, measurementdate, weight, height, bmi, bodyfatpercentage, chest, waist, hip, biceps, thigh, trainerid, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            } else {
+                // Cập nhật
+                sql = "UPDATE MemberProgress SET measurementdate = ?, weight = ?, height = ?, bmi = ?, bodyfatpercentage = ?, chest = ?, waist = ?, hip = ?, biceps = ?, thigh = ?, trainerid = ?, notes = ? WHERE progressid = ?";
+            }
+
+            try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                    java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                int index = 1;
+                if (existingProgress == null) {
+                    ps.setInt(index++, memberId);
+                }
+                ps.setDate(index++, java.sql.Date.valueOf(datePicker.getValue()));
+                ps.setBigDecimal(index++, weight);
+                ps.setBigDecimal(index++, height);
+                ps.setBigDecimal(index++, bmi);
+                ps.setBigDecimal(index++, bodyFat);
+                ps.setBigDecimal(index++, chest);
+                ps.setBigDecimal(index++, waist);
+                ps.setBigDecimal(index++, hip);
+                ps.setBigDecimal(index++, biceps);
+                ps.setBigDecimal(index++, thigh);
+                ps.setInt(index++, currentTrainerId);
+                ps.setString(index++, notes);
+
+                if (existingProgress != null) {
+                    ps.setInt(index, existingProgress.getProgressId());
+                }
+
+                int result = ps.executeUpdate();
+                if (result > 0) {
+                    showAlert(AlertType.INFORMATION, "Thành công",
+                            existingProgress == null ? "Đã thêm số đo mới!" : "Đã cập nhật số đo!");
+                    return true;
+                } else {
+                    showAlert(AlertType.ERROR, "Lỗi", "Không thể lưu dữ liệu!");
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void deleteProgress(model.MemberProgress progress, TableView<model.MemberProgress> table) {
+        Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Xác nhận xóa");
+        confirmAlert.setHeaderText(null);
+        confirmAlert.setContentText("Bạn có chắc chắn muốn xóa số đo ngày " +
+                progress.getMeasurementDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " không?");
+
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                String sql = "UPDATE MemberProgress SET status = 'Đã xóa' WHERE progressid = ?";
+
+                try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                        java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+                    ps.setInt(1, progress.getProgressId());
+
+                    int result = ps.executeUpdate();
+                    if (result > 0) {
+                        showAlert(AlertType.INFORMATION, "Thành công", "Đã xóa số đo!");
+                        loadMemberProgress(table, progress.getMemberId());
+                    } else {
+                        showAlert(AlertType.ERROR, "Lỗi", "Không thể xóa số đo!");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert(AlertType.ERROR, "Lỗi", "Có lỗi xảy ra khi xóa: " + e.getMessage());
+                }
+            }
+        });
     }
 
     @FXML
@@ -414,6 +1073,7 @@ public class WorkoutsController {
     @FXML
     private void refreshMembersList() {
         loadManagedMembers(currentTrainerId);
+        trainingController.updateExpiredTrainingSchedules();
     }
 
     private void showMemberDetailsPopup(TrainingRegistration registration) {
@@ -639,35 +1299,24 @@ public class WorkoutsController {
                 cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
         colDesc.setPrefWidth(180);
 
-        // Cột thao tác
+        // Cột thao tác - chỉ còn nút xóa
         TableColumn<ExerciseWithDetails, Void> colExerciseAction = new TableColumn<>("Thao tác");
-        colExerciseAction.setPrefWidth(120);
+        colExerciseAction.setPrefWidth(80);
 
         Callback<TableColumn<ExerciseWithDetails, Void>, TableCell<ExerciseWithDetails, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<ExerciseWithDetails, Void> call(final TableColumn<ExerciseWithDetails, Void> param) {
                 return new TableCell<>() {
-                    private final Button editBtn = new Button("Sửa");
                     private final Button deleteBtn = new Button("Xóa");
-                    private final HBox hbox = new HBox(5, editBtn, deleteBtn);
 
                     {
-                        editBtn.setPrefWidth(50);
-                        deleteBtn.setPrefWidth(50);
-                        hbox.setAlignment(Pos.CENTER);
-
-                        editBtn.setOnAction(event -> {
-                            ExerciseWithDetails exercise = getTableView().getItems().get(getIndex());
-                            showEditExerciseDialog(schedule, exercise, popupStage);
-                        });
+                        deleteBtn.setPrefWidth(70);
 
                         deleteBtn.setOnAction(event -> {
                             ExerciseWithDetails exercise = getTableView().getItems().get(getIndex());
                             deleteExerciseFromSchedule(schedule, exercise, popupStage);
                         });
 
-                        editBtn.setStyle(
-                                "-fx-background-color: #FFB74D; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px;");
                         deleteBtn.setStyle(
                                 "-fx-background-color: #F48FB1; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px;");
                     }
@@ -678,7 +1327,7 @@ public class WorkoutsController {
                         if (empty) {
                             setGraphic(null);
                         } else {
-                            setGraphic(hbox);
+                            setGraphic(deleteBtn);
                         }
                     }
                 };
@@ -689,7 +1338,7 @@ public class WorkoutsController {
         exerciseTable.getColumns().addAll(colName, colCode, colCategory, colQuantity, colComment, colDesc,
                 colExerciseAction);
         exerciseTable.setItems(javafx.collections.FXCollections.observableArrayList(exerciseDetails));
-        exerciseTable.setPrefWidth(980);
+        exerciseTable.setPrefWidth(960);
         exerciseTable.setPrefHeight(400);
 
         // Nút thêm bài tập mới
@@ -701,8 +1350,46 @@ public class WorkoutsController {
             showAddExercisesDialog(schedule, popupStage);
         });
 
+        // Nút sửa bài tập
+        Button editExerciseBtn = new Button("Sửa bài tập");
+        editExerciseBtn.setPrefWidth(120);
+        editExerciseBtn.setStyle(
+                "-fx-background-color: #FFB74D; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+        editExerciseBtn.setOnAction(event -> {
+            ExerciseWithDetails selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
+            if (selectedExercise == null) {
+                showAlert(AlertType.WARNING, "Thông báo", "Vui lòng chọn bài tập cần sửa!");
+                return;
+            }
+            showEditExerciseDialog(schedule, selectedExercise, popupStage);
+        });
+
+        // Nút nhận xét bài tập
+        Button commentExerciseBtn = new Button("Nhận xét bài tập");
+        commentExerciseBtn.setPrefWidth(130);
+        commentExerciseBtn.setStyle(
+                "-fx-background-color: #9C27B0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+
+        // Kiểm tra trạng thái lịch tập để enable/disable nút nhận xét
+        boolean isCompleted = "Hoàn thành".equals(schedule.getStatus());
+        commentExerciseBtn.setDisable(!isCompleted);
+
+        if (!isCompleted) {
+            commentExerciseBtn.setStyle(
+                    "-fx-background-color: #CCCCCC; -fx-text-fill: #666666; -fx-font-weight: bold; -fx-background-radius: 8; -fx-font-size: 14px;");
+        }
+
+        commentExerciseBtn.setOnAction(event -> {
+            showExerciseCommentsDialog(schedule, exerciseDetails, popupStage);
+        });
+
+        // HBox chứa các nút
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.getChildren().addAll(addExerciseBtn, editExerciseBtn, commentExerciseBtn);
+
         VBox vbox = new VBox(15);
-        vbox.getChildren().addAll(exerciseTable, addExerciseBtn);
+        vbox.getChildren().addAll(exerciseTable, buttonBox);
         vbox.setSpacing(10);
         vbox.setStyle("-fx-padding: 20;");
         vbox.setAlignment(Pos.CENTER);
@@ -733,6 +1420,7 @@ public class WorkoutsController {
     private void refreshScheduleTable() {
         try {
             loadSchedulesByTrainer(currentTrainerId);
+            trainingController.updateExpiredTrainingSchedules();
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(AlertType.ERROR, "Lỗi", "Không thể tải lại dữ liệu");
@@ -1210,5 +1898,174 @@ public class WorkoutsController {
                 }
             }
         });
+    }
+
+    private void showExerciseCommentsDialog(TrainingSchedule schedule,
+            java.util.List<ExerciseWithDetails> exerciseDetails,
+            Stage parentStage) {
+        try {
+            Stage dialog = new Stage();
+            dialog.setTitle("Nhận xét bài tập - " + schedule.getMemberName());
+
+            VBox root = new VBox(15);
+            root.setPadding(new javafx.geometry.Insets(20));
+
+            // Tiêu đề
+            Label titleLabel = new Label("Nhận xét cho từng bài tập");
+            titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+            // Thông tin buổi tập
+            Label sessionInfoLabel = new Label("Buổi tập ngày: " +
+                    (schedule.getDate() != null ? schedule.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            : "N/A")
+                    +
+                    " lúc " + (schedule.getTime() != null ? schedule.getTime() : "N/A"));
+            sessionInfoLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #666666;");
+
+            // ScrollPane cho danh sách bài tập
+            ScrollPane scrollPane = new ScrollPane();
+            VBox exerciseContainer = new VBox(10);
+            exerciseContainer.setPadding(new javafx.geometry.Insets(10));
+
+            // Danh sách TextArea để lưu nhận xét
+            java.util.List<TextArea> commentAreas = new ArrayList<>();
+
+            // Tạo form nhận xét cho từng bài tập
+            for (ExerciseWithDetails exercise : exerciseDetails) {
+                VBox exerciseBox = new VBox(8);
+                exerciseBox.setStyle(
+                        "-fx-border-color: #e0e0e0; -fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 15; -fx-background-color: #f9f9f9; -fx-background-radius: 8;");
+
+                // Thông tin bài tập
+                Label exerciseNameLabel = new Label(exercise.getExerciseName());
+                exerciseNameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+                Label exerciseDetailsLabel = new Label("Mã: " + exercise.getExerciseCode() + " | " +
+                        "Loại: " + exercise.getCategory() + " | " +
+                        "Số lượng: " + exercise.getQuantityFormatted());
+                exerciseDetailsLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666666;");
+
+                // Ô nhập nhận xét
+                Label commentLabel = new Label("Nhận xét của HLV:");
+                commentLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #232930;");
+
+                TextArea commentArea = new TextArea();
+                commentArea.setPromptText("Nhập nhận xét cho bài tập này...");
+                commentArea.setPrefRowCount(3);
+                commentArea.setMaxHeight(80);
+                commentArea.setStyle("-fx-font-size: 12px;");
+
+                // Lấy nhận xét hiện tại nếu có (có thể từ database)
+                String currentComment = getExerciseComment(schedule.getId(), exercise.getExerciseId());
+                if (currentComment != null && !currentComment.trim().isEmpty()) {
+                    commentArea.setText(currentComment);
+                }
+
+                commentAreas.add(commentArea);
+
+                exerciseBox.getChildren().addAll(exerciseNameLabel, exerciseDetailsLabel, commentLabel, commentArea);
+                exerciseContainer.getChildren().add(exerciseBox);
+            }
+
+            scrollPane.setContent(exerciseContainer);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPrefHeight(400);
+            scrollPane.setStyle("-fx-background-color: white;");
+
+            // Nút lưu nhận xét
+            Button saveButton = new Button("Lưu nhận xét");
+            saveButton.setPrefWidth(120);
+            saveButton.setStyle(
+                    "-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+            saveButton.setOnAction(e -> {
+                try {
+                    boolean allSaved = true;
+                    for (int i = 0; i < exerciseDetails.size(); i++) {
+                        ExerciseWithDetails exercise = exerciseDetails.get(i);
+                        String comment = commentAreas.get(i).getText().trim();
+
+                        if (!saveExerciseComment(schedule.getId(), exercise.getExerciseId(), comment)) {
+                            allSaved = false;
+                        }
+                    }
+
+                    if (allSaved) {
+                        showAlert(AlertType.INFORMATION, "Thành công", "Đã lưu tất cả nhận xét bài tập!");
+                        dialog.close();
+                    } else {
+                        showAlert(AlertType.ERROR, "Lỗi", "Có lỗi xảy ra khi lưu một số nhận xét!");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    showAlert(AlertType.ERROR, "Lỗi", "Lỗi khi lưu nhận xét: " + ex.getMessage());
+                }
+            });
+
+            // Nút hủy
+            Button cancelButton = new Button("Hủy");
+            cancelButton.setPrefWidth(80);
+            cancelButton.setStyle(
+                    "-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 14px;");
+            cancelButton.setOnAction(e -> dialog.close());
+
+            // HBox chứa các nút
+            HBox buttonBox = new HBox(10);
+            buttonBox.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().addAll(saveButton, cancelButton);
+
+            root.getChildren().addAll(titleLabel, sessionInfoLabel, scrollPane, buttonBox);
+
+            Scene scene = new Scene(root, 1000, 550);
+            dialog.setScene(scene);
+            dialog.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Lỗi", "Không thể hiển thị dialog nhận xét bài tập");
+        }
+    }
+
+    private String getExerciseComment(int scheduleId, int exerciseId) {
+        String comment = "";
+        String sql = "SELECT TrainerComment FROM TrainingScheduleExercises WHERE scheduleid = ? AND exerciseid = ?";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, scheduleId);
+            ps.setInt(2, exerciseId);
+
+            java.sql.ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                comment = rs.getString("TrainerComment");
+                if (comment == null) {
+                    comment = "";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy nhận xét bài tập: " + e.getMessage());
+        }
+
+        return comment;
+    }
+
+    private boolean saveExerciseComment(int scheduleId, int exerciseId, String comment) {
+        String sql = "UPDATE TrainingScheduleExercises SET TrainerComment = ? WHERE scheduleid = ? AND exerciseid = ?";
+
+        try (java.sql.Connection conn = utils.DBConnection.getConnection();
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, comment);
+            ps.setInt(2, scheduleId);
+            ps.setInt(3, exerciseId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lưu nhận xét bài tập: " + e.getMessage());
+            return false;
+        }
     }
 }
