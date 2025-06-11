@@ -6,6 +6,7 @@ public class TrainingScheduleExercise {
     private int rep;
     private int set;
     private String comment;
+    private String trainerComment;
 
     public TrainingScheduleExercise() {
     }
@@ -16,6 +17,16 @@ public class TrainingScheduleExercise {
         this.rep = rep;
         this.set = set;
         this.comment = comment;
+    }
+
+    public TrainingScheduleExercise(int scheduleId, int exerciseId, int rep, int set, String comment,
+            String trainerComment) {
+        this.scheduleId = scheduleId;
+        this.exerciseId = exerciseId;
+        this.rep = rep;
+        this.set = set;
+        this.comment = comment;
+        this.trainerComment = trainerComment;
     }
 
     public int getScheduleId() {
@@ -56,5 +67,13 @@ public class TrainingScheduleExercise {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getTrainerComment() {
+        return trainerComment;
+    }
+
+    public void setTrainerComment(String trainerComment) {
+        this.trainerComment = trainerComment;
     }
 }

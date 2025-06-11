@@ -39,6 +39,7 @@
                     <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="120" />
                     <TableColumn fx:id="colNotes" text="Ghi chú" prefWidth="220" />
                     <TableColumn fx:id="colAction" text="Bài tập" prefWidth="80" />
+                    <TableColumn fx:id="colRating" text="Đánh giá" prefWidth="150" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

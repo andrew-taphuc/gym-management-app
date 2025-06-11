@@ -11,15 +11,13 @@ public class Room {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private int centerId;
-    private FitnessCenter center; // Reference to FitnessCenter
 
     public Room() {
     }
 
     public Room(int roomId, String roomCode, String roomName, String roomType,
             String description, String status, LocalDateTime createdAt,
-            LocalDateTime updatedAt, int centerId) {
+            LocalDateTime updatedAt) {
         this.roomId = roomId;
         this.roomCode = roomCode;
         this.roomName = roomName;
@@ -28,7 +26,6 @@ public class Room {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.centerId = centerId;
     }
 
     // Getters and Setters
@@ -94,21 +91,5 @@ public class Room {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public int getCenterId() {
-        return centerId;
-    }
-
-    public void setCenterId(int centerId) {
-        this.centerId = centerId;
-    }
-
-    public FitnessCenter getCenter() {
-        return center;
-    }
-
-    public void setCenter(FitnessCenter center) {
-        this.center = center;
     }
 }
