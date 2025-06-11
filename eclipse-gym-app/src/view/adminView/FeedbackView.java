@@ -85,14 +85,7 @@ public class FeedbackView {
                 replyButton.setOnAction(e -> {
                     Feedback feedback = getTableView().getItems().get(getIndex());
 
-                    // Kiểm tra đã phản hồi chưa
-                    if (feedback.responseCommentProperty().get() != null &&
-                            !feedback.responseCommentProperty().get().isEmpty()) {
-                        showAlert("Thông báo", "Phản hồi này đã được xử lý.");
-                        return;
-                    }
-
-                    // Mở dialog trả lời feedback mới
+                    // Mở dialog trả lời feedback
                     openFeedbackReplyDialog(feedback);
                 });
             }
