@@ -41,20 +41,9 @@ public class HomeView_Owner extends BaseView {
             welcomeLabel.setText("Welcome, " + currentUser.getUsername());
             roleLabel.setText("Role: " + currentUser.getRole());
         }
-        // Load home content by default
+        // Load dashboard by default
         handleDashboardClick();
     }
-
-    // @FXML
-    // private void handleHomeClick() {
-    //     try {
-    //         Parent homeContent = FXMLLoader.load(getClass().getResource("home_content.fxml"));
-    //         contentArea.getChildren().clear();
-    //         contentArea.getChildren().add(homeContent);
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 
     public <T> void loadViewWithUser(String fxmlPath, T controller) {
         try {

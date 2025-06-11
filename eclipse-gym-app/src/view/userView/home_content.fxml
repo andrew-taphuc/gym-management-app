@@ -69,7 +69,7 @@
                     <VBox style="-fx-background-color: #e3f2fd; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="BMI" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label fx:id="bmiValue" text="22.5" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                            <Label fx:id="bmiValue" text="N/A" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
                             <Label fx:id="bmiStatus" text="Normal" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
                         </HBox>
                     </VBox>
@@ -78,15 +78,15 @@
                     <VBox style="-fx-background-color: #f3e5f5; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="Body Fat" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label fx:id="bodyFatValue" text="18%" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-                            <Label fx:id="bodyFatStatus" text="Tốt" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
+                            <Label fx:id="bodyFatValue" text="N/A" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                            <Label fx:id="bodyFatStatus" text="N/A" style="-fx-font-size: 14px; -fx-text-fill: #4caf50;"/>
                         </HBox>
                     </VBox>
 
                     <!-- Progress Card -->
                     <VBox style="-fx-background-color: #e8f5e9; -fx-background-radius: 8; -fx-padding: 12;">
                         <Label text="Tiến độ" style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
-                        <Label fx:id="progressCard" text="Đã giảm 2.5kg so với lần đầu" 
+                        <Label fx:id="progressCard" text="N/A" 
                             style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #388e3c;"/>
                     </VBox>
 

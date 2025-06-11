@@ -16,11 +16,10 @@
                 style="-fx-text-fill: #fff; -fx-font-size: 18px; -fx-font-family: 'Courier New'; -fx-padding: 0 0 0 0;" />
             <Label fx:id="roleLabel"
                 style="-fx-text-fill: #bdbdbd; -fx-font-size: 14px; -fx-font-family: 'Courier New'; -fx-padding: 0 0 10 0;" />
-            <!-- <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Home"
-                onAction="#handleHomeClick" /> -->
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Dashboard"
                 onAction="#handleDashboardClick" />
-            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn" text="Room &amp; Equipment"
+            <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn"
+                text="Room &amp; Equipment"
                 onAction="#handleEquipmentClick" />
             <Button maxWidth="280.0" minHeight="70" styleClass="menu-btn"
                 text="Plan Management"
