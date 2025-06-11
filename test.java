@@ -1,0 +1,64 @@
+import controller.UserController;
+import model.User; 
+import model.enums.enum_Gender;
+import model.enums.enum_Role;
+import model.enums.enum_UserStatus;
+import org.junit.Test;
+import java.time.LocalDate;
+import static org.junit.Assert.*;
+
+public class test {
+
+    // // Kiểm thử đơn vị cho isEmailExists
+    // @Test
+    // public void testIsEmailExists_ReturnsTrue_WhenEmailExists() throws Exception {
+    //     Connection mockConn = mock(Connection.class);
+    //     PreparedStatement mockStmt = mock(PreparedStatement.class);
+    //     ResultSet mockRs = mock(ResultSet.class);
+
+    //     when(mockConn.prepareStatement(anyString())).thenReturn(mockStmt);
+    //     when(mockStmt.executeQuery()).thenReturn(mockRs);
+    //     when(mockRs.next()).thenReturn(true); // Có email
+
+    //     UserController userController = new UserController();
+    //     java.lang.reflect.Field connField = UserController.class.getDeclaredField("connection");
+    //     connField.setAccessible(true);
+    //     connField.set(userController, mockConn);
+
+    //     assertTrue(userController.isEmailExists("test@mail.com"));
+    // }
+
+   @Test
+    public void testCreateUser_And_CheckUsernameAndEmailExistence() {
+        // Arrange
+        UserController userController = new UserController();
+        User user = new User();
+
+        long timestamp = System.currentTimeMillis();
+        String uniqueUsername = "testuser_" + timestamp;
+        String uniqueEmail = "testuser_" + timestamp + "@mail.com";
+
+        user.setUsername(uniqueUsername);
+        user.setPassword("testpassword123");
+        user.setEmail(uniqueEmail);
+        user.setPhoneNumber("0123456789");
+        user.setFullName("Test User");
+        user.setDateOfBirth(LocalDate.of(2000, 1, 1));
+        user.setGender(enum_Gender.MALE);
+        user.setAddress("Hanoi");
+        user.setStatus(enum_UserStatus.ACTIVE);
+        user.setRole(enum_Role.MEMBER);
+
+        // Act
+        int userId = userController.createUser(user);
+
+        // Assert
+        assertTrue("User creation failed, userId should be > 0", userId > 0);
+
+        boolean isUsernameExists = userController.isUsernameExists(uniqueUsername);
+        boolean isEmailExists = userController.isEmailExists(uniqueEmail);
+
+        assertTrue("Username should exist after creation", isUsernameExists);
+        assertTrue("Email should exist after creation", isEmailExists);
+    }
+}
