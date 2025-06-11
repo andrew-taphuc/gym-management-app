@@ -6,24 +6,26 @@ public class MemberProgress {
     private int progressId;
     private int memberId;
     private LocalDate measurementDate;
-    private double weight;
-    private double height;
-    private double bmi;
-    private double bodyFatPercentage;
-    private double chest;
-    private double waist;
-    private double hip;
-    private double biceps;
-    private double thigh;
-    private int trainerId;
+    private Double weight;
+    private Double height;
+    private Double bmi;
+    private Double bodyFatPercentage;
+    private Double chest;
+    private Double waist;
+    private Double hip;
+    private Double biceps;
+    private Double thigh;
+    private Integer trainerId;
     private String notes;
+    private String status;
 
     public MemberProgress() {
     }
 
-    public MemberProgress(int progressId, int memberId, LocalDate measurementDate, double weight, double height,
-            double bmi, double bodyFatPercentage, double chest, double waist, double hip, double biceps, double thigh,
-            int trainerId, String notes) {
+    public MemberProgress(int progressId, int memberId, LocalDate measurementDate, Double weight, Double height,
+            Double bmi, Double bodyFatPercentage, Double chest, Double waist, Double hip,
+            Double biceps, Double thigh,
+            Integer trainerId, String notes) {
         this.progressId = progressId;
         this.memberId = memberId;
         this.measurementDate = measurementDate;
@@ -64,83 +66,83 @@ public class MemberProgress {
         this.measurementDate = measurementDate;
     }
 
-    public double getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
-    public double getHeight() {
+    public Double getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(Double height) {
         this.height = height;
     }
 
-    public double getBmi() {
+    public Double getBmi() {
         return bmi;
     }
 
-    public void setBmi(double bmi) {
+    public void setBmi(Double bmi) {
         this.bmi = bmi;
     }
 
-    public double getBodyFatPercentage() {
+    public Double getBodyFatPercentage() {
         return bodyFatPercentage;
     }
 
-    public void setBodyFatPercentage(double bodyFatPercentage) {
+    public void setBodyFatPercentage(Double bodyFatPercentage) {
         this.bodyFatPercentage = bodyFatPercentage;
     }
 
-    public double getChest() {
+    public Double getChest() {
         return chest;
     }
 
-    public void setChest(double chest) {
+    public void setChest(Double chest) {
         this.chest = chest;
     }
 
-    public double getWaist() {
+    public Double getWaist() {
         return waist;
     }
 
-    public void setWaist(double waist) {
+    public void setWaist(Double waist) {
         this.waist = waist;
     }
 
-    public double getHip() {
+    public Double getHip() {
         return hip;
     }
 
-    public void setHip(double hip) {
+    public void setHip(Double hip) {
         this.hip = hip;
     }
 
-    public double getBiceps() {
+    public Double getBiceps() {
         return biceps;
     }
 
-    public void setBiceps(double biceps) {
+    public void setBiceps(Double biceps) {
         this.biceps = biceps;
     }
 
-    public double getThigh() {
+    public Double getThigh() {
         return thigh;
     }
 
-    public void setThigh(double thigh) {
+    public void setThigh(Double thigh) {
         this.thigh = thigh;
     }
 
-    public int getTrainerId() {
+    public Integer getTrainerId() {
         return trainerId;
     }
 
-    public void setTrainerId(int trainerId) {
+    public void setTrainerId(Integer trainerId) {
         this.trainerId = trainerId;
     }
 
@@ -150,5 +152,13 @@ public class MemberProgress {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

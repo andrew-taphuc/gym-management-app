@@ -45,6 +45,9 @@ CREATE TYPE discount_type AS ENUM ('Phần trăm', 'Tiền mặt');
 
 CREATE TYPE promotion_status AS ENUM ('Còn hạn', 'Hết hạn', 'Chưa khả dụng');
 
+CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
+
+CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
 
 -- Bảng người dùng chung
 CREATE TABLE Users (
@@ -270,11 +273,9 @@ CREATE TABLE MemberProgress (
   Biceps DECIMAL(5,2),
   Thigh DECIMAL(5,2),
   TrainerID INT,
+  Status VARCHAR(50),
   Notes VARCHAR(500)
 );
-
-CREATE TYPE feedback_type AS ENUM ('Cơ sở vật chất', 'Nhân viên', 'Khác');
-CREATE TYPE feedback_status AS ENUM ('Đang giải quyết', 'Đã giải quyết');
 
 CREATE TABLE Feedback (
     FeedbackID SERIAL PRIMARY KEY,
@@ -288,4 +289,3 @@ CREATE TABLE Feedback (
     ResponseDate TIMESTAMP,
     ResponderID INT -- Người phản hồi
 );
-
