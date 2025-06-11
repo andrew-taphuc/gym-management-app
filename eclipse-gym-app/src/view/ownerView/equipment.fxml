@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    prefHeight="700.0" prefWidth="1200.0">
+
+    <AnchorPane AnchorPane.topAnchor="0"
+        AnchorPane.leftAnchor="0"
+        AnchorPane.rightAnchor="0"
+        AnchorPane.bottomAnchor="0"
+        prefHeight="700.0" prefWidth="1200.0">
+
+        <VBox AnchorPane.topAnchor="0"
+            AnchorPane.leftAnchor="0"
+            AnchorPane.rightAnchor="0"
+            AnchorPane.bottomAnchor="0"
+            styleClass="content-area"
+            alignment="TOP_LEFT"
+            spacing="10"
+            stylesheets="@equipment.css">
+
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Header -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="pageTitle" styleClass="page-title" text="Quản lý thiết bị tập"/>
+            </HBox>
+            
+            <!-- Statistics Boxes -->
+            <HBox spacing="20" alignment="CENTER_LEFT" prefHeight="150">
+                <VBox styleClass="stat-box" HBox.hgrow="ALWAYS">
+                    <Label text="Số phòng tập" styleClass="stat-title"/>
+                    <Label fx:id="lblTotalRooms" text="0" styleClass="stat-value"/>
+                </VBox>
+                <VBox styleClass="stat-box" HBox.hgrow="ALWAYS">
+                    <Label text="Số loại thiết bị" styleClass="stat-title"/>
+                    <Label fx:id="lblTotalEquipmentTypes" text="0" styleClass="stat-value"/>
+                    <Button text="Xem chi tiết" onAction="#handleViewEquipmentTypes" styleClass="btn-details"/>
+                </VBox>
+                <VBox styleClass="stat-box" HBox.hgrow="ALWAYS">
+                    <Label text="Số thiết bị bảo trì" styleClass="stat-title"/>
+                    <Label fx:id="lblMaintenanceEquipment" text="0" styleClass="stat-value"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label styleClass="page-title" text="Danh sách các phòng tập"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Thêm phòng tập" onAction="#handleAddRoom" styleClass="btn-add"/>
+                <Button text="Sửa phòng tập" onAction="#handleEditRoom" styleClass="btn-edit"/>
+            </HBox>
+                <!-- Rooms List -->
+            <TableView 
+                fx:id="tblRooms"
+                prefHeight="300"
+                maxHeight="300"
+                VBox.vgrow="NEVER"
+                styleClass="equipment-table">
+                <columns>
+                    <TableColumn fx:id="colRoomCode" text="Mã phòng" prefWidth="100"/>
+                    <TableColumn fx:id="colRoomName" text="Tên phòng" prefWidth="200"/>
+                    <TableColumn fx:id="colRoomType" text="Loại phòng" prefWidth="150"/>
+                    <TableColumn fx:id="colDescription" text="Mô tả" prefWidth="300"/>
+                    <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="100"/>
+                    <TableColumn fx:id="colActions" text="Thao tác" prefWidth="100"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label styleClass="page-title" text="Danh sách thiết bị bảo trì"/>
+            </HBox>
+
+            <TableView 
+                fx:id="tblMaintenanceEquipment"
+                prefHeight="200"
+                maxHeight="200"
+                VBox.vgrow="NEVER"
+                styleClass="equipment-table">
+                <columns>
+                    <TableColumn fx:id="colEquipmentCode" text="Mã thiết bị" prefWidth="100"/>
+                    <TableColumn fx:id="colEquipmentType" text="Loại thiết bị" prefWidth="200"/>
+                    <TableColumn fx:id="colEquipmentRoom" text="Phòng" prefWidth="150"/>
+                    <TableColumn fx:id="colEquipmentQuantity" text="Số lượng" prefWidth="100"/>
+                    <TableColumn fx:id="colEquipmentDescription" text="Mô tả" prefWidth="300"/>
+                    <TableColumn fx:id="colMaintenanceActions" text="Thao tác" prefWidth="100"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox> 
+    </AnchorPane>
+</AnchorPane>

@@ -64,7 +64,14 @@
         </HBox>
     </HBox>
 
-    <Label text="Danh sách gói tập" style= "-fx-font-weight: bold; -fx-font-size: 20px;"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Danh sách gói tập" style= "-fx-font-weight: bold; -fx-font-size: 20px;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnActivate" text="Kích hoạt" 
+                onAction="#handleActivateMembership"
+                style="-fx-background-color:rgb(236, 195, 13); -fx-text-fill: black; -fx-font-size: 16px; -fx-background-radius: 8px; -fx-cursor: hand;"
+                prefWidth="120" prefHeight="35"/>
+    </HBox>
     <TableView fx:id="tblMemberships" prefHeight="150" 
                 maxHeight="300" styleClass="track-table">
         <columns>

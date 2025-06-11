@@ -76,6 +76,13 @@ public class HomeView_Owner extends BaseView {
     }
 
     @FXML
+    private void handleEquipmentClick() {
+        view.ownerView.EquipmentView controller = new view.ownerView.EquipmentView();
+        controller.setCurrentUser(currentUser);
+        loadViewWithUser("equipment.fxml", controller);
+    }
+
+    @FXML
     private void handlePlansClick() {
         view.ownerView.PlansRenewalsController controller = new view.ownerView.PlansRenewalsController();
         controller.setCurrentUser(currentUser);

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+    xmlns:fx="http://javafx.com/fxml"
+    prefHeight="600.0" prefWidth="800.0">
+
+    <AnchorPane AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+        AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+        prefHeight="600.0" prefWidth="800.0">
+
+        <VBox AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+            styleClass="content-area"
+            stylesheets="@payment.css"
+            alignment="TOP_LEFT"
+            spacing="10.0">
+
+            <padding>
+                <Insets top="10.0" left="20.0" right="20.0" bottom="20.0" />
+            </padding>
+
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label fx:id="pageTitle" styleClass="page-title" text="Quản lý Thanh toán" />
+            </HBox>
+
+            <!-- Payment Table - Sát lên và full height -->
+            <TableView fx:id="paymentTable" VBox.vgrow="ALWAYS"
+                styleClass="payment-table"
+                prefHeight="550"
+                maxHeight="550">
+                <columns>
+                    <!-- Thứ tự mới: ID, Tên hội viên, ngày thanh toán, số tiền, trạng thái, phương
+                    thức, loại dịch vụ, mã hóa đơn, thao tác -->
+                    <TableColumn fx:id="paymentIdColumn" text="ID" prefWidth="50.0"
+                        style="-fx-alignment: CENTER; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="memberNameColumn" text="Tên hội viên" prefWidth="150.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="paymentDateColumn" text="Ngày thanh toán" prefWidth="170.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="amountColumn" text="Số tiền" prefWidth="150.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="120.0"
+                        style="-fx-alignment: CENTER; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="paymentMethodColumn" text="Phương thức" prefWidth="130.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="serviceTypeColumn" text="Loại dịch vụ" prefWidth="160.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="invoiceCodeColumn" text="Mã hóa đơn" prefWidth="120.0"
+                        style="-fx-alignment: CENTER-LEFT; -fx-font-size: 20px;" />
+                    <TableColumn fx:id="actionColumn" text="Thao tác" prefWidth="180.0"
+                        style="-fx-alignment: CENTER; -fx-font-size: 20px;" />
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+
+        </VBox>
+
+    </AnchorPane>
+
+</AnchorPane> 

@@ -2,6 +2,7 @@ package view.adminView;
 
 import controller.TrainingRegistrationController;
 import controller.TrainingScheduleController;
+import controller.TrainingController;
 import controller.MemberController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +17,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import model.enums.enum_MembershipStatus;
 import model.enums.enum_MemberStatus;
+import utils.DBConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +38,7 @@ public class MemberTrackController {
     @FXML private TableView<Attendance> tblAttendance;
     @FXML private Button btnCheckinGym;
     @FXML private Button btnCheckinPT;
+    @FXML private Button btnActivate;
 
     @FXML private TableColumn<Membership, String> colPlanName;
     @FXML private TableColumn<Membership, String> colStartDate;
@@ -45,6 +52,7 @@ public class MemberTrackController {
 
     private User currentUser;
     private Member member;
+    private TrainingController trainingController = new TrainingController();
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -56,6 +64,7 @@ public class MemberTrackController {
         loadMemberships();
         loadAttendance();
         loadSessionCount();
+        trainingController.updateExpiredTrainingSchedules();
     }
 
     private void loadMemberInfo() {
@@ -257,6 +266,42 @@ public class MemberTrackController {
                 showAlert("Check-in PT thất bại!");
             }
         });
+    }
+
+    @FXML
+    public void handleActivateMembership() {
+        Membership selectedMembership = tblMemberships.getSelectionModel().getSelectedItem();
+        if (selectedMembership == null) {
+            showAlert("Vui lòng chọn một gói tập để kích hoạt!");
+            return;
+        }
+
+        if (selectedMembership.getStatus() == enum_MembershipStatus.ACTIVE) {
+            showAlert("Gói đã được kích hoạt rồi!");
+            return;
+        }
+
+        // Cập nhật trạng thái gói tập
+        try {
+            String sql = "UPDATE Memberships SET Status = ?::membership_status_enum WHERE MembershipID = ?";
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, enum_MembershipStatus.ACTIVE.getValue());
+                stmt.setInt(2, selectedMembership.getMembershipId());
+                
+                if (stmt.executeUpdate() > 0) {
+                    // Cập nhật lại giao diện
+                    selectedMembership.setStatus(enum_MembershipStatus.ACTIVE);
+                    tblMemberships.refresh();
+                    showAlert("Kích hoạt gói tập thành công!");
+                } else {
+                    showAlert("Không thể kích hoạt gói tập!");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Lỗi khi kích hoạt gói tập: " + e.getMessage());
+        }
     }
 
     private void showAlert(String message) {
