@@ -114,94 +114,12 @@ public class MemberController {
                     member.setJoinDate(rs.getDate("JoinDate").toLocalDate());
                 }
                 member.setStatus(enum_MemberStatus.fromValue(rs.getString("Status")));
-                // Nếu cần, có thể set thêm số điện thoại, tên, ...
-                // member.setPhoneNumber(rs.getString("PhoneNumber"));
-                // member.setFullName(rs.getString("FullName"));
                 return member;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    // Lấy danh sách các gói tập của hội viên
-    public static List<Membership> getMembershipsByMemberId(int memberId) {
-        List<Membership> list = new ArrayList<>();
-        String query = "SELECT * FROM Memberships WHERE MemberID = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Membership m = new Membership();
-                m.setMembershipId(rs.getInt("MembershipID"));
-                m.setPlanId(rs.getInt("PlanID"));
-                m.setMemberId(rs.getInt("MemberID"));
-                m.setStartDate(rs.getDate("StartDate").toLocalDate());
-                m.setEndDate(rs.getDate("EndDate").toLocalDate());
-                m.setStatus(enum_MembershipStatus.fromValue(rs.getString("Status")));
-                list.add(m);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    // Lấy 5 lần check-in gần nhất
-    public static List<Attendance> getRecentAttendance(int memberId, int limit) {
-        List<Attendance> list = new ArrayList<>();
-        String query = "SELECT a.*, mp.PlanName, " +
-                "CASE WHEN a.TrainingScheduleID IS NOT NULL " +
-                "THEN u_trainer.FullName ELSE NULL END AS TrainerName " +
-                "FROM Attendance a " +
-                "JOIN Memberships m ON a.MembershipID = m.MembershipID " +
-                "JOIN MembershipPlans mp ON m.PlanID = mp.PlanID " +
-                "LEFT JOIN TrainingSchedule ts ON a.TrainingScheduleID = ts.ScheduleID " +
-                "LEFT JOIN Trainers t ON ts.TrainerID = t.TrainerID " +
-                "LEFT JOIN Users u_trainer ON t.UserID = u_trainer.UserID " +
-                "WHERE a.MemberID = ? ORDER BY a.CheckinTime DESC";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Attendance a = new Attendance();
-                a.setAttendanceId(rs.getInt("AttendanceID"));
-                a.setMemberId(rs.getInt("MemberID"));
-                a.setCheckInTime(rs.getTimestamp("CheckinTime").toLocalDateTime());
-                a.setMembershipId(rs.getInt("MembershipID"));
-                a.setPlanName(rs.getString("PlanName")); // Thêm trường này vào model Attendance
-                a.setTrainingScheduleId(
-                        rs.getObject("TrainingScheduleID") != null ? rs.getInt("TrainingScheduleID") : null);
-                a.setTrainerName(rs.getString("TrainerName")); // Thêm tên trainer
-                list.add(a);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Số dòng trả về: " + list.size());
-        return list;
-    }
-
-    // Đếm số buổi đã tập trong tháng này
-    public static int countAttendanceThisMonth(int memberId, LocalDate now) {
-        int count = 0;
-        String query = "SELECT COUNT(*) FROM Attendance WHERE MemberID = ? AND EXTRACT(MONTH FROM CheckinTime) = ? AND EXTRACT(YEAR FROM CheckinTime) = ?";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            stmt.setInt(2, now.getMonthValue());
-            stmt.setInt(3, now.getYear());
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
     }
 
     // Check-in phòng tập (GYM)
@@ -326,5 +244,32 @@ public class MemberController {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Lấy ID của member từ UserID
+     * 
+     * @param userId ID của user
+     * @return ID của member, hoặc null nếu không tìm thấy
+     */
+    public Integer getMemberIdByUserId(int userId) {
+        String sql = "SELECT MemberID FROM Members WHERE UserID = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("MemberID");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi truy vấn MemberID từ UserID: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null; // Không tìm thấy hoặc lỗi xảy ra
     }
 }

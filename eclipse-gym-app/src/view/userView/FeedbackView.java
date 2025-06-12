@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.text.Text;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 import controller.FeedbackController;
+import controller.MemberController;
 
 public class FeedbackView {
 
@@ -39,6 +39,7 @@ public class FeedbackView {
     private User currentUser;
     private final ObservableList<Feedback> feedbackList = FXCollections.observableArrayList();
     private final FeedbackController feedbackController = new FeedbackController();
+    private final MemberController memberController = new MemberController();
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -122,7 +123,7 @@ public class FeedbackView {
 
         try {
             // Lấy feedback từ database
-            int MemberId = feedbackController.getMemberIdByUserId(currentUser.getUserId());
+            int MemberId = memberController.getMemberIdByUserId(currentUser.getUserId());
             List<Feedback> feedbacks = feedbackController.getFeedbacksByMemberID(MemberId);
             feedbackList.clear();
             feedbackList.addAll(feedbacks);

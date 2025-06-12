@@ -492,36 +492,7 @@ public class WorkoutsController {
         colMemberAction.setCellFactory(cellFactory);
     }
 
-    private void addBodyMetricsButtonToMembersTable() {
-        Callback<TableColumn<TrainingRegistration, Void>, TableCell<TrainingRegistration, Void>> cellFactory = new Callback<>() {
-            @Override
-            public TableCell<TrainingRegistration, Void> call(final TableColumn<TrainingRegistration, Void> param) {
-                return new TableCell<>() {
-                    private final Button btn = new Button("Xem chỉ số cơ thể");
-                    {
-                        btn.setPrefWidth(120);
-                        btn.setOnAction(event -> {
-                            TrainingRegistration registration = getTableView().getItems().get(getIndex());
-                            showBodyMetricsPopup(registration);
-                        });
-                        btn.setStyle(
-                                "-fx-background-color: #81C784; -fx-text-fill: #232930; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;");
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(btn);
-                        }
-                    }
-                };
-            }
-        };
-        // colBodyMetrics.setCellFactory(cellFactory);
-    }
+   
 
     private void showBodyMetricsPopup(TrainingRegistration registration) {
         Stage popupStage = new Stage();
@@ -1399,15 +1370,6 @@ public class WorkoutsController {
         popupStage.show();
     }
 
-    private void loadRooms() {
-        try {
-            ObservableList<Room> rooms = FXCollections.observableArrayList(roomController.getAllRooms());
-            roomComboBox.setItems(rooms);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(AlertType.ERROR, "Lỗi", "Không thể tải danh sách phòng tập");
-        }
-    }
 
     private void showAlert(AlertType type, String title, String content) {
         Alert alert = new Alert(type);

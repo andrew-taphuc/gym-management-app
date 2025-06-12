@@ -6,13 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import model.User;
-import model.enums.enum_Role;
 import view.BaseView;
-import view.LoginView;
-import view.ProfileView;
+
 
 public class HomeView_trainer extends BaseView {
     @FXML

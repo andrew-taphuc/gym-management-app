@@ -1,8 +1,11 @@
 package view.userView;
 
 import controller.MemberProgressController;
-import controller.MemberProgressController.MembershipInfo;
-import controller.MemberProgressController.TrainingSchedule;
+import controller.MemberController;
+import controller.AttendanceController;
+import controller.TrainingScheduleController;
+import controller.TrainingRegistrationController;
+import controller.MembershipController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
@@ -16,6 +19,8 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.layout.Pane;
 import model.MemberProgress;
 import model.User;
+import model.TrainingSchedule;
+import model.Membership;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -67,7 +72,7 @@ public class HomeContent {
     @FXML
     private TableColumn<TrainingSchedule, LocalDate> dateColumn;
     @FXML
-    private TableColumn<TrainingSchedule, LocalTime> timeColumn;
+    private TableColumn<TrainingSchedule, String> timeColumn;
     @FXML
     private TableColumn<TrainingSchedule, String> trainerColumn;
     @FXML
@@ -77,6 +82,8 @@ public class HomeContent {
 
     private User currentUser;
     private final MemberProgressController progressController = new MemberProgressController();
+    private final MemberController memberController = new MemberController();
+    private final MembershipController membershipController = new MembershipController();
     private List<MemberProgress> history;
 
     public HomeContent() {
@@ -98,11 +105,11 @@ public class HomeContent {
         statTypeCombo.setOnAction(e -> updateLineChart());
 
         // Khởi tạo TableView
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("scheduleDate"));
-        timeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
         trainerColumn.setCellValueFactory(new PropertyValueFactory<>("trainerName"));
         roomColumn.setCellValueFactory(new PropertyValueFactory<>("roomName"));
-        exercisesColumn.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+        exercisesColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
 
         // Load data after FXML is initialized
         if (currentUser != null) {
@@ -113,11 +120,11 @@ public class HomeContent {
     private void loadUserData() {
         System.out.println("loadUserData called");
         // Lấy memberId từ userId
-        Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        Integer memberId = memberController.getMemberIdByUserId(currentUser.getUserId());
         System.out.println("MemberId: " + memberId);
         if (memberId != null) {
             // Load thông tin gói tập
-            MembershipInfo membership = progressController.getCurrentMembershipInfo(memberId);
+            Membership membership = membershipController.getCurrentMembershipInfo(memberId);
             if (membership != null) {
                 updateMembershipInfo(membership);
             }
@@ -135,12 +142,12 @@ public class HomeContent {
             }
 
             // Load lịch tập sắp tới
-            List<TrainingSchedule> schedules = progressController.getUpcomingSchedules(memberId);
+            List<TrainingSchedule> schedules = TrainingScheduleController.getUpcomingSchedules(memberId);
             updateScheduleTable(schedules);
         }
     }
 
-    private void updateMembershipInfo(MembershipInfo membership) {
+    private void updateMembershipInfo(Membership membership) {
         // Cập nhật thông tin gói tập
         welcomeLabel.setText("Chào mừng trở lại!");
         membershipStatus.setText(String.format("Gói tập: %s (Còn %d ngày)",
@@ -150,9 +157,9 @@ public class HomeContent {
                         membership.getEndDate())));
 
         // Lấy tổng số buổi tập còn lại từ tất cả các TrainingRegistrations
-        Integer memberId = progressController.getMemberIdByUserId(currentUser.getUserId());
+        Integer memberId = memberController.getMemberIdByUserId(currentUser.getUserId());
         if (memberId != null) {
-            int totalRemainingSessions = progressController.getTotalRemainingSessions(memberId);
+            int totalRemainingSessions = TrainingRegistrationController.getTotalRemainingSessions(memberId);
             if (totalRemainingSessions > 0) {
                 remainingSessions.setText(String.valueOf(totalRemainingSessions));
             } else {
@@ -165,16 +172,16 @@ public class HomeContent {
 
     private void updateSessionStats(int memberId) {
         // Cập nhật số buổi tập trong tháng
-        int monthlyCount = progressController.getMonthlySessions(memberId);
+        int monthlyCount = AttendanceController.getMonthlySessions(memberId);
         monthlySessions.setText(String.valueOf(monthlyCount));
 
         // Cập nhật chuỗi ngày tập
-        int streak = progressController.getStreakDays(memberId);
+        int streak = AttendanceController.getStreakDays(memberId);
         streakDays.setText(String.valueOf(streak));
         streakAchievement.setText(streak + " ngày");
 
         // Cập nhật tổng số buổi tập
-        int total = progressController.getTotalSessions(memberId);
+        int total = AttendanceController.getTotalSessions(memberId);
         totalSessions.setText(total + " buổi");
     }
 

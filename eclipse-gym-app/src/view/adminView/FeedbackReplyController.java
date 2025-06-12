@@ -9,6 +9,7 @@ import model.Feedback;
 import model.User;
 import controller.FeedbackController;
 import controller.RoomEquipmentController;
+import controller.EquipmentController;
 import javafx.scene.layout.HBox;
 
 public class FeedbackReplyController {
@@ -41,12 +42,14 @@ public class FeedbackReplyController {
     private String currentEquipmentStatus;
     private int equipmentId;
     private Runnable onSuccessCallback;
+    private EquipmentController equipmentController;
 
     public void setData(Feedback feedback, User currentUser, Runnable onSuccessCallback) {
         this.feedback = feedback;
         this.currentUser = currentUser;
         this.onSuccessCallback = onSuccessCallback;
         this.feedbackController = new FeedbackController();
+        this.equipmentController = new EquipmentController();
         this.roomEquipmentController = new RoomEquipmentController();
 
         populateFields();
@@ -98,10 +101,10 @@ public class FeedbackReplyController {
         try {
             this.equipmentId = equipmentId;
 
-            // Get equipment info using existing method
-            String equipmentCode = feedbackController.getEquipmentCodeById(equipmentId);
+            // Get equipment info using EquipmentController
+            String equipmentCode = equipmentController.getEquipmentCodeById(equipmentId);
             if (equipmentCode != null) {
-                String equipmentInfo = feedbackController.getEquipmentInfoByCode(equipmentCode);
+                String equipmentInfo = equipmentController.getEquipmentInfoByCode(equipmentCode);
                 if (equipmentInfo != null) {
                     // Parse equipment info to get status
                     parseAndDisplayEquipmentInfo(equipmentInfo);
@@ -208,9 +211,9 @@ public class FeedbackReplyController {
                 currentEquipmentStatus = newStatus;
 
                 // Update display
-                String equipmentCode = feedbackController.getEquipmentCodeById(equipmentId);
+                String equipmentCode = equipmentController.getEquipmentCodeById(equipmentId);
                 if (equipmentCode != null) {
-                    String updatedInfo = feedbackController.getEquipmentInfoByCode(equipmentCode);
+                    String updatedInfo = equipmentController.getEquipmentInfoByCode(equipmentCode);
                     if (updatedInfo != null) {
                         parseAndDisplayEquipmentInfo(updatedInfo);
                     }

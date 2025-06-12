@@ -6,22 +6,17 @@ import controller.TrainingController;
 import controller.MemberController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 import model.Member;
 import model.User;
 import model.Membership;
 import model.TrainingRegistration;
 import model.Attendance;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import model.enums.enum_MembershipStatus;
 import model.enums.enum_MemberStatus;
-import utils.DBConnection;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import controller.AttendanceController;
+import controller.MembershipController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -116,32 +111,34 @@ public class MemberTrackController {
 
     private void loadMemberships() {
         // Lấy danh sách các gói tập của hội viên
-        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
+        MembershipController membershipController = new MembershipController();
+        List<Membership> memberships = membershipController.getMembershipsByMemberID(member.getMemberId());
         tblMemberships.getItems().setAll(memberships);
     }
 
     private void loadAttendance() {
         // Lấy 5 lần check-in gần nhất
-        List<Attendance> attendanceList = MemberController.getRecentAttendance(member.getMemberId(), 5);
+        List<Attendance> attendanceList = AttendanceController.getRecentAttendance(member.getMemberId());
         tblAttendance.getItems().setAll(attendanceList);
     }
 
     private void loadSessionCount() {
         // Đếm số buổi đã tập trong tháng này
-        int count = MemberController.countAttendanceThisMonth(member.getMemberId(), LocalDate.now());
+        int count = AttendanceController.countAttendanceThisMonth(member.getMemberId(), LocalDate.now());
         lblSessionCount.setText(String.valueOf(count));
     }
 
     @FXML
     public void handleCheckinGym() {
         // Kiểm tra xem đã check-in trong vòng 1 tiếng chưa
-        if (MemberController.hasCheckedInWithinLastHour(member.getMemberId())) {
+        if (AttendanceController.hasCheckedInWithinLastHour(member.getMemberId())) {
             showAlert("Bạn chỉ được check-in 1 lần mỗi tiếng");
             return;
         }
 
         // Lấy gói GYM hợp lệ (không phải PT, còn hạn)
-        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
+        MembershipController membershipController = new MembershipController();
+        List<Membership> memberships = membershipController.getMembershipsByMemberID(member.getMemberId());
         Membership gymMembership = memberships.stream()
                 .filter(m -> !m.isPersonalTraining() && m.isActive()) // isPersonalTraining() == false là GYM
                 .findFirst()
@@ -152,7 +149,7 @@ public class MemberTrackController {
             return;
         }
 
-        boolean success = MemberController.checkinGym(member.getMemberId(), gymMembership.getMembershipId());
+        boolean success = AttendanceController.checkinGym(member.getMemberId(), gymMembership.getMembershipId());
         if (success) {
             loadAttendance();
             loadSessionCount();
@@ -178,7 +175,8 @@ public class MemberTrackController {
         }
 
         // Lấy gói Membership đang hoạt động (để lấy membershipId cho Attendance)
-        List<Membership> memberships = MemberController.getMembershipsByMemberId(member.getMemberId());
+        MembershipController membershipController = new MembershipController();
+        List<Membership> memberships = membershipController.getMembershipsByMemberID(member.getMemberId());
         Membership activeMembership = memberships.stream()
                 .filter(Membership::isActive)
                 .findFirst()
@@ -279,7 +277,7 @@ public class MemberTrackController {
                 showAlert("Chỉ được phép check-in buổi tập trong ngày hôm nay!");
                 return;
             }
-            boolean success = TrainingRegistrationController.checkinPT(
+            boolean success = AttendanceController.checkinPT(
                     member.getMemberId(),
                     activeMembership.getMembershipId(),
                     ptRegistration.getRegistrationId(),
@@ -307,26 +305,14 @@ public class MemberTrackController {
             return;
         }
 
-        // Cập nhật trạng thái gói tập
-        try {
-            String sql = "UPDATE Memberships SET Status = ?::membership_status_enum WHERE MembershipID = ?";
-            try (Connection conn = DBConnection.getConnection();
-                    PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, enum_MembershipStatus.ACTIVE.getValue());
-                stmt.setInt(2, selectedMembership.getMembershipId());
-
-                if (stmt.executeUpdate() > 0) {
-                    // Cập nhật lại giao diện
-                    selectedMembership.setStatus(enum_MembershipStatus.ACTIVE);
-                    tblMemberships.refresh();
-                    showAlert("Kích hoạt gói tập thành công!");
-                } else {
-                    showAlert("Không thể kích hoạt gói tập!");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Lỗi khi kích hoạt gói tập: " + e.getMessage());
+        MembershipController membershipController = new MembershipController();
+        if (membershipController.activateMembership(selectedMembership.getMembershipId())) {
+            // Cập nhật lại giao diện
+            selectedMembership.setStatus(enum_MembershipStatus.ACTIVE);
+            tblMemberships.refresh();
+            showAlert("Kích hoạt gói tập thành công!");
+        } else {
+            showAlert("Không thể kích hoạt gói tập!");
         }
     }
 

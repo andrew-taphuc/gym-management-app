@@ -11,6 +11,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.User;
 import controller.FeedbackController;
+import controller.EquipmentController;
+import controller.RoomEquipmentController;
+import controller.MemberController;
 
 import java.util.function.Consumer;
 
@@ -30,6 +33,9 @@ public class FeedbackFormController {
     private User user;
     private Consumer<Void> feedbackSubmittedCallback;
     private FeedbackController feedbackController;
+    private EquipmentController equipmentController;
+    private RoomEquipmentController roomEquipmentController;
+    private MemberController memberController;
 
     @FXML
     public void initialize() {
@@ -75,10 +81,10 @@ public class FeedbackFormController {
         String equipmentCode = equipmentCodeText.trim();
 
         // Kiểm tra mã tồn tại
-        boolean exists = feedbackController.checkEquipmentCodeExists(equipmentCode);
+        boolean exists = roomEquipmentController.isEquipmentCodeExists(equipmentCode);
 
         if (exists) {
-            String equipmentInfo = feedbackController.getEquipmentInfoByCode(equipmentCode);
+            String equipmentInfo = equipmentController.getEquipmentInfoByCode(equipmentCode);
             equipmentStatusLabel.setText("✓ Thiết bị: " + equipmentInfo);
             equipmentStatusLabel.setStyle("-fx-text-fill: #4CAF50; -fx-font-weight: bold;");
         } else {
@@ -97,6 +103,9 @@ public class FeedbackFormController {
 
     public void setFeedbackController(FeedbackController controller) {
         this.feedbackController = controller;
+        this.equipmentController = new EquipmentController();
+        this.roomEquipmentController = new RoomEquipmentController();
+        this.memberController = new MemberController();
     }
 
     @FXML
@@ -127,17 +136,18 @@ public class FeedbackFormController {
 
             try {
                 // Kiểm tra mã tồn tại
-                if (!feedbackController.checkEquipmentCodeExists(equipmentCode)) {
+                if (!roomEquipmentController.isEquipmentCodeExists(equipmentCode)) {
                     showAlert("Lỗi", "Mã thiết bị không tồn tại trong hệ thống!");
                     return;
                 }
 
                 // Lấy EquipmentID từ EquipmentCode
-                equipmentId = feedbackController.getEquipmentIdByCode(equipmentCode.trim());
-                if (equipmentId == null) {
+                var equipment = roomEquipmentController.getRoomEquipmentByCode(equipmentCode.trim());
+                if (equipment == null) {
                     showAlert("Lỗi", "Không thể lấy ID thiết bị từ mã!");
                     return;
                 }
+                equipmentId = equipment.getRoomEquipmentId();
 
             } catch (Exception e) {
                 showAlert("Lỗi", "Có lỗi xảy ra khi kiểm tra mã thiết bị: " + e.getMessage());
@@ -147,7 +157,12 @@ public class FeedbackFormController {
 
         try {
             // Lưu feedback vào database
-            int memberId = feedbackController.getMemberIdByUserId(user.getUserId());
+            Integer memberId = memberController.getMemberIdByUserId(user.getUserId());
+            if (memberId == null) {
+                showAlert("Lỗi", "Không tìm thấy thông tin hội viên!");
+                return;
+            }
+            
             boolean success = feedbackController.insertFeedback(memberId, type, comment.trim(), equipmentId);
 
             if (success) {

@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.beans.property.SimpleStringProperty;
 import model.User;
 import model.Membership;
@@ -21,7 +20,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import java.io.IOException;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
 public class RenewMembershipController {

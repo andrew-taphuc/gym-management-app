@@ -7,11 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import model.User;
-import model.enums.enum_Role;
 import view.BaseView;
-import view.LoginView;
-import view.ProfileView;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 

@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Feedback;
 import controller.FeedbackController;
+import controller.EquipmentController;
 
 public class FeedbackDetailController {
 
@@ -33,10 +34,12 @@ public class FeedbackDetailController {
 
     private Feedback feedback;
     private FeedbackController feedbackController;
+    private EquipmentController equipmentController;
 
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
         this.feedbackController = new FeedbackController();
+        this.equipmentController = new EquipmentController();
         populateFields();
     }
 
@@ -119,11 +122,11 @@ public class FeedbackDetailController {
      * Lấy thông tin thiết bị từ ID (tận dụng method có sẵn)
      */
     private String getEquipmentInfoById(int equipmentId) {
-        // Lấy equipment code từ ID bằng method có sẵn trong FeedbackController
-        String equipmentCode = feedbackController.getEquipmentCodeById(equipmentId);
+        // Lấy equipment code từ ID bằng EquipmentController
+        String equipmentCode = equipmentController.getEquipmentCodeById(equipmentId);
         if (equipmentCode != null) {
-            // Sau đó dùng method có sẵn để lấy thông tin đầy đủ
-            return feedbackController.getEquipmentInfoByCode(equipmentCode);
+            // Sau đó dùng EquipmentController để lấy thông tin đầy đủ
+            return equipmentController.getEquipmentInfoByCode(equipmentCode);
         }
         return null;
     }

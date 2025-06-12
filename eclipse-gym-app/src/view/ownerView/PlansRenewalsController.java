@@ -31,8 +31,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Optional;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
 public class PlansRenewalsController {
     @FXML
     private Label pageTitle;

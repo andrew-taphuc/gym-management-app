@@ -210,4 +210,69 @@ public class MembershipController {
         }
         return false;
     }
+
+    public boolean activateMembership(int membershipId) {
+        String sql = "UPDATE Memberships SET Status = ?::membership_status_enum WHERE MembershipID = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, enum_MembershipStatus.ACTIVE.getValue());
+            stmt.setInt(2, membershipId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Membership getCurrentMembershipInfo(int memberId) {
+        String sql = """
+                    SELECT m.MembershipID, m.MemberID, m.PlanID, m.StartDate, m.EndDate, m.Status, m.PaymentID,
+                           mp.PlanName, mp.Duration, mp.Price,
+                           COALESCE(tr.SessionsLeft, 0) as SessionsLeft
+                    FROM Memberships m
+                    JOIN MembershipPlans mp ON m.PlanID = mp.PlanID
+                    LEFT JOIN (
+                        SELECT MemberID, SessionsLeft
+                        FROM TrainingRegistrations
+                        WHERE MemberID = ?
+                        ORDER BY StartDate DESC
+                        LIMIT 1
+                    ) tr ON tr.MemberID = m.MemberID
+                    WHERE m.MemberID = ? AND m.Status = 'Hoạt động'
+                    ORDER BY m.EndDate DESC
+                    LIMIT 1
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, memberId);
+            pstmt.setInt(2, memberId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Membership membership = new Membership();
+                membership.setMembershipId(rs.getInt("MembershipID"));
+                membership.setMemberId(rs.getInt("MemberID"));
+                membership.setPlanId(rs.getInt("PlanID"));
+                membership.setStartDate(rs.getDate("StartDate").toLocalDate());
+                membership.setEndDate(rs.getDate("EndDate").toLocalDate());
+                membership.setStatus(model.enums.enum_MembershipStatus.fromValue(rs.getString("Status")));
+                membership.setPaymentId(rs.getInt("PaymentID"));
+                
+                // Set plan information
+                model.MembershipPlan plan = new model.MembershipPlan();
+                plan.setPlanName(rs.getString("PlanName"));
+                plan.setDuration(rs.getInt("Duration"));
+                plan.setPrice(rs.getDouble("Price"));
+                membership.setPlan(plan);
+                
+                return membership;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy thông tin gói tập: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
