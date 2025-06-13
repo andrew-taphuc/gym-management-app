@@ -1,59 +1,188 @@
 # Gym Management App
 
-Ứng dụng quản lý phòng gym với giao diện JavaFX, hỗ trợ nhiều vai trò người dùng (Member, Trainer, Manager).
+Ứng dụng quản lý phòng gym toàn diện được phát triển bằng JavaFX, hỗ trợ đa vai trò người dùng (Member, Trainer, Manager) với các chức năng chuyên biệt cho từng đối tượng.
 
-## Chức năng chính
+## 🌟 Tính năng nổi bật
 
-- Đăng ký, đăng nhập, quản lý tài khoản
-- Quản lý gói tập, thanh toán, lịch sử tập luyện
-- Quản lý khuyến mãi, phản hồi, thông tin cá nhân
-- Giao diện riêng cho từng vai trò: Member, Trainer, Manager
+### 👤 Đối với Hội viên (Member)
 
-## Cấu trúc thư mục
+- Đăng ký tài khoản và thanh toán gói tập online
+- Quản lý thông tin cá nhân và lịch sử tập luyện
+- Đặt lịch tập với huấn luyện viên (PT)
+- Xem lịch sử điểm danh và theo dõi tiến độ
+- Đăng ký tham gia các khuyến mãi
+- Gửi phản hồi và đánh giá chất lượng dịch vụ
+
+### 🏋️‍♂️ Đối với Huấn luyện viên (Trainer)
+
+- Quản lý danh sách hội viên được phân công
+- Tạo và quản lý lịch tập cho từng hội viên
+- Theo dõi tiến độ tập luyện của hội viên
+- Nhận phản hồi và đánh giá từ hội viên
+- Quản lý thông tin cá nhân và lịch làm việc
+
+### 👨‍💼 Đối với Quản lý (Manager)
+
+- Quản lý toàn bộ hệ thống và người dùng
+- Thêm/sửa/xóa gói tập và khuyến mãi
+- Quản lý thanh toán và hóa đơn
+- Phân công huấn luyện viên cho hội viên
+- Xem báo cáo thống kê và doanh thu
+- Quản lý phòng tập và thiết bị
+
+## 🛠️ Công nghệ sử dụng
+
+- **Ngôn ngữ:** Java 17
+- **Framework UI:** JavaFX
+- **Cơ sở dữ liệu:** PostgreSQL
+- **IDE:** Eclipse/IntelliJ IDEA/VSCode
+- **Build Tool:** Maven
+- **Version Control:** Git
+
+## 📁 Cấu trúc dự án
 
 ```
-├── src/
-│   ├── view/
-│   │   ├── userView/         # Giao diện & controller cho Member
-│   │   ├── trainerView/      # Giao diện & controller cho Trainer
-│   │   ├── adminView/        # Giao diện & controller cho Manager
-│   │   └── ...
-│   ├── controller/           # Controller logic
-│   ├── model/                # Model dữ liệu
-│   ├── utils/                # Tiện ích, helper
-│   └── Main.java             # Điểm khởi động ứng dụng
+gym-management-app/
+├── eclipse-gym-app/              # Thư mục chính của dự án
+│   ├── src/
+│   │   ├── view/                # Giao diện người dùng
+│   │   │   ├── userView/       # Giao diện cho Member
+│   │   │   ├── trainerView/    # Giao diện cho Trainer
+│   │   │   ├── adminView/      # Giao diện cho Manager
+│   │   │   ├── style.css       # CSS chung
+│   │   │   └── dialog.css      # CSS cho dialog
+│   │   ├── controller/         # Xử lý logic nghiệp vụ
+│   │   ├── model/             # Định nghĩa cấu trúc dữ liệu
+│   │   ├── utils/             # Tiện ích và helper
+│   │   └── Main.java          # Điểm khởi động ứng dụng
+│   └── pom.xml                # Cấu hình Maven
+├── DB.sql                     # Script tạo cơ sở dữ liệu
+├── DB_data.sql               # Dữ liệu mẫu
+├── DB_function.sql           # Các hàm database
+└── CREDIT_CARD.txt          # Thông tin thẻ tín dụng mẫu
 ```
 
-## Hướng dẫn cài đặt & chạy
+## 🚀 Hướng dẫn cài đặt
 
-1. **Yêu cầu:**
-   - Java 17 trở lên
-   - JavaFX SDK
-2. **Chạy ứng dụng:**
-   - Mở project trong IDE (Eclipse/IntelliJ/VSCode)
-   - Thiết lập VM options để include JavaFX (ví dụ: `--module-path /path/to/javafx-sdk/lib --add-modules javafx.controls,javafx.fxml`)
+### Yêu cầu hệ thống
+
+- Java JDK 17 trở lên
+- JavaFX SDK 17 trở lên
+- PostgreSQL 12 trở lên
+- IDE (Eclipse/IntelliJ IDEA/VSCode)
+
+### Các bước cài đặt
+
+1. **Clone repository:**
+
+   ```bash
+   git clone https://github.com/andrew-taphuc/gym-management-app.git
+   cd gym-management-app
+   ```
+
+2. **Cài đặt cơ sở dữ liệu:**
+
+   - Tạo database mới trong PostgreSQL
+   - Chạy lần lượt các file:
+     ```bash
+     psql -U your_username -d your_database -f DB.sql
+     psql -U your_username -d your_database -f DB_function.sql
+     psql -U your_username -d your_database -f DB_data.sql
+     ```
+
+3. **Cấu hình IDE:**
+
+   - Mở project trong IDE
+   - Cấu hình JavaFX SDK trong VM options:
+     ```
+     --module-path /path/to/javafx-sdk/lib
+     --add-modules javafx.controls,javafx.fxml
+     ```
+   - Cập nhật thông tin kết nối database trong `utils/DBConnection.java`
+
+4. **Chạy ứng dụng:**
    - Chạy file `Main.java`
+   - Đăng nhập với tài khoản mẫu:
+     - Member: taphuc1/1234
+     - Trainer: pt1/1234
+     - Manager: mana1/1234
+     - Owner: admin/1234
 
-## Hướng dẫn sử dụng
+## 📝 Hướng dẫn sử dụng
 
-- **Đăng ký:** Người dùng mới đăng ký, thanh toán gói tập, sau đó đăng nhập.
-- **Đăng nhập:**
-  - Member: truy cập các chức năng tập luyện, phản hồi, xem thông tin cá nhân.
-  - Trainer: quản lý lịch tập, xem phản hồi, quản lý học viên.
-  - Manager: quản lý toàn bộ hệ thống, gói tập, khuyến mãi, tài khoản.
-- **Chuyển trang:** Menu bar hiển thị các chức năng phù hợp với từng vai trò.
+### Đăng ký tài khoản mới
 
-## Một số lưu ý
+1. Chọn "Đăng ký" từ màn hình đăng nhập
+2. Điền đầy đủ thông tin cá nhân
+3. Chọn gói tập và thanh toán
+4. Kích hoạt tài khoản qua email
 
-- File thẻ tín dụng mẫu: `CREDIT_CARD.txt` (dùng để test thanh toán)
-- Style giao diện được định nghĩa trong `view/style.css` và `view/dialog.css`
-- Để thay đổi giao diện từng vai trò, chỉnh sửa trong các thư mục `userView`, `trainerView`, `adminView`.
+### Quản lý gói tập
 
-## Đóng góp & phát triển
+- **Member:** Xem thông tin gói tập, gia hạn, nâng cấp
+- **Manager:** Thêm/sửa/xóa gói tập, quản lý giá
 
-- Fork, tạo branch mới và gửi pull request nếu muốn đóng góp thêm tính năng.
-- Mọi ý kiến đóng góp vui lòng gửi về email hoặc issue trên repository.
+### Đặt lịch tập PT
+
+1. Member chọn "Đặt lịch PT"
+2. Chọn huấn luyện viên và thời gian
+3. Xác nhận đặt lịch
+4. Nhận thông báo xác nhận
+
+### Quản lý điểm danh
+
+- **Member:** Check-in qua QR code hoặc thẻ
+- **Trainer:** Xác nhận buổi tập và ghi nhận tiến độ
+- **Manager:** Theo dõi thống kê điểm danh
+
+## 🔧 Bảo trì và phát triển
+
+### Cập nhật database
+
+- Backup dữ liệu trước khi cập nhật
+- Chạy script cập nhật theo thứ tự
+- Kiểm tra tính toàn vẹn dữ liệu
+
+### Thêm tính năng mới
+
+1. Tạo branch mới từ `develop`
+2. Phát triển và test kỹ lưỡng
+3. Tạo pull request để review
+4. Merge vào `develop` sau khi được duyệt
+
+### Báo lỗi
+
+- Tạo issue với mô tả chi tiết
+- Đính kèm log lỗi nếu có
+- Cung cấp các bước để tái hiện lỗi
+
+## 📄 Giấy phép
+
+Dự án được phát triển dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
+
+## 👥 Đóng góp
+
+Mọi đóng góp đều được hoan nghênh! Vui lòng:
+
+1. Fork repository
+2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
+3. Commit thay đổi (`git commit -m 'Add some AmazingFeature'`)
+4. Push lên branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
+
+## 👨‍💻 Cộng tác viên
+
+Dự án được phát triển bởi:
+
+- **Tạ Hồng Phúc** ([@andrew-taphuc](https://github.com/andrew-taphuc)) - Chủ dự án
+- **Nguyễn Quang Hưng** ([@Gnuhq26](https://github.com/Gnuhq26)) - Collaborator
+- **Nguyễn Mạnh Tùng** ([@nmtun](https://github.com/nmtun)) - Collaborator
+
+## 📧 Liên hệ
+
+- Email: taphuc1@gmail.com
+- Issue: https://github.com/andrew-taphuc/gym-management-app/issues
 
 ---
 
-Chúc bạn sử dụng ứng dụng Gym Management App hiệu quả!
+Chúc bạn có trải nghiệm tốt với Gym Management App! 🎉
