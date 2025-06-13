@@ -381,21 +381,13 @@ public class DashboardController {
             // Sửa lại để tính chính xác gói thường trong tháng đó
             sql = "SELECT COUNT(*) FROM Memberships m " +
                     "WHERE EXTRACT(YEAR FROM m.StartDate) = ? " +
-                    "AND EXTRACT(MONTH FROM m.StartDate) = ? " +
-                    "AND m.MemberID NOT IN (" +
-                    "SELECT tr.MemberID FROM TrainingRegistrations tr " +
-                    "WHERE EXTRACT(YEAR FROM tr.StartDate) = ? " +
-                    "AND EXTRACT(MONTH FROM tr.StartDate) = ?" +
-                    ")";
+                    "AND EXTRACT(MONTH FROM m.StartDate) = ?";
         }
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, year);
             stmt.setInt(2, month);
-            if (!isPT) {
-                stmt.setInt(3, year); // Thêm tham số cho subquery
-                stmt.setInt(4, month);
-            }
+            // Xóa phần code thừa - không cần thêm tham số cho trường hợp !isPT
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
