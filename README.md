@@ -156,6 +156,65 @@ gym-management-app/
 - Đính kèm log lỗi nếu có
 - Cung cấp các bước để tái hiện lỗi
 
+## 📚 Tài liệu tham khảo
+
+### Tài liệu kỹ thuật
+
+1. **Java & JavaFX**
+
+   - [JavaFX Documentation](https://docs.oracle.com/javase/8/javafx/api/toc.htm)
+   - [JavaFX CSS Reference Guide](https://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html)
+   - [JavaFX Scene Builder](https://gluonhq.com/products/scene-builder/)
+
+2. **Database & PostgreSQL**
+
+   - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+   - [JDBC Tutorial](https://docs.oracle.com/javase/tutorial/jdbc/)
+   - [PostgreSQL JDBC Driver](https://jdbc.postgresql.org/documentation/)
+
+3. **Design Patterns & Architecture**
+   - [MVC Pattern in JavaFX](https://edencoding.com/mvc-pattern-javafx/)
+   - [JavaFX Best Practices](https://docs.oracle.com/javafx/2/best_practices/jfxpub-best_practices.htm)
+   - [Clean Architecture in Java](https://www.baeldung.com/java-clean-architecture)
+
+### Tài liệu nghiệp vụ
+
+1. **Quản lý phòng tập**
+
+   - [Fitness Business Management](https://www.acefitness.org/fitness-certifications/group-fitness-certification/)
+   - [Gym Management Best Practices](https://www.ihrsa.org/improve-your-club/business-operations/)
+   - [Personal Training Management](https://www.acefitness.org/fitness-certifications/personal-trainer-certification/)
+
+2. **Tiêu chuẩn & Quy định**
+
+   - [ISO 9001:2015 - Quality Management Systems](https://www.iso.org/iso-9001-quality-management.html)
+   - [GDPR Compliance for Fitness Apps](https://gdpr.eu/fitness-apps/)
+   - [Payment Card Industry Data Security Standard (PCI DSS)](https://www.pcisecuritystandards.org/)
+
+3. **Tài liệu SRS**
+   - [IEEE 830-1998 - Recommended Practice for Software Requirements Specifications](https://standards.ieee.org/standard/830-1998.html)
+   - [ISO/IEC/IEEE 29148:2018 - Systems and software engineering](https://www.iso.org/standard/72089.html)
+   - [Software Requirements Specification Template](https://www.altexsoft.com/blog/business/software-requirements-specification-document-with-template/)
+
+### Công cụ & Framework
+
+1. **Development Tools**
+
+   - [Eclipse IDE](https://www.eclipse.org/documentation/)
+   - [IntelliJ IDEA](https://www.jetbrains.com/idea/documentation/)
+   - [Visual Studio Code](https://code.visualstudio.com/docs)
+
+2. **Version Control & Collaboration**
+
+   - [Git Documentation](https://git-scm.com/doc)
+   - [GitHub Guides](https://guides.github.com/)
+   - [Git Flow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+
+3. **Testing & Quality Assurance**
+   - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
+   - [TestFX Documentation](https://testfx.github.io/TestFX/)
+   - [SonarQube Documentation](https://docs.sonarqube.org/)
+
 ## 📄 Giấy phép
 
 Dự án được phát triển dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
