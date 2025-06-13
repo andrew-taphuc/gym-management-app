@@ -38,14 +38,6 @@ public class FeedbackController {
         return insertFeedback(memberID, feedbackType, comment, null);
     }
 
-    /**
-     * Kiểm tra EquipmentID có tồn tại trong database không
-     * 
-     * @param equipmentId ID thiết bị cần kiểm tra
-     * @return true nếu tồn tại, false nếu không tồn tại
-     */
-
-
     // Lấy danh sách feedback của một member
     public List<Feedback> getFeedbacksByMemberID(int memberID) {
         List<Feedback> feedbacks = new ArrayList<>();
@@ -165,30 +157,4 @@ public class FeedbackController {
         return updateFeedbackStatus(feedbackID, status, responseComment, responderID);
     }
 
-    // public boolean replyFeedback(int feedbackID, String responseComment, int
-    // responderID) {
-    // String sql = """
-    // UPDATE Feedback
-    // SET ResponseComment = ?,
-    // ResponseDate = CURRENT_TIMESTAMP,
-    // ResponderID = ?
-    // WHERE FeedbackID = ?
-    // """;
-
-    // try (Connection conn = DBConnection.getConnection();
-    // PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-    // pstmt.setString(1, responseComment);
-    // pstmt.setInt(2, responderID);
-    // pstmt.setInt(3, feedbackID);
-
-    // int rowsAffected = pstmt.executeUpdate();
-    // return rowsAffected > 0;
-
-    // } catch (SQLException e) {
-    // System.err.println("Lỗi khi cập nhật phản hồi: " + e.getMessage());
-    // e.printStackTrace();
-    // return false;
-    // }
-    // }
 }

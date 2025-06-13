@@ -112,4 +112,84 @@ public class TrainingScheduleController {
         }
         return schedules;
     }
+
+    public boolean addTrainingSchedule(model.TrainingSchedule schedule) throws SQLException {
+        String sql = "INSERT INTO TrainingSchedule (registrationid, memberid, trainerid, membershipid, scheduledate, starttime, duration, roomid, status, notes) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?::training_status_enum, ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setInt(1, schedule.getRegistrationId());
+            pstmt.setInt(2, schedule.getMemberId());
+            pstmt.setInt(3, schedule.getTrainerId());
+            pstmt.setInt(4, schedule.getMembershipId());
+            pstmt.setDate(5, java.sql.Date.valueOf(schedule.getDate()));
+
+            // Xử lý format thời gian
+            String timeString = schedule.getTime();
+            if (timeString.length() == 5 && timeString.matches("\\d{2}:\\d{2}")) {
+                timeString += ":00";
+            }
+            pstmt.setTime(6, java.sql.Time.valueOf(timeString));
+
+            pstmt.setInt(7, schedule.getDuration() > 0 ? schedule.getDuration() : 60);
+            pstmt.setInt(8, schedule.getRoomId());
+            pstmt.setString(9, schedule.getStatus());
+            pstmt.setString(10, schedule.getNotes());
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        schedule.setId(generatedKeys.getInt(1));
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    public List<model.TrainingSchedule> getSchedulesByMemberId(int memberId) {
+        List<model.TrainingSchedule> list = new ArrayList<>();
+        String sql = "SELECT ts.*, " +
+                "u_trainer.fullname as trainer_name, " +
+                "r.roomname as room_name " +
+                "FROM TrainingSchedule ts " +
+                "LEFT JOIN Trainers t ON ts.trainerid = t.trainerid " +
+                "LEFT JOIN Users u_trainer ON t.userid = u_trainer.userid " +
+                "LEFT JOIN Rooms r ON ts.roomid = r.roomid " +
+                "WHERE ts.memberid = ? " +
+                "ORDER BY ts.scheduledate DESC, ts.starttime DESC";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                model.TrainingSchedule ts = new model.TrainingSchedule();
+                ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
+                ts.setMemberId(rs.getInt("memberid"));
+                ts.setTrainerId(rs.getInt("trainerid"));
+                ts.setMembershipId(rs.getInt("membershipid"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
+                ts.setRoomId(rs.getInt("roomid"));
+                ts.setStatus(rs.getString("status"));
+                ts.setNotes(rs.getString("notes"));
+                ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
+
+                // Thêm thông tin tên trainer và room
+                ts.setTrainerName(rs.getString("trainer_name"));
+                ts.setRoomName(rs.getString("room_name"));
+
+                list.add(ts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

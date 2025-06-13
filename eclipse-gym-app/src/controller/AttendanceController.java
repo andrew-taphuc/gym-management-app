@@ -129,30 +129,38 @@ public class AttendanceController {
     }
 
     // Lấy 5 lần check-in gần nhất
-    public static List<Attendance> getRecentAttendance(int memberId) {
+    public static List<Attendance> getRecentAttendance(int memberId, int limit) {
         List<Attendance> list = new ArrayList<>();
-        String query = "SELECT a.*, m.PlanID, ts.TrainerID " +
-                      "FROM Attendance a " +
-                      "LEFT JOIN Memberships m ON a.MembershipID = m.MembershipID " +
-                      "LEFT JOIN TrainingSchedule ts ON a.TrainingScheduleID = ts.ScheduleID " +
-                      "WHERE a.MemberID = ? " +
-                      "ORDER BY a.CheckInTime DESC LIMIT 5";
+        String query = "SELECT a.*, mp.PlanName, " +
+                "CASE WHEN a.TrainingScheduleID IS NOT NULL " +
+                "THEN u_trainer.FullName ELSE NULL END AS TrainerName " +
+                "FROM Attendance a " +
+                "JOIN Memberships m ON a.MembershipID = m.MembershipID " +
+                "JOIN MembershipPlans mp ON m.PlanID = mp.PlanID " +
+                "LEFT JOIN TrainingSchedule ts ON a.TrainingScheduleID = ts.ScheduleID " +
+                "LEFT JOIN Trainers t ON ts.TrainerID = t.TrainerID " +
+                "LEFT JOIN Users u_trainer ON t.UserID = u_trainer.UserID " +
+                "WHERE a.MemberID = ? ORDER BY a.CheckinTime DESC";
         try (Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, memberId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Attendance attendance = new Attendance();
-                attendance.setAttendanceId(rs.getInt("AttendanceID"));
-                attendance.setMemberId(rs.getInt("MemberID"));
-                attendance.setMembershipId(rs.getInt("MembershipID"));
-                attendance.setCheckInTime(rs.getTimestamp("CheckInTime").toLocalDateTime());
-                attendance.setTrainingScheduleId(rs.getInt("TrainingScheduleID"));
-                list.add(attendance);
+                Attendance a = new Attendance();
+                a.setAttendanceId(rs.getInt("AttendanceID"));
+                a.setMemberId(rs.getInt("MemberID"));
+                a.setCheckInTime(rs.getTimestamp("CheckinTime").toLocalDateTime());
+                a.setMembershipId(rs.getInt("MembershipID"));
+                a.setPlanName(rs.getString("PlanName")); // Thêm trường này vào model Attendance
+                a.setTrainingScheduleId(
+                        rs.getObject("TrainingScheduleID") != null ? rs.getInt("TrainingScheduleID") : null);
+                a.setTrainerName(rs.getString("TrainerName")); // Thêm tên trainer
+                list.add(a);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        System.out.println("Số dòng trả về: " + list.size());
         return list;
     }
 

@@ -38,6 +38,7 @@ import model.Room;
 import model.Exercise;
 import controller.RoomController;
 import controller.ExerciseController;
+import controller.TrainingScheduleController;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
@@ -103,6 +104,8 @@ public class WorkoutsController {
     private ComboBox<Room> roomComboBox;
 
     private User currentUser;
+    private TrainingScheduleController trainingScheduleController = new TrainingScheduleController();
+    private TrainerController trainerController = new TrainerController();
     private TrainingController trainingController = new TrainingController();
     private RoomController roomController = new RoomController();
     private ExerciseController exerciseController = new ExerciseController();
@@ -310,7 +313,7 @@ public class WorkoutsController {
         ObservableList<TrainingRegistration> list = FXCollections.observableArrayList();
 
         // Lấy thông tin trainer để biết specialization
-        Trainer trainer = trainingController.getTrainerById(trainerId);
+        Trainer trainer = trainerController.getTrainerById(trainerId);
         if (trainer != null) {
             // Lấy danh sách hội viên đang quản lý thông qua TrainingRegistrations
             java.util.List<Member> members = trainingController.getMembersByTrainerId(trainerId);
@@ -1023,7 +1026,7 @@ public class WorkoutsController {
     @FXML
     private void showUnassignedMembers() {
         // Lấy thông tin trainer để biết specialization
-        Trainer trainer = trainingController.getTrainerById(currentTrainerId);
+        Trainer trainer = trainerController.getTrainerById(currentTrainerId);
         if (trainer == null) {
             showAlert("Lỗi", "Không thể lấy thông tin trainer!");
             return;
@@ -1112,7 +1115,7 @@ public class WorkoutsController {
         scheduleTable.getColumns().addAll(colDate, colTime, colRoom, colStatus, colRegId);
 
         // Lấy danh sách lịch tập của hội viên
-        List<TrainingSchedule> schedules = trainingController.getSchedulesByMemberId(registration.getMemberId());
+        List<TrainingSchedule> schedules = trainingScheduleController.getSchedulesByMemberId(registration.getMemberId());
         scheduleTable.setItems(FXCollections.observableArrayList(schedules));
 
         vbox.getChildren().addAll(memberInfo, memberName, memberCode, planName, startDate, sessionsLeft, registrationId,
@@ -1718,7 +1721,7 @@ public class WorkoutsController {
                 newSchedule.setNotes(notes);
 
                 try {
-                    if (trainingController.addTrainingSchedule(newSchedule)) {
+                    if (trainingScheduleController.addTrainingSchedule(newSchedule)) {
                         showAlert(AlertType.INFORMATION, "Thành công", "Đã thêm lịch tập mới");
                         dialog.close();
                         refreshScheduleTable();

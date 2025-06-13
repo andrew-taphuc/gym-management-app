@@ -17,6 +17,7 @@ import model.enums.enum_MembershipStatus;
 import model.enums.enum_MemberStatus;
 import controller.AttendanceController;
 import controller.MembershipController;
+import controller.UserController;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -69,6 +70,7 @@ public class MemberTrackController {
     private User currentUser;
     private Member member;
     private TrainingController trainingController = new TrainingController();
+    private UserController userController = new UserController();
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -86,8 +88,7 @@ public class MemberTrackController {
     private void loadMemberInfo() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         if (member != null) {
-            MemberController memberController = new MemberController();
-            User user = memberController.getUserById(member.getUserId());
+            User user = userController.getUserByID(member.getUserId());
             if (user != null) {
                 lblFullName.setText(user.getFullName());
                 lblPhone.setText(user.getPhoneNumber());
@@ -118,7 +119,7 @@ public class MemberTrackController {
 
     private void loadAttendance() {
         // Lấy 5 lần check-in gần nhất
-        List<Attendance> attendanceList = AttendanceController.getRecentAttendance(member.getMemberId());
+        List<Attendance> attendanceList = AttendanceController.getRecentAttendance(member.getMemberId(), 5);
         tblAttendance.getItems().setAll(attendanceList);
     }
 

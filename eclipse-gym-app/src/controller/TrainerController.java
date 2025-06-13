@@ -84,4 +84,60 @@ public class TrainerController {
         }
         return trainers;
     }
+
+    public model.Trainer getTrainerById(int trainerId) {
+        String sql = "SELECT t.trainerid, t.userid, t.trainercode, t.specialization, t.bio, t.rating, t.status as trainer_status, "
+                +
+                "u.username, u.email, u.phonenumber, u.fullname, u.dateofbirth, u.gender, u.address, " +
+                "u.createdat, u.updateat, u.status as user_status, u.role " +
+                "FROM Trainers t " +
+                "JOIN Users u ON t.userid = u.userid " +
+                "WHERE t.trainerid = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // Tạo User object
+                User user = new User();
+                user.setUserId(rs.getInt("userid"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPhoneNumber(rs.getString("phonenumber"));
+                user.setFullName(rs.getString("fullname"));
+                if (rs.getDate("dateofbirth") != null) {
+                    user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
+                }
+                user.setGender(model.enums.enum_Gender.fromValue(rs.getString("gender")));
+                user.setAddress(rs.getString("address"));
+                if (rs.getTimestamp("createdat") != null) {
+                    user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
+                }
+                if (rs.getTimestamp("updateat") != null) {
+                    user.setUpdatedAt(rs.getTimestamp("updateat").toLocalDateTime());
+                }
+                user.setStatus(model.enums.enum_UserStatus.fromValue(rs.getString("user_status")));
+                user.setRole(model.enums.enum_Role.fromValue(rs.getString("role")));
+
+                // Tạo Trainer object
+                model.Trainer trainer = new model.Trainer();
+                trainer.setTrainerId(rs.getInt("trainerid"));
+                trainer.setUserId(rs.getInt("userid"));
+                trainer.setTrainerCode(rs.getString("trainercode"));
+                trainer.setSpecialization(
+                        model.enums.enum_TrainerSpecialization.fromValue(rs.getString("specialization")));
+                trainer.setBio(rs.getString("bio"));
+                trainer.setRating(rs.getDouble("rating"));
+                trainer.setStatus(model.enums.enum_TrainerStatus.fromValue(rs.getString("trainer_status")));
+                trainer.setUser(user);
+
+                return trainer;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

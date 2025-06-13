@@ -122,37 +122,6 @@ public class MemberController {
         return null;
     }
 
-    // Check-in phòng tập (GYM)
-    public static boolean checkinGym(int memberId, int membershipId) {
-        String query = "INSERT INTO Attendance (MemberID, MembershipID, CheckInTime, TrainingScheduleID) VALUES (?, ?, NOW(), NULL)";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            stmt.setInt(2, membershipId);
-            int affected = stmt.executeUpdate();
-            return affected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Check-in dịch vụ PT
-    public static boolean checkinPT(int memberId, int membershipId, int trainingScheduleId) {
-        String query = "INSERT INTO Attendance (MemberID, MembershipID, CheckInTime, TrainingScheduleID) VALUES (?, ?, NOW(), ?)";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            stmt.setInt(2, membershipId);
-            stmt.setInt(3, trainingScheduleId);
-            int affected = stmt.executeUpdate();
-            return affected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     public static int getTodayPTScheduleId(int memberId, int membershipId) {
         String query = "SELECT ScheduleID FROM TrainingSchedule " +
                 "WHERE MemberID = ? AND MembershipID = ? AND DATE(CreatedDate) = ?";
@@ -171,25 +140,6 @@ public class MemberController {
         return -1;
     }
 
-    public User getUserById(int userId) {
-        String query = "SELECT * FROM Users WHERE UserID = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, userId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getInt("UserID"));
-                user.setFullName(rs.getString("FullName"));
-                user.setPhoneNumber(rs.getString("PhoneNumber"));
-                // Thêm các trường khác nếu cần
-                return user;
-
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public List<Member> getAllMembers() {
         List<Member> members = new ArrayList<>();
@@ -229,21 +179,6 @@ public class MemberController {
             e.printStackTrace();
         }
         return members;
-    }
-
-    public static boolean hasCheckedInWithinLastHour(int memberId) {
-        String query = "SELECT COUNT(*) FROM Attendance WHERE MemberID = ? AND CheckinTime >= NOW() - INTERVAL '1 hour'";
-        try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     /**

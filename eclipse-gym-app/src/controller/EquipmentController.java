@@ -8,12 +8,6 @@ import java.sql.SQLException;
 
 public class EquipmentController {
 
-    /**
-     * Lấy EquipmentCode từ EquipmentID
-     * 
-     * @param equipmentId ID thiết bị
-     * @return Mã thiết bị, hoặc null nếu không tìm thấy
-     */
     public String getEquipmentCodeById(int equipmentId) {
         String sql = "SELECT EquipmentCode FROM roomequipment WHERE RoomEquipmentID = ?";
 
