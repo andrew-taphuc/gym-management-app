@@ -2,6 +2,18 @@
 
 Ứng dụng quản lý phòng gym toàn diện được phát triển bằng JavaFX, hỗ trợ đa vai trò người dùng (Member, Trainer, Manager) với các chức năng chuyên biệt cho từng đối tượng.
 
+Project nhóm cho học phần Phát triển phần mềm theo tiêu chuẩn ITSS - IT4549 - SOICT - HUST
+
+GVHD: [Ths. Nguyễn Mạnh Tuấn](https://soict.hust.edu.vn/ths-nguyen-manh-tuan.html) - giảng viên Trường Công nghệ thông tin và truyền thông, trường Đại học Bách khoa Hà nội.
+
+## 👨‍💻 Phát triển bởi
+
+Dự án được phát triển bởi:
+
+- **Tạ Hồng Phúc** ([@andrew-taphuc](https://github.com/andrew-taphuc)) - Chủ dự án
+- **Nguyễn Quang Hưng** ([@Gnuhq26](https://github.com/Gnuhq26)) - Chủ dự án
+- **Nguyễn Mạnh Tùng** ([@nmtun](https://github.com/nmtun)) - Chủ dự án
+
 ## 🌟 Tính năng nổi bật
 
 ### 👤 Đối với Hội viên (Member)
@@ -228,14 +240,6 @@ Mọi đóng góp đều được hoan nghênh! Vui lòng:
 3. Commit thay đổi (`git commit -m 'Add some AmazingFeature'`)
 4. Push lên branch (`git push origin feature/AmazingFeature`)
 5. Tạo Pull Request
-
-## 👨‍💻 Cộng tác viên
-
-Dự án được phát triển bởi:
-
-- **Tạ Hồng Phúc** ([@andrew-taphuc](https://github.com/andrew-taphuc)) - Chủ dự án
-- **Nguyễn Quang Hưng** ([@Gnuhq26](https://github.com/Gnuhq26)) - Collaborator
-- **Nguyễn Mạnh Tùng** ([@nmtun](https://github.com/nmtun)) - Collaborator
 
 ## 📧 Liên hệ
 
