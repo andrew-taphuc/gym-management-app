@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.Date;
 
-public class MemberController {
+public class MemberController extends AbstractMemberController {
     private Connection connection;
 
     public MemberController() {

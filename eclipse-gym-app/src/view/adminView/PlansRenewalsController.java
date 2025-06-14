@@ -2,6 +2,7 @@ package view.adminView;
 
 import model.Member;
 import controller.MemberController;
+import controller.IMemberController;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
@@ -47,7 +48,9 @@ public class PlansRenewalsController {
     private TextField searchField;
 
     private User currentUser;
-    private MemberController memberController = new MemberController();
+
+    
+    private IMemberController memberController = new MemberController();
     private ObservableList<Member> allMembers = FXCollections.observableArrayList();
     private Stage stage;
 
