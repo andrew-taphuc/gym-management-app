@@ -13,6 +13,7 @@ import model.ExerciseWithDetails;
 import model.enums.enum_TrainingStatus;
 import java.time.format.DateTimeFormatter;
 import controller.TrainingController;
+import controller.TrainingScheduleController;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.util.Callback;
@@ -48,6 +49,7 @@ public class WorkoutsController {
 
     private User currentUser;
     private TrainingController trainingController = new TrainingController();
+    private TrainingScheduleController trainingScheduleController = new TrainingScheduleController();
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -94,7 +96,7 @@ public class WorkoutsController {
 
     private void loadSchedulesByMember(int userId) {
         ObservableList<TrainingSchedule> list = FXCollections.observableArrayList();
-        list.addAll(trainingController.getSchedulesByUserId(userId));
+        list.addAll(trainingScheduleController.getSchedulesByUserId(userId));
         scheduleTable.setItems(list);
     }
 
@@ -132,7 +134,7 @@ public class WorkoutsController {
     private void showExercisesPopup(int scheduleId) {
         TrainingController trainingController = new TrainingController();
         java.util.List<ExerciseWithDetails> exerciseDetails = trainingController.getExercisesByScheduleId(scheduleId);
-        String scheduleStatus = trainingController.getTrainingScheduleStatus(scheduleId);
+        String scheduleStatus = trainingScheduleController.getTrainingScheduleStatus(scheduleId);
 
         Stage popupStage = new Stage();
         popupStage.setTitle("Danh sách bài tập của buổi tập");
@@ -437,7 +439,7 @@ public class WorkoutsController {
                     }
 
                     private void submitRating(int scheduleId, int rating) {
-                        TrainingController controller = new TrainingController();
+                        TrainingScheduleController controller = new TrainingScheduleController();
                         if (controller.updateTrainingScheduleRating(scheduleId, rating)) {
                             // Thành công - disable rating controls
                             for (Button star : starButtons) {
@@ -480,7 +482,7 @@ public class WorkoutsController {
 
                             if (isCompleted && hasTrainer) {
                                 // Kiểm tra xem đã đánh giá chưa
-                                int existingRating = trainingController.getTrainingScheduleRating(schedule.getId());
+                                int existingRating = trainingScheduleController.getTrainingScheduleRating(schedule.getId());
                                 if (existingRating > 0) {
                                     // Đã đánh giá - hiển thị rating và disable controls
                                     selectedRating = existingRating;

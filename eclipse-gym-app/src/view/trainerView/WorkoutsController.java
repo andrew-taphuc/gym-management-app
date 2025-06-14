@@ -39,6 +39,7 @@ import model.Exercise;
 import controller.RoomController;
 import controller.ExerciseController;
 import controller.TrainingScheduleController;
+import controller.TrainingRegistrationController;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
@@ -104,6 +105,7 @@ public class WorkoutsController {
     private ComboBox<Room> roomComboBox;
 
     private User currentUser;
+    private TrainingRegistrationController trainingRegistrationController = new TrainingRegistrationController();
     private TrainingScheduleController trainingScheduleController = new TrainingScheduleController();
     private TrainerController trainerController = new TrainerController();
     private TrainingController trainingController = new TrainingController();
@@ -173,7 +175,7 @@ public class WorkoutsController {
 
         colRating.setCellValueFactory(cellData -> {
             TrainingSchedule schedule = cellData.getValue();
-            int rating = trainingController.getTrainingScheduleRating(schedule.getId());
+            int rating = trainingScheduleController.getTrainingScheduleRating(schedule.getId());
             String ratingText = rating > 0 ? rating + "/5" : "-";
             return new javafx.beans.property.SimpleStringProperty(ratingText);
         });
@@ -251,7 +253,7 @@ public class WorkoutsController {
 
     private void loadSchedulesByTrainer(int trainerId) {
         ObservableList<TrainingSchedule> list = FXCollections.observableArrayList();
-        list.addAll(trainingController.getSchedulesByTrainerId(trainerId));
+        list.addAll(trainingScheduleController.getSchedulesByTrainerId(trainerId));
 
         // Sắp xếp theo trạng thái và thời gian
         list.sort((s1, s2) -> {
@@ -431,7 +433,7 @@ public class WorkoutsController {
                                 alert.showAndWait().ifPresent(response -> {
                                     if (response == ButtonType.OK) {
                                         try {
-                                            if (trainingController.cancelTrainingSchedule(schedule.getId())) {
+                                            if (trainingScheduleController.cancelTrainingSchedule(schedule.getId())) {
                                                 refreshScheduleTable();
                                             } else {
                                                 showAlert(AlertType.ERROR, "Lỗi", "Không thể hủy lịch tập");
@@ -1007,7 +1009,7 @@ public class WorkoutsController {
 
         try {
             int registrationId = Integer.parseInt(registrationIdStr);
-            boolean success = trainingController.assignMemberToTrainerByRegistrationId(registrationId,
+            boolean success = trainingRegistrationController.assignMemberToTrainerByRegistrationId(registrationId,
                     currentTrainerId);
 
             if (success) {
@@ -1032,7 +1034,7 @@ public class WorkoutsController {
             return;
         }
 
-        java.util.List<TrainingRegistration> unassignedList = trainingController
+        java.util.List<TrainingRegistration> unassignedList = trainingRegistrationController
                 .getUnassignedTrainingRegistrationsBySpecialization(trainer.getSpecialization());
 
         if (unassignedList.isEmpty()) {
@@ -1177,7 +1179,7 @@ public class WorkoutsController {
                     {
                         selectBtn.setOnAction(event -> {
                             TrainingRegistration selected = getTableView().getItems().get(getIndex());
-                            boolean success = trainingController.assignMemberToTrainerByRegistrationId(
+                            boolean success = trainingRegistrationController.assignMemberToTrainerByRegistrationId(
                                     selected.getRegistrationId(), currentTrainerId);
 
                             if (success) {
@@ -1624,7 +1626,7 @@ public class WorkoutsController {
             memberComboBox.setOnAction(e -> {
                 Member selectedMember = memberComboBox.getValue();
                 if (selectedMember != null) {
-                    List<TrainingRegistration> registrations = trainingController
+                    List<TrainingRegistration> registrations = trainingRegistrationController
                             .getTrainingRegistrationsByMemberId(selectedMember.getMemberId());
                     // Lọc chỉ lấy các registration có trainerId trùng với currentTrainerId
                     registrations = registrations.stream()
@@ -1700,7 +1702,7 @@ public class WorkoutsController {
 
                 // Kiểm tra số buổi còn lại
                 int sessionsLeft = selectedRegistration.getSessionsLeft();
-                int scheduledSessions = trainingController
+                int scheduledSessions = trainingScheduleController
                         .getScheduledSessionsCount(selectedRegistration.getRegistrationId());
 
                 if (scheduledSessions >= sessionsLeft) {

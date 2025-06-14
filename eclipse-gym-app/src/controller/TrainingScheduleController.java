@@ -4,6 +4,8 @@ import utils.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.enums.enum_TrainingStatus;
+import model.TrainingSchedule;
 
 public class TrainingScheduleController {
     // Lấy ScheduleID của buổi PT hôm nay cho hội viên và registrationId
@@ -183,6 +185,167 @@ public class TrainingScheduleController {
 
                 // Thêm thông tin tên trainer và room
                 ts.setTrainerName(rs.getString("trainer_name"));
+                ts.setRoomName(rs.getString("room_name"));
+
+                list.add(ts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // Thêm method mới để đếm số buổi đã lên lịch cho một registration
+    public int getScheduledSessionsCount(int registrationId) {
+        String sql = "SELECT COUNT(*) FROM TrainingSchedule WHERE registrationid = ? AND status = 'Đã lên lịch'";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, registrationId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Thêm method mới để hủy lịch tập
+    public boolean cancelTrainingSchedule(int scheduleId) throws SQLException {
+        String sql = "UPDATE TrainingSchedule SET status = ?::training_status_enum WHERE scheduleid = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, enum_TrainingStatus.CANCELLED.getValue());
+            ps.setInt(2, scheduleId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    
+    // Thêm method để lấy trạng thái của buổi tập
+    public String getTrainingScheduleStatus(int scheduleId) {
+        String status = "";
+        String sql = "SELECT status FROM TrainingSchedule WHERE scheduleid = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, scheduleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                status = rs.getString("status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    // Thêm method để cập nhật đánh giá cho buổi tập
+    public boolean updateTrainingScheduleRating(int scheduleId, int rating) {
+        String sql = "UPDATE TrainingSchedule SET rating = ? WHERE scheduleid = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, rating);
+            ps.setInt(2, scheduleId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Thêm method để lấy đánh giá hiện tại của buổi tập
+    public int getTrainingScheduleRating(int scheduleId) {
+        int rating = 0;
+        String sql = "SELECT rating FROM TrainingSchedule WHERE scheduleid = ?";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, scheduleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                rating = rs.getInt("rating");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rating;
+    }
+
+    public List<TrainingSchedule> getSchedulesByUserId(int userId) {
+        List<TrainingSchedule> list = new ArrayList<>();
+        String sql = "SELECT ts.*, " +
+                "u_trainer.fullname as trainer_name, " +
+                "r.roomname as room_name " +
+                "FROM TrainingSchedule ts " +
+                "JOIN Members m ON ts.memberid = m.memberid " +
+                "LEFT JOIN Trainers t ON ts.trainerid = t.trainerid " +
+                "LEFT JOIN Users u_trainer ON t.userid = u_trainer.userid " +
+                "LEFT JOIN Rooms r ON ts.roomid = r.roomid " +
+                "WHERE m.userid = ? " +
+                "ORDER BY ts.scheduledate DESC, ts.starttime DESC";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TrainingSchedule ts = new TrainingSchedule();
+                ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
+                ts.setMemberId(rs.getInt("memberid"));
+                ts.setTrainerId(rs.getInt("trainerid"));
+                ts.setMembershipId(rs.getInt("membershipid"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
+                ts.setRoomId(rs.getInt("roomid"));
+                ts.setStatus(rs.getString("status"));
+                ts.setNotes(rs.getString("notes"));
+                ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
+
+                // Thêm thông tin tên trainer và room
+                ts.setTrainerName(rs.getString("trainer_name"));
+                ts.setRoomName(rs.getString("room_name"));
+
+                list.add(ts);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<TrainingSchedule> getSchedulesByTrainerId(int trainerId) {
+        List<TrainingSchedule> list = new ArrayList<>();
+        String sql = "SELECT ts.*, " +
+                "u_member.fullname as member_name, " +
+                "m.membercode as member_code, " +
+                "r.roomname as room_name " +
+                "FROM TrainingSchedule ts " +
+                "JOIN Members m ON ts.memberid = m.memberid " +
+                "LEFT JOIN Users u_member ON m.userid = u_member.userid " +
+                "LEFT JOIN Rooms r ON ts.roomid = r.roomid " +
+                "WHERE ts.trainerid = ? " +
+                "ORDER BY ts.scheduledate DESC, ts.starttime DESC";
+        try (Connection conn = DBConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                TrainingSchedule ts = new TrainingSchedule();
+                ts.setId(rs.getInt("scheduleid"));
+                ts.setRegistrationId(rs.getInt("registrationid"));
+                ts.setMemberId(rs.getInt("memberid"));
+                ts.setTrainerId(rs.getInt("trainerid"));
+                ts.setMembershipId(rs.getInt("membershipid"));
+                ts.setDate(rs.getDate("scheduledate").toLocalDate());
+                ts.setTime(rs.getTime("starttime").toLocalTime().toString());
+                ts.setRoomId(rs.getInt("roomid"));
+                ts.setStatus(rs.getString("status"));
+                ts.setNotes(rs.getString("notes"));
+                ts.setCreatedDate(rs.getTimestamp("createddate").toLocalDateTime());
+
+                // Thêm thông tin tên học viên, mã hội viên và room
+                ts.setMemberName(rs.getString("member_name"));
+                ts.setMemberCode(rs.getString("member_code"));
                 ts.setRoomName(rs.getString("room_name"));
 
                 list.add(ts);
