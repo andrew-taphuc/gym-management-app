@@ -3,3 +3,8 @@
 111122223333444a,321,50000.0
 4444333322221111,122,200000.0
 1234123412341234,123,290000.0
+
+3 cái phản hồi gộp làm 1 thành phản hồi và tiếp nhận xử lý 
+đăng ký và thanh toán có r -> bỏ thanh toán
+Gộp chung các báo cáo ở dashboard
+CRUD hội viên -> quản lý hội viên
